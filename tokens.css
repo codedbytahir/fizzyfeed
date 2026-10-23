@@ -1,0 +1,97 @@
+/* ============================================================
+   fizzyfeed — brand tokens v0.1
+   Electric Blue identity · dev codename: kroma
+   Final name pending (fizzyfeed / feezyfeed) — tokens are name-agnostic.
+   ============================================================ */
+
+:root {
+  /* ---- brand core: Electric Blue scale (primary = 500) ---- */
+  --electric-50:  #EAF1FF;
+  --electric-100: #D0E1FF;
+  --electric-200: #A3C4FF;
+  --electric-300: #6FA1FF;
+  --electric-400: #3B7DFF;
+  --electric-500: #0A5CFF;  /* PRIMARY — electric blue */
+  --electric-600: #0047E0;  /* use for small text on white (AA) */
+  --electric-700: #0037B0;
+  --electric-800: #002B85;
+  --electric-900: #001F5C;
+  --electric-950: #001438;
+
+  /* ---- Volt: cyan companion (gradient tail, live accents) ---- */
+  --volt-300: #7BE9FF;
+  --volt-400: #2FDDFF;
+  --volt-500: #00D5FF;
+  --volt-600: #00B2D6;
+  --volt-700: #008CAD;
+
+  /* ---- Chroma Violet: gradient head (the "kroma" note) ---- */
+  --violet-400: #9A6BFF;
+  --violet-500: #6333FF;
+  --violet-600: #4A1FD9;
+
+  /* ---- Spark lime: delight accent, sparingly ---- */
+  --spark-500: #C8FF4D;
+
+  /* ---- Ink: blue-tinted neutrals (dark-mode first) ---- */
+  --ink-50:  #F5F8FE;
+  --ink-100: #E7EDF8;
+  --ink-200: #C6D0E4;
+  --ink-300: #9AA8C4;
+  --ink-400: #6B7A99;
+  --ink-500: #4A5774;
+  --ink-600: #33405C;
+  --ink-700: #1F2940;
+  --ink-800: #131A2B;
+  --ink-900: #0A0E1A;
+  --ink-950: #05070E;  /* app background */
+
+  /* ---- semantic ---- */
+  --success: #00C853;
+  --warning: #FFB020;
+  --danger:  #FF4757;
+  --info:    var(--electric-500);
+
+  /* ---- brand gradient (the chroma sweep used in the mark) ---- */
+  --grad-brand: linear-gradient(135deg, #6333FF 0%, #0A5CFF 45%, #00D5FF 100%);
+
+  /* ---- recap card palette (one gradient per story card) ---- */
+  --grad-bolt:   linear-gradient(135deg, #0A5CFF 0%, #00D5FF 100%);  /* Bolt      — brand */
+  --grad-nebula: linear-gradient(135deg, #6333FF 0%, #0A5CFF 100%);  /* Nebula    — brand */
+  --grad-aurora: linear-gradient(135deg, #00D5FF 0%, #00FFA3 100%);  /* Aurora    */
+  --grad-fizz:   linear-gradient(135deg, #C8FF4D 0%, #00E5A0 100%);  /* Lime Fizz */
+  --grad-sunset: linear-gradient(135deg, #FF8A00 0%, #FF3D77 100%);  /* Sunset    */
+  --grad-coral:  linear-gradient(135deg, #FF5C5C 0%, #FF9E2C 100%);  /* Coral Pop */
+  --grad-grape:  linear-gradient(135deg, #A855F7 0%, #6366FA 100%);  /* Grape Soda */
+
+  /* ---- typography ---- */
+  --font-display: "Space Grotesk", "Inter", system-ui, -apple-system, sans-serif;
+  --font-sans:    "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* ---- radii ---- */
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   22px;
+  --radius-xl:   32px;
+  --radius-card: 28px;   /* recap story cards */
+  --radius-full: 999px;
+
+  /* ---- elevation ---- */
+  --glow-electric: 0 0 0 1px rgb(10 92 255 / 0.25), 0 12px 48px rgb(10 92 255 / 0.35);
+  --shadow-card:   0 8px 30px rgb(5 7 14 / 0.35);
+  --shadow-pop:    0 2px 8px rgb(5 7 14 / 0.25), 0 16px 56px rgb(10 92 255 / 0.22);
+
+  /* ---- fluid display scale (min → max) ---- */
+  --text-xs:   0.75rem;   /* 12 */
+  --text-sm:   0.875rem;  /* 14 */
+  --text-base: 1rem;      /* 16 */
+  --text-lg:   1.125rem;  /* 18 */
+  --text-xl:   1.25rem;   /* 20 */
+  --text-2xl:  1.5rem;    /* 24 */
+  --text-3xl:  1.875rem;  /* 30 */
+  --text-4xl:  2.375rem;  /* 38 */
+  --text-5xl:  3rem;      /* 48 */
+  --text-6xl:  3.75rem;   /* 60 */
+  --text-7xl:  4.75rem;   /* 76 */
+}

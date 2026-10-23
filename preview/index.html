@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>fizzyfeed — brand kit v0.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --electric-500:#0A5CFF; --electric-600:#0047E0; --electric-300:#6FA1FF;
+    --volt-500:#00D5FF; --violet-500:#6333FF; --spark-500:#C8FF4D;
+    --ink-950:#05070E; --ink-900:#0A0E1A; --ink-800:#131A2B; --ink-700:#1F2940;
+    --ink-600:#33405C; --ink-400:#6B7A99; --ink-300:#9AA8C4; --ink-200:#C6D0E4; --ink-100:#E7EDF8; --ink-50:#F5F8FE;
+    --grad-brand:linear-gradient(135deg,#6333FF 0%,#0A5CFF 45%,#00D5FF 100%);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--ink-950); color:var(--ink-200); font-family:Inter,system-ui,sans-serif; line-height:1.5; }
+  .wrap { max-width:1120px; margin:0 auto; padding:48px 28px 96px; }
+  h1,h2,h3 { font-family:"Space Grotesk",sans-serif; color:#fff; font-weight:700; }
+  .eyebrow { font-family:"JetBrains Mono",monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--electric-300); margin-bottom:10px; }
+  .brandbar { height:6px; background:var(--grad-brand); }
+  header.hero { text-align:center; padding:64px 0 40px; }
+  header.hero img { width:96px; height:96px; border-radius:24px; }
+  header.hero h1 { font-size:44px; margin-top:20px; }
+  header.hero p { color:var(--ink-300); margin-top:8px; font-size:17px; }
+  .glow { background:radial-gradient(600px 300px at 80% 0%, rgb(10 92 255 / .18), transparent 70%); }
+  section { margin-top:72px; }
+  section > h2 { font-size:28px; margin-bottom:6px; }
+  section > .sub { color:var(--ink-400); font-size:15px; margin-bottom:24px; }
+  .grid { display:grid; gap:16px; }
+  .tile { background:var(--ink-900); border:1px solid var(--ink-800); border-radius:20px; padding:28px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; min-height:180px; }
+  .tile.dark2 { background:var(--ink-800); }
+  .tile.light { background:var(--ink-50); border-color:var(--ink-100); }
+  .tile img { max-width:80%; }
+  .tile .cap { font-size:12px; font-family:"JetBrains Mono",monospace; color:var(--ink-400); }
+  .tile.light .cap { color:var(--ink-600); }
+  .g3 { grid-template-columns:repeat(3,1fr); }
+  .g2 { grid-template-columns:repeat(2,1fr); }
+  /* swatches */
+  .swrow { display:grid; grid-template-columns:repeat(11,1fr); gap:8px; margin-bottom:20px; }
+  .sw { border-radius:10px; height:72px; display:flex; align-items:flex-end; padding:8px; }
+  .sw span { font-family:"JetBrains Mono",monospace; font-size:9.5px; color:#fff; opacity:.85; }
+  .swrow .name { font-family:"Space Grotesk",sans-serif; font-size:13px; color:var(--ink-200); margin:10px 0 6px; grid-column:1/-1; }
+  .sw4 { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .sw4 .sw { height:84px; }
+  /* cards palette */
+  .cards { display:grid; grid-template-columns:repeat(7,1fr); gap:12px; }
+  .card { aspect-ratio:9/14; border-radius:18px; display:flex; align-items:flex-end; padding:14px; }
+  .card b { font-family:"Space Grotesk",sans-serif; color:#fff; font-size:13px; font-weight:700; }
+  /* type */
+  .spec { border:1px solid var(--ink-800); border-radius:20px; overflow:hidden; }
+  .spec .row { padding:26px 28px; border-bottom:1px solid var(--ink-800); display:flex; align-items:baseline; gap:24px; }
+  .spec .row:last-child { border-bottom:none; }
+  .spec .tag { font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--ink-400); width:180px; flex-shrink:0; }
+  /* og previews */
+  .oggrid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  .oggrid img { width:100%; border-radius:14px; border:1px solid var(--ink-800); display:block; }
+  /* dodont */
+  .dodont { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .dodont .col { border-radius:20px; padding:26px; border:1px solid var(--ink-800); background:var(--ink-900); }
+  .dodont h3 { font-size:16px; margin-bottom:14px; }
+  .dodont ul { list-style:none; }
+  .dodont li { padding:7px 0; font-size:14.5px; color:var(--ink-300); border-bottom:1px dashed var(--ink-800); }
+  .dodont li:last-child { border:none; }
+  .do h3 { color:var(--spark-500); } .dont h3 { color:#FF6B7A; }
+  footer { margin-top:80px; text-align:center; color:var(--ink-400); font-size:13px; }
+</style>
+</head>
+<body>
+<div class="brandbar"></div>
+<div class="wrap glow">
+
+  <header class="hero">
+    <img src="../logo/png/icon-512.png" alt="Yearline mark">
+    <h1>fizzyfeed <span style="color:var(--ink-400)">/</span> kroma</h1>
+    <p>brand kit v0.1 · electric blue identity · one mark, any name</p>
+  </header>
+
+  <section>
+    <h2>The Yearline mark</h2>
+    <p class="sub">Gradient card = your year as colorful story cards · sparkline = posting activity · dot = the recap moment.</p>
+    <div class="grid g3">
+      <div class="tile"><img src="../logo/svg/mark-gradient.svg" style="width:128px"><span class="cap">mark-gradient · primary</span></div>
+      <div class="tile dark2"><img src="../logo/svg/mark-glyph-dark.svg" style="width:150px"><span class="cap">glyph · on dark</span></div>
+      <div class="tile light"><img src="../logo/svg/mark-glyph-light.svg" style="width:150px"><span class="cap">glyph · on light</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Lockups — one mark, three names</h2>
+    <p class="sub">Name not final? That's the point. The mark never changes; swap the wordmark when the domain lands.</p>
+    <div class="grid g3">
+      <div class="tile"><img src="../logo/svg/lockup-kroma-on-dark.svg"><span class="cap">kroma · dev codename</span></div>
+      <div class="tile"><img src="../logo/svg/lockup-fizzyfeed-on-dark.svg"><span class="cap">fizzyfeed · candidate</span></div>
+      <div class="tile"><img src="../logo/svg/lockup-feezyfeed-on-dark.svg"><span class="cap">feezyfeed · candidate</span></div>
+    </div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="tile light"><img src="../logo/svg/lockup-fizzyfeed-on-light.svg"><span class="cap">lockup on light</span></div>
+      <div class="tile"><img src="../logo/svg/wordmark-fizzyfeed-on-dark.svg" style="max-width:55%"><span class="cap">wordmark only · vector-outlined</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Color</h2>
+    <p class="sub">60% ink · 30% electric · 10% chroma. Dark-first: ink-950 is the canvas, electric blue is the light.</p>
+    <div class="swrow"><span class="name">electric — primary scale</span>
+      <div class="sw" style="background:#EAF1FF"><span>50</span></div><div class="sw" style="background:#D0E1FF"><span>100</span></div>
+      <div class="sw" style="background:#A3C4FF"><span>200</span></div><div class="sw" style="background:#6FA1FF"><span>300</span></div>
+      <div class="sw" style="background:#3B7DFF"><span>400</span></div><div class="sw" style="background:#0A5CFF"><span>500★</span></div>
+      <div class="sw" style="background:#0047E0"><span>600</span></div><div class="sw" style="background:#0037B0"><span>700</span></div>
+      <div class="sw" style="background:#002B85"><span>800</span></div><div class="sw" style="background:#001F5C"><span>900</span></div>
+      <div class="sw" style="background:#001438"><span>950</span></div>
+    </div>
+    <div class="swrow"><span class="name">ink — blue-tinted neutrals</span>
+      <div class="sw" style="background:#F5F8FE"><span>50</span></div><div class="sw" style="background:#E7EDF8"><span>100</span></div>
+      <div class="sw" style="background:#C6D0E4"><span>200</span></div><div class="sw" style="background:#9AA8C4"><span>300</span></div>
+      <div class="sw" style="background:#6B7A99"><span>400</span></div><div class="sw" style="background:#4A5774"><span>500</span></div>
+      <div class="sw" style="background:#33405C"><span>600</span></div><div class="sw" style="background:#1F2940"><span>700</span></div>
+      <div class="sw" style="background:#131A2B"><span>800</span></div><div class="sw" style="background:#0A0E1A"><span>900</span></div>
+      <div class="sw" style="background:#05070E;border:1px solid var(--ink-800)"><span>950★</span></div>
+    </div>
+    <div class="sw4">
+      <div class="sw" style="background:#00D5FF"><span>volt-500 · gradient tail</span></div>
+      <div class="sw" style="background:#6333FF"><span>violet-500 · gradient head</span></div>
+      <div class="sw" style="background:#C8FF4D"><span>spark-500 · delight, ≤5%</span></div>
+      <div class="sw" style="background:var(--grad-brand)"><span>grad-brand · the sweep</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Recap card palette</h2>
+    <p class="sub">One gradient per story card. Bolt &amp; Nebula lead the deck; text on cards is always white.</p>
+    <div class="cards">
+      <div class="card" style="background:linear-gradient(135deg,#0A5CFF,#00D5FF)"><b>Bolt</b></div>
+      <div class="card" style="background:linear-gradient(135deg,#6333FF,#0A5CFF)"><b>Nebula</b></div>
+      <div class="card" style="background:linear-gradient(135deg,#00D5FF,#00FFA3)"><b>Aurora</b></div>
+      <div class="card" style="background:linear-gradient(135deg,#C8FF4D,#00E5A0)"><b>Lime Fizz</b></div>
+      <div class="card" style="background:linear-gradient(135deg,#FF8A00,#FF3D77)"><b>Sunset</b></div>
+      <div class="card" style="background:linear-gradient(135deg,#FF5C5C,#FF9E2C)"><b>Coral Pop</b></div>
+      <div class="card" style="background:linear-gradient(135deg,#A855F7,#6366FA)"><b>Grape Soda</b></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Typography</h2>
+    <p class="sub">Space Grotesk for voice · Inter for clarity · JetBrains Mono for truth (numbers).</p>
+    <div class="spec">
+      <div class="row"><span class="tag">display · Space Grotesk 700</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:40px;color:#fff">your year in posts.</span></div>
+      <div class="row"><span class="tag">headline · Space Grotesk 500</span><span style="font-family:'Space Grotesk';font-weight:500;font-size:26px;color:#fff">5,214 posts. one very tired keyboard.</span></div>
+      <div class="row"><span class="tag">body · Inter 400</span><span style="font-size:16px">Connect Buffer, and we turn twelve months of publishing into seven cards worth sharing — with real numbers, real peaks, and a name for the alter ego you became along the way.</span></div>
+      <div class="row"><span class="tag">data · JetBrains Mono 500</span><span style="font-family:'JetBrains Mono';font-size:18px;color:var(--electric-300)">389,102 words · 312-day streak · 07:42 avg</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Social &amp; OG kit</h2>
+    <p class="sub">Same system every time: ink canvas → two glows → mark → headline → chip → gradient bar.</p>
+    <div class="oggrid">
+      <img src="../social/og-image.png" alt="OG agnostic">
+      <img src="../social/og-image-kroma.png" alt="OG kroma">
+      <img src="../social/github-social-preview.png" alt="GitHub preview">
+      <img src="../social/twitter-banner.png" alt="Twitter banner">
+    </div>
+  </section>
+
+  <section>
+    <h2>Rules</h2>
+    <div class="dodont">
+      <div class="col do"><h3>do</h3><ul>
+        <li>Dark-first — ink-950 canvas, blue as the light source</li>
+        <li>One gradient moment per screen section</li>
+        <li>Let the sparkline draw itself on reveal — it's the signature motion</li>
+        <li>Keep numbers honest — the chart IS the aesthetic</li>
+        <li>Swap wordmarks freely; the mark is sacred</li>
+      </ul></div>
+      <div class="col dont"><h3>don't</h3><ul>
+        <li>Use the word "wrapped" — trademark line</li>
+        <li>Recolor or outline the sparkline</li>
+        <li>Gradient wallpaper — chroma is a highlight, not a background</li>
+        <li>Pure gray neutrals — ink is blue-tinted on purpose</li>
+        <li>Stack glows on the primary CTA and everything else</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <footer>fizzyfeed brand kit v0.1 · built for Buffer Commit 2026 · tokens in tokens.css / tokens.json</footer>
+</div>
+</body>
+</html>

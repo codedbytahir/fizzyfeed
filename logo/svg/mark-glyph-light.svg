@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="66 108 382 296" role="img" aria-label="Yearline glyph — ink sparkline with terminal spark">
+  <title>Yearline glyph — for light backgrounds</title>
+  <path d="M 118 352 L 206 250 L 268 306 L 386 170" fill="none" stroke="#05070E" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="386" cy="170" r="32" fill="#05070E"/>
+</svg>
