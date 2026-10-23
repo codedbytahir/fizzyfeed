@@ -1,5 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="66 108 382 296" role="img" aria-label="Yearline glyph — white sparkline with terminal spark">
-  <title>Yearline glyph — for dark backgrounds</title>
-  <path d="M 118 352 L 206 250 L 268 306 L 386 170" fill="none" stroke="#FFFFFF" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="386" cy="170" r="32" fill="#FFFFFF"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="6 64 500 388" role="img" aria-label="The Deck glyph — white cards for dark backgrounds">
+  <title>The Deck glyph — for dark backgrounds</title>
+  <g fill="none" stroke="#FFFFFF" stroke-width="20">
+    <rect transform="translate(168,258) rotate(-11)" x="-120" y="-160" width="240" height="320" rx="54"/>
+    <rect transform="translate(344,258) rotate(11)" x="-120" y="-160" width="240" height="320" rx="54"/>
+  </g>
+  <rect x="136" y="98" width="240" height="320" rx="54" fill="#FFFFFF"/>
 </svg>

@@ -1,13 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Yearline mark — a sparkline of your posting year on a chromatic card">
-  <title>Yearline mark — gradient</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="The Deck mark — three fanned gradient cards with a white yearline spark on the front card">
+  <title>The Deck mark — gradient</title>
   <defs>
-    <linearGradient id="yearline-bg" x1="0" y1="512" x2="512" y2="0" gradientUnits="userSpaceOnUse">
+    <linearGradient id="dl-left" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00D5FF"/>
+      <stop offset="1" stop-color="#0A5CFF"/>
+    </linearGradient>
+    <linearGradient id="dl-right" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6333FF"/>
+      <stop offset="1" stop-color="#0A5CFF"/>
+    </linearGradient>
+    <linearGradient id="dl-center" x1="0" y1="1" x2="1" y2="0">
       <stop offset="0" stop-color="#6333FF"/>
       <stop offset="0.45" stop-color="#0A5CFF"/>
       <stop offset="1" stop-color="#00D5FF"/>
     </linearGradient>
   </defs>
-  <rect x="0" y="0" width="512" height="512" rx="116" fill="url(#yearline-bg)"/>
-  <path d="M 118 352 L 206 250 L 268 306 L 386 170" fill="none" stroke="#FFFFFF" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="386" cy="170" r="32" fill="#FFFFFF"/>
+  <rect transform="translate(168,258) rotate(-11)" x="-120" y="-160" width="240" height="320" rx="54" fill="url(#dl-left)"/>
+  <rect transform="translate(344,258) rotate(11)" x="-120" y="-160" width="240" height="320" rx="54" fill="url(#dl-right)"/>
+  <rect x="136" y="98" width="240" height="320" rx="54" fill="url(#dl-center)"/>
+  <path d="M 198 304 L 240 264 L 264 288 L 304 242" fill="none" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="304" cy="242" r="14" fill="#FFFFFF"/>
 </svg>

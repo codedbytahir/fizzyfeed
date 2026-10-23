@@ -13,15 +13,15 @@ Built for **Buffer Commit 2026** ($25,600 hackathon, Oct 28 – Nov 13).
 | Final candidate A | `fizzyfeed` | fizzyfeed.cv (~$7.98/yr) | ⏳ pending purchase decision |
 | Final candidate B | `feezyfeed` | feezyfeed.cv | ⏳ pending |
 
-**The mark is name-agnostic by design** — it encodes the product (a sparkline of your posting year on a chromatic card), not a word. Swap the wordmark whenever the name lands; the Yearline never changes.
+**The mark is name-agnostic by design** — it encodes the product (a fanned deck of story cards carrying your year), not a word. Swap the wordmark whenever the name lands; the Deck never changes.
 
-## The mark — "Yearline"
+## The mark — "The Deck"
 
-- **Gradient card** → your year of posts as colorful, shareable story cards (the chroma sweep nods to the `kroma` codename)
-- **Ascending sparkline** → posting activity through the year, with ups and downs
-- **Terminal dot** → the recap moment; the highlight the year builds toward
+- **Three fanned gradient cards** → the story deck your year becomes — one card per moment; volt & violet flanks bookend the electric blue core
+- **White yearline spark on the front card** → the recap moment the whole year rises toward
+- **Chroma sweep on the front card** → nods to the `kroma` codename
 
-Files: `logo/svg/mark-gradient.svg` (primary), `mark-glyph-dark.svg` / `mark-glyph-light.svg` (mono, no card), `favicon.svg`.
+Files: `logo/svg/mark-gradient.svg` (primary), `mark-glyph-dark.svg` / `mark-glyph-light.svg` (mono deck silhouette), `favicon.svg` (cards only, no spark — cleaner at 16px).
 
 Wordmarks & lockups (vector-outlined, font-independent): `logo/svg/wordmark-{name}-{on-dark|on-light}.svg`, `lockup-{name}-{on-dark|on-light}.svg` — pre-built for **kroma / fizzyfeed / feezyfeed** so the rename is a file swap, not a redesign.
 
@@ -81,7 +81,7 @@ Open `preview/index.html` in a browser — full brand board: logo variants, clea
 
 1. Dark-first: `ink-950` background, electric blue as the light source.
 2. One gradient per screen section — the chroma sweep is a highlight, not wallpaper.
-3. Never recolor the mark's sparkline; the card gradient is the only color it wears.
+3. Never recolor the yearline spark or the card gradients; the deck wears its three fixed gradients only.
 4. Don't use the word "wrapped" anywhere in UI or copy (trademark).
 5. Min sizes: mark 24px, glyph 20px, lockup height 32px.
 

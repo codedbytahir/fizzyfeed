@@ -26,38 +26,39 @@ Three personality anchors:
 | Candidate B | `feezyfeed` — variant spelling, same treatment |
 | Lock-in rule | Do **not** bake either name into code identifiers; use a single `BRAND_NAME` const + this asset swap |
 
-The **Yearline mark never changes** when the name does. Only the wordmark file swaps. This was a hard design requirement: one logo must survive a rename that hasn't happened yet.
+The **Deck mark never changes** when the name does. Only the wordmark file swaps. This was a hard design requirement: one logo must survive a rename that hasn't happened yet.
 
 Wordmark rendering: **Space Grotesk Bold, lowercase, no tagline attached**. The supplied `wordmark-*.svg` / `lockup-*.svg` files are vector-outlined — no font install needed, they render identically everywhere.
 
-## 3 · The Yearline mark
+## 3 · The Deck mark
 
 ### 3.1 Meaning
 
 | Element | Meaning |
 |---|---|
-| Rounded gradient card | the story cards; the chroma sweep = your colorful year |
-| Ascending sparkline | posting activity across the year, with dips kept honest |
-| Terminal dot | the recap moment — the point the whole year rises toward |
+| Three fanned gradient cards | the story deck your year becomes — 5–7 cards, one per moment |
+| Volt & violet side cards | chroma bookends; electric blue stays the core |
+| White yearline spark (front card) | the recap moment — the point the whole year rises toward |
 
 ### 3.2 Variants
 
 | File | Use |
 |---|---|
-| `mark-gradient.svg` | primary — app icon, favicon, avatars, buttons, loading states |
-| `mark-glyph-dark.svg` | white sparkline+dot only — on `ink-800`…`ink-950` backgrounds, headers |
-| `mark-glyph-light.svg` | ink sparkline+dot only — on `ink-50`/white backgrounds, print |
+| `mark-gradient.svg` | primary — app icon, avatars, buttons, loading states |
+| `mark-glyph-dark.svg` | white deck silhouette (front solid, back outlined) — on `ink-800`…`ink-950` backgrounds, headers |
+| `mark-glyph-light.svg` | ink deck silhouette — on `ink-50`/white backgrounds, print |
+| `favicon.svg` | cards only, no spark — survives 16px |
 
 ### 3.3 Clearspace & minimums
 
-- Clearspace on all sides = **the diameter of the terminal dot** (64/512 of mark height ≈ 12.5%).
+- Clearspace on all sides = **12% of mark height** (matches the side-card overhang).
 - Minimum sizes: gradient mark **24px**, mono glyph **20px**, favicon renders down to 16px.
 - In lockups, wordmark cap-height ≈ 75% of mark height; gap = 22% of mark height (pre-built in the files).
 
 ### 3.4 Misuse — never
 
-- Recolor the sparkline or place it on a photo.
-- Rotate, add drop shadows, or outline the card.
+- Recolor the yearline spark or the card gradients; the deck wears three fixed gradients only.
+- Rotate the fan further, add drop shadows, or outline the cards.
 - Stretch non-uniformly; only proportional scaling.
 - Put the gradient mark on a colored background busier than `ink-800`.
 - Rebuild the wordmark in another font "just this once".
@@ -119,7 +120,7 @@ Microcopy is sentence case, ≤ 40 chars for buttons, and always names the real 
 
 ## 7 · Motion & delight notes
 
-- The sparkline **draws itself** left→right on first reveal (300–500ms, ease-out); the dot pops with a 200ms overshoot. This is the signature motion — reuse it for progress moments.
+- The **yearline spark draws itself** left→right on the front card's first reveal (300–500ms, ease-out) with a 200ms overshoot pop on the dot; the two back cards ease apart ~4°. This is the signature motion — reuse it for progress moments.
 - Card reveals: stagger 80ms, slight scale 0.96→1 + rise 12px.
 - Glow (`--glow-electric`) is reserved for the primary CTA and live states — not hover wallpaper.
 
