@@ -686,13 +686,13 @@
     rgb(5 7 14/.78) 0%, rgb(5 7 14/.5) 30%, rgb(5 7 14/.22) 48%, rgb(5 7 14/0) 66%)}
 .fx-deck-fan__num{position:absolute;top:1.8333cqw;left:1.8333cqw;
   font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:500;
-  font-size:12px;font-size:1.0833cqw;line-height:1;letter-spacing:.14em;
+  font-size:max(1.0833cqw,6px);line-height:1;letter-spacing:.14em;
   font-variant-numeric:tabular-nums;
   color:rgb(255 255 255/.75);
   text-shadow:0 1px 6px rgb(5 7 14/.6);text-shadow:0 1px .5cqw rgb(5 7 14/.6)}
 .fx-deck-fan__label{position:absolute;top:3.6667cqw;left:1.8333cqw;
   font-family:'Space Grotesk','Inter',ui-sans-serif,sans-serif;font-weight:500;
-  font-size:24px;font-size:2cqw;line-height:1.05;letter-spacing:-.01em;text-transform:lowercase;
+  font-size:max(2cqw,11px);line-height:1.05;letter-spacing:-.01em;text-transform:lowercase;
   color:var(--white);
   text-shadow:0 1px 8px rgb(5 7 14/.45);text-shadow:0 1px .6667cqw rgb(5 7 14/.45)}
 
@@ -968,12 +968,30 @@
     100%     { transform: scale(1); opacity: 0; }
   }
 
-  /* mobile: stack to ~720px, card scales down via transform only */
+  /* responsive centering: the 540px card is WIDER than small stages, and grid
+     "safe" centering falls back to start on overflow -> card stranded off-canvas
+     on phones. absolute + translate centering is overflow-proof at every width,
+     and `translate` composes independently of the breathe/scale `transform`. */
+  .fx-persona-morph__card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+  }
+
+  /* mobile: stack to ~720px, card scales down via transform only (stepped so the
+     scaled card always fits the track: 540px * scale <= 100vw - 48px wrap pad) */
   @media (max-width: 720px) {
-    .fx-persona-morph { aspect-ratio: auto; height: 470px; --fx-card-scale: .78; }
+    .fx-persona-morph { aspect-ratio: auto; height: 470px; --fx-card-scale: .75; }
+  }
+  @media (max-width: 560px) {
+    .fx-persona-morph { height: 440px; --fx-card-scale: .62; }
   }
   @media (max-width: 430px) {
-    .fx-persona-morph { height: 420px; --fx-card-scale: .6; }
+    .fx-persona-morph { height: 400px; --fx-card-scale: .55; }
+  }
+  @media (max-width: 360px) {
+    .fx-persona-morph { height: 372px; --fx-card-scale: .48; }
   }
 
   /* reduced motion: static composed frame — first persona shown, sparkline drawn */
@@ -1144,6 +1162,14 @@
   .fx.fx-queue-recap.is-paused .fx-queue-recap__caret,
   .fx.fx-queue-recap.is-paused .fx-queue-recap__glow,
   .fx.fx-queue-recap.is-paused .fx-queue-recap__meta-dot{animation-play-state:paused}
+
+  /* mobile: trade the 16/9 fit for a taller cropped composition (see fit() in JS) */
+  @media (max-width: 720px){
+    .fx.fx-queue-recap{aspect-ratio:auto; height:340px}
+  }
+  @media (max-width: 430px){
+    .fx.fx-queue-recap{height:300px}
+  }
 
   /* reduced motion: static composed frame, no loop, no blink, no breathe */
   @media (prefers-reduced-motion: reduce){
@@ -2826,7 +2852,10 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
       /* ---------- responsive stage: uniform scale of the fixed 1200x675 canvas ---------- */
       function fit() {
         const w = root.clientWidth || 1200;
-        stage.style.setProperty('--fx-qr-scale', String(w / 1200));
+        /* mobile: crop-scale ~1.8x fit-width so the stage-centered recap card + cta
+           keep a strong presence; side chips crop away (module overflow: hidden) */
+        const scale = w < 720 ? Math.min((w / 1200) * 1.8, 0.66) : w / 1200;
+        stage.style.setProperty('--fx-qr-scale', String(scale));
       }
       if ('ResizeObserver' in window) new ResizeObserver(fit).observe(root);
       else window.addEventListener('resize', fit, { passive: true });
