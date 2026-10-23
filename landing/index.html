@@ -1163,6 +1163,20 @@
   .fx.fx-queue-recap.is-paused .fx-queue-recap__glow,
   .fx.fx-queue-recap.is-paused .fx-queue-recap__meta-dot{animation-play-state:paused}
 
+  /* ---- the courier: the written post condenses into this icon, then it
+          ferries the recap to every channel chip (left -> right sweep) ---- */
+  .fx-queue-recap__courier{
+    position:absolute; left:0; top:0; width:44px; height:44px;
+    margin:-22px 0 0 -22px; border-radius:12px;
+    background:var(--white);
+    box-shadow:0 8px 22px rgb(5 7 14/.5), 0 0 0 1px rgb(5 7 14/.05),
+               0 0 26px rgb(10 92 255/.4);
+    display:grid; place-items:center;
+    opacity:0; z-index:3; pointer-events:none;
+    will-change:transform,opacity;
+  }
+  .fx-queue-recap__courier svg{width:26px;height:26px;display:block}
+
   /* mobile: trade the 16/9 fit for a taller cropped composition (see fit() in JS) */
   @media (max-width: 720px){
     .fx.fx-queue-recap{aspect-ratio:auto; height:340px}
@@ -2517,7 +2531,7 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
       <div class="cta-box">
 <!-- MODULE ROOT: this whole div is what the landing page embeds -->
 <div class="fx fx-queue-recap" data-brand-name="fizzyfeed" data-fx-state="idle" role="img"
-     aria-label="Animation: a recap post reading ‘your year in posts.’ types itself onto a white card, a ‘queue the recap’ button presses once, and the post fans out into seven channel chips that each receive a cyan checkmark.">
+     aria-label="Animation: a recap post reading ‘your year in posts.’ types itself onto a white card, a ‘queue the recap’ button presses once, the post condenses into a small deck-mark icon, and the icon ferries the recap to seven channel chips along the fan arc — each channel pops and receives a cyan checkmark as it lands.">
   <div class="fx-queue-recap__stage">
     <div class="fx-queue-recap__glow fx-queue-recap__glow--a"></div>
     <div class="fx-queue-recap__glow fx-queue-recap__glow--b"></div>
@@ -2530,6 +2544,16 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
       <div class="fx-queue-recap__chip"><div class="fx-queue-recap__chip-in"><span class="fx-queue-recap__chip-glyph">&#9834;</span><span class="fx-queue-recap__chip-dot"></span><svg class="fx-queue-recap__chip-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.9l4 4.1 8-9.4" pathLength="1"/></svg></div></div>
       <div class="fx-queue-recap__chip"><div class="fx-queue-recap__chip-in"><span class="fx-queue-recap__chip-glyph">&#9654;</span><span class="fx-queue-recap__chip-dot"></span><svg class="fx-queue-recap__chip-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.9l4 4.1 8-9.4" pathLength="1"/></svg></div></div>
       <div class="fx-queue-recap__chip"><div class="fx-queue-recap__chip-in"><span class="fx-queue-recap__chip-glyph">th</span><span class="fx-queue-recap__chip-dot"></span><svg class="fx-queue-recap__chip-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.9l4 4.1 8-9.4" pathLength="1"/></svg></div></div>
+    </div>
+
+    <div class="fx-queue-recap__courier" aria-hidden="true">
+      <svg viewBox="0 0 26 26" aria-hidden="true" focusable="false">
+        <defs><linearGradient id="fx-qr-courier-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6333FF"/><stop offset=".5" stop-color="#0A5CFF"/><stop offset="1" stop-color="#00D5FF"/></linearGradient></defs>
+        <rect x="4.6" y="5.2" width="9.6" height="13.4" rx="2.4" transform="rotate(-13 9.4 11.9)" fill="#6333FF" opacity=".85"/>
+        <rect x="11.8" y="5.2" width="9.6" height="13.4" rx="2.4" transform="rotate(13 16.6 11.9)" fill="#00D5FF" opacity=".85"/>
+        <rect x="7.9" y="4.6" width="10.2" height="14.6" rx="2.6" fill="url(#fx-qr-courier-grad)"/>
+        <path d="M10.2 13.6c1.9-.5 3.5-2 4.3-4.6M10.4 16.5c3-.6 5.4-2.4 6.5-5.6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      </svg>
     </div>
 
     <div class="fx-queue-recap__card">
@@ -2572,6 +2596,7 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
       const press   = root.querySelector('.fx-queue-recap__cta-press');
       const glowHot = root.querySelector('.fx-queue-recap__cta-glowhot');
       const halo    = root.querySelector('.fx-queue-recap__cta-halo');
+      const courier = root.querySelector('.fx-queue-recap__courier');
 
       const LINES = {
         head:  { el: root.querySelector('[data-type="head"]'),  full: 'your year in posts.',                            t0: 0.35, tick: 0.042, last: '' },
@@ -2584,17 +2609,23 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
         body:  root.querySelector('[data-caret="body"]')
       };
 
-      /* timeline beats (seconds of the 15s cycle) */
+      /* timeline beats (seconds of the 15s cycle)
+         act 1  type the recap post            0.35 – 4.7
+         act 2  press ‘queue the recap’        4.75
+         act 3  card condenses into the courier icon   5.55 – 6.45
+         act 4  the icon ferries the recap to every channel (left -> right),
+                each arrival lands a check     6.75 – 10.6
+         act 5  all-queued hold + glow pulse   10.6 – 13.9 */
       const T = {
         head: 0.35, stats: 1.75, body: 3.50,
         press: 4.75,
         collapse: 5.55, cardOut: 5.70, emerge: 5.90,
-        check: 7.00,
+        tour: 6.75, leg: 0.42, dwell: 0.07,
         pulse: 12.40,
         reset: 13.90, cardIn: 13.95, caretBack: 14.70
       };
       const CARD_CX = 600, CARD_CY = 288;      /* chips are born at the card centre */
-      const EMERGE_ORD = [3, 2, 4, 1, 5, 0, 6]; /* centre-out bloom, 80ms apart */
+      const EMERGE_ORD = [3, 2, 4, 1, 5, 0, 6]; /* centre-out bloom, 50ms apart */
       const RESET_ORD  = [0, 6, 1, 5, 2, 4, 3]; /* outermost back first, 40ms apart */
       const CYCLE = 15;
 
@@ -2615,6 +2646,13 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
           rord: RESET_ORD.indexOf(i)
         };
       });
+
+      /* ---------- the courier’s route: chips left -> right along the fan arc ---------- */
+      const VISIT = chipState.map(c => c.i).sort((a, b) => chipState[a].ax - chipState[b].ax);
+      for (const c of chipState) {
+        c.visit = VISIT.indexOf(c.i);
+        c.arrive = T.tour + T.leg + c.visit * (T.leg + T.dwell); /* check lands on arrival */
+      }
 
       /* ---------- tiny easing kit ---------- */
       const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
@@ -2731,13 +2769,14 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
         glowHot.style.transform = 'scale(' + (ps + swell).toFixed(4) + ')';
         halo.style.opacity = hal.toFixed(3);
 
-        /* chips: emerge centre-out, breathe, then retract on the reset */
+        /* chips: bloom centre-out fast (all settled before the courier departs),
+           breathe, receive the icon one by one, then retract on the reset */
         for (const c of chipState) {
-          const st = T.emerge + c.ord * 0.08;
+          const st = T.emerge + c.ord * 0.05;
           const rst = T.reset + c.rord * 0.04;
           let pe, op;
           if (t < rst) {
-            pe = clamp01((t - st) / 0.62);
+            pe = clamp01((t - st) / 0.5);
             op = clamp01(pe / 0.18);
           } else {
             const pr = clamp01((t - rst) / 0.55);
@@ -2747,24 +2786,67 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
           const e = easeOutBack(pe, 1.25);
           let br = 0;
           if (pe >= 1 && t < rst) {
-            const bw = clamp01((t - st - 0.62) / 0.9) * clamp01((rst - t) / 0.4);
+            const bw = clamp01((t - st - 0.5) / 0.9) * clamp01((rst - t) / 0.4);
             br = 2.6 * Math.sin((t / 5.2) * 2 * Math.PI + c.i * 0.9) * bw;
           }
+          /* the courier just landed here: the chip receives it with a small pop */
+          const rcv = Math.sin(Math.PI * clamp01((t - c.arrive) / 0.4));
           const x = c.ax + (CARD_CX - c.ax) * (1 - e);
           const y = c.ay + (CARD_CY - c.ay) * (1 - e) + br;
           c.inner.style.opacity = op.toFixed(3);
           c.inner.style.transform =
             'translate(' + (x - c.ax).toFixed(2) + 'px,' + (y - c.ay).toFixed(2) + 'px) ' +
-            'rotate(' + (c.tilt * e).toFixed(2) + 'deg) scale(' + (0.2 + 0.8 * e).toFixed(4) + ')';
+            'rotate(' + (c.tilt * e).toFixed(2) + 'deg) scale(' + ((0.2 + 0.8 * e) * (1 + 0.13 * rcv)).toFixed(4) + ')';
 
-          /* volt checkmark draws in, 80ms stagger, dot yields */
-          const cp = clamp01((t - (T.check + c.i * 0.08)) / 0.26);
+          /* volt checkmark draws the moment the courier lands, dot yields */
+          const cp = clamp01((t - c.arrive) / 0.26);
           if (c.checkPath) c.checkPath.style.strokeDashoffset = (1 - easeOutCubic(cp)).toFixed(4);
           if (c.checkSvg) {
             c.checkSvg.style.opacity = clamp01(cp * 8).toFixed(3);
             c.checkSvg.style.transform = 'scale(' + (0.55 + 0.45 * easeOutBack(cp, 1.8)).toFixed(4) + ')';
           }
           if (c.dot) c.dot.style.opacity = (1 - clamp01(cp * 1.4)).toFixed(3);
+        }
+
+        /* ---- the courier: the post condenses into this icon at the card centre,
+                then ferries the recap along a tossed arc to every channel,
+                returns to centre and dissolves once every check has landed ---- */
+        if (courier) {
+          const born = 5.95, gone = 11.15;
+          const lastV = chipState.length - 1;
+          const backAt = T.tour + T.leg + lastV * (T.leg + T.dwell) + 0.12;
+          let o = 0, x = CARD_CX, y = CARD_CY, rot = 0, s = 1;
+          if (t >= born && t < gone) {
+            const bp = clamp01((t - born) / 0.34);
+            s = 0.4 + 0.6 * easeOutBack(bp, 1.9);
+            o = clamp01(bp / 0.45);
+            if (t >= T.tour && t < backAt) {
+              const v = Math.min(lastV, Math.floor((t - T.tour) / (T.leg + T.dwell)));
+              const d = T.tour + v * (T.leg + T.dwell);
+              const p = easeInOutCubic(clamp01((t - d) / T.leg));
+              const A = v === 0 ? [CARD_CX, CARD_CY]
+                                : [chipState[VISIT[v - 1]].ax, chipState[VISIT[v - 1]].ay];
+              const B = chipState[VISIT[v]];
+              const lift = v === 0 ? 38 : 20;
+              const q = 1 - p;
+              const cx2 = (A[0] + B.ax) / 2, cy2 = (A[1] + B.ay) / 2 - lift;
+              x = q * q * A[0] + 2 * q * p * cx2 + p * p * B.ax;
+              y = q * q * A[1] + 2 * q * p * cy2 + p * p * B.ay;
+              rot = 7 * Math.sin(p * Math.PI) * (v % 2 ? -1 : 1);
+            } else if (t >= backAt) {
+              const rp = clamp01((t - backAt) / 0.4);
+              const e = easeInOutCubic(rp);
+              const Lc = chipState[VISIT[lastV]];
+              x = Lc.ax + (CARD_CX - Lc.ax) * e;
+              y = Lc.ay + (CARD_CY - Lc.ay) * e;
+              rot = (1 - e) * -4;
+              s *= 1 - 0.35 * e;
+              o = 1 - clamp01((t - (backAt + 0.28)) / 0.45);
+            }
+          }
+          courier.style.opacity = o.toFixed(3);
+          courier.style.transform =
+            'translate(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px) rotate(' + rot.toFixed(2) + 'deg) scale(' + s.toFixed(4) + ')';
         }
       }
 
@@ -2782,6 +2864,7 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
         meta.style.opacity = '1'; meta.style.transform = 'none';
         content.style.opacity = '1'; content.style.transform = 'none';
         card.style.opacity = '1'; card.style.transform = 'none';
+        if (courier) courier.style.opacity = '0';
         for (const key in CARETS) setCaret(key, false);
         setComposing(false);
         for (const c of chipState) {
