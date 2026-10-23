@@ -79,6 +79,25 @@ Source `.svg` masters sit next to every PNG — edit those, re-render.
 
 Open `preview/index.html` in a browser — full brand board: logo variants, clearspace, palette, card gradients, type specimen, usage do/don'ts.
 
+## Landing page (motion-first)
+
+`landing/index.html` — dark-first marketing page with six seamless animation modules
+(hero deck, feed-to-deck homage, chapter fan, yearline stats, alter-ego morph, recap CTA).
+Serve locally with `npx serve landing/`. Each module is self-contained in
+`landing/animations/<id>/index.html`; motion law lives in [`docs/ANIMATIONS.md`](docs/ANIMATIONS.md).
+
+## Agent-native repo
+
+This codebase is built to be worked on by AI agents (and humans):
+
+- **[`AGENTS.md`](AGENTS.md)** — the operating manual: read order, non-negotiables, workflow protocol, definition of done.
+- **[`docs/specs/`](docs/specs/)** — the build specs (00 product → 08 build plan) for the app itself: architecture, D1 schema, Buffer OAuth PKCE, yearize pipeline, satori deck rendering, AI persona, recap queue, Greatest Hits.
+- **[`tasks/TASKS.json`](tasks/TASKS.json)** — machine-readable task queue; agents claim → build → verify → close.
+- **`scripts/agent-check.sh`** — guardrails (banned word, name-agnosticism, token discipline, secrets); run before every commit.
+- **Skills in-repo**: impeccable (`.claude/skills/`), ponytail, graphify, vercel web-design-guidelines + react-best-practices (`skills/`).
+- Multi-agent harness files: `CLAUDE.md`, `.cursor/rules/`, `.github/copilot-instructions.md`.
+
+
 ## Rules of thumb
 
 1. Dark-first: `ink-950` background, electric blue as the light source.

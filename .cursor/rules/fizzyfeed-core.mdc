@@ -1,0 +1,23 @@
+---
+description: fizzyfeed core rules — always apply
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# fizzyfeed (dev codename: kroma) — agent rules
+
+Entry point: read `AGENTS.md` first, then the relevant spec in `docs/specs/`.
+Task backlog: `tasks/TASKS.json` (claim todo → build → verify → mark done).
+
+Hard rules (violations fail `scripts/agent-check.sh`):
+1. Name-agnostic product: never bake `kroma`/`fizzyfeed`/`feezyfeed` into code identifiers — use the `BRAND_NAME` constant and the pre-built `logo/svg/wordmark-*` files.
+2. The word "wrapped" is banned everywhere (UI, copy, comments, commits).
+3. Colors only from `tokens.css` / `tokens.json` — no raw hex in components. The 7 card gradients are fixed; never recolor the yearline spark or deck gradients.
+4. Dark-first: `ink-950 #05070E` canvas, electric blue light source, 60/30/10 ratio.
+5. Honest numbers only — never invent engagement metrics. Lowercase headlines (Space Grotesk), sentence-case UI (Inter), tabular numbers (JetBrains Mono).
+6. Buffer tokens: AES-GCM encrypted in D1, never KV, never logged. Read-only OAuth default; the single `POST /post` write needs explicit consent.
+7. TypeScript strict, no `any`. Reuse before adding. Smallest complete change (ponytail discipline).
+
+Landing animations: modules in `landing/animations/<id>/index.html` are self-contained
+scoped blocks (`FX-MODULE-START/END`); animate transform/opacity/stroke-dashoffset only;
+honor `prefers-reduced-motion`; seamless loops. Spec: `docs/ANIMATIONS.md`.

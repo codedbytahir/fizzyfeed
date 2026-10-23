@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "@fantox/graphify": {
+      "version": "2.1.0",
+      "installedAt": 1792736446950,
+      "ownerHandle": "fantox"
+    }
+  }
+}
