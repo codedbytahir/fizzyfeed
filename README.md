@@ -5,6 +5,8 @@ Built for **Buffer Commit 2026** ($25,600 hackathon, Oct 28 – Nov 13).
 
 ![og](social/og-image.png)
 
+> **What are we building?** Read [`IDEA.md`](IDEA.md) — the full product concept: the flow, the 7 story-card chapters, the auto-queued recap post, and the stack.
+
 ## Name status
 
 | Role | Name | Domain | State |
