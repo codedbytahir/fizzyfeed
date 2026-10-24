@@ -1,14 +1,33 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>fizzyfeed — your year in posts</title>
 <meta name="description" content="connect buffer, and twelve months of publishing become a deck of seven story cards, an ai-named alter ego, and a recap post queued to every channel — in one click.">
+<link rel="canonical" href="https://codedbytahir.github.io/fizzyfeed/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://codedbytahir.github.io/fizzyfeed/">
 <meta property="og:title" content="fizzyfeed — your year in posts">
 <meta property="og:description" content="twelve months of publishing, carded. seven story cards, an alter ego, one queued recap.">
-<meta property="og:image" content="social/og-image.png">
+<meta property="og:image" content="https://codedbytahir.github.io/fizzyfeed/social/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="fizzyfeed — your year in posts">
+<meta name="twitter:description" content="twelve months of publishing, carded. seven story cards, an alter ego, one queued recap.">
+<meta name="twitter:image" content="https://codedbytahir.github.io/fizzyfeed/social/og-image.png">
 <meta name="theme-color" content="#05070E">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "fizzyfeed",
+  "url": "https://codedbytahir.github.io/fizzyfeed/",
+  "description": "connect buffer, and twelve months of publishing become a deck of seven story cards, an ai-named alter ego, and a recap post queued to every channel — in one click.",
+  "inLanguage": "en",
+  "about": "your year in posts — a buffer commit 2026 hackathon project",
+  "publisher": { "@type": "Organization", "name": "fizzyfeed", "url": "https://github.com/codedbytahir/fizzyfeed" }
+}
+</script>
 <link rel="icon" type="image/png" href="logo/favicon-48.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1194,6 +1213,7 @@
   .fx.fx-queue-recap.is-static .fx-queue-recap__glow,
   .fx.fx-queue-recap.is-static .fx-queue-recap__meta-dot{animation:none !important}
 </style>
+<noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
 
@@ -1213,15 +1233,15 @@
 
   <section class="hero" aria-labelledby="hero-h">
     <div class="wrap hero-copy">
-      <span class="overline">built for buffer commit 2026</span>
-      <h1 id="hero-h">your year in posts.</h1>
-      <p class="sub">connect buffer, and twelve months of publishing become a deck of seven story
+      <span class="overline reveal">built for buffer commit 2026</span>
+      <h1 id="hero-h" class="reveal">your year in posts.</h1>
+      <p class="sub reveal">connect buffer, and twelve months of publishing become a deck of seven story
       cards, an ai-named posting alter ego, and a recap post queued to every channel — in one click.</p>
-      <div class="hero-cta">
+      <div class="hero-cta reveal">
         <a class="btn" data-connect href="/api/auth/buffer/login">connect buffer</a>
         <a class="btn ghost" href="#chapters">see the deck</a>
       </div>
-      <p class="hero-note"><b>read-only</b> oauth by default · one-click revoke · honest numbers only</p>
+      <p class="hero-note reveal"><b>read-only</b> oauth by default · one-click revoke · honest numbers only</p>
     </div>
     <div class="wrap hero-fx">
 <div class="fx fx-hero-deck" data-brand-name="fizzyfeed" role="img" aria-label="an animated loop: a bright line draws across a dark grid, twelve month ticks light up along it, then the line folds into a fan of three gradient cards whose white spark pops and the deck sways gently">
@@ -1435,9 +1455,9 @@
   <section class="proof" aria-labelledby="proof-h">
     <div class="wrap">
       <div class="sec-head">
-        <span class="overline">the proof</span>
-        <h2 id="proof-h">your rhythm, honestly.</h2>
-        <p class="sub">the chart is the aesthetic. we draw your actual year — real days, real
+        <span class="overline reveal">the proof</span>
+        <h2 id="proof-h" class="reveal">your rhythm, honestly.</h2>
+        <p class="sub reveal">the chart is the aesthetic. we draw your actual year — real days, real
         streaks, real quiet months. nothing inflated, nothing invented.</p>
       </div>
 <div class="fx fx-yearline-draw" data-brand-name="fizzyfeed" role="img" aria-label="Animated stat band: a year of posting activity draws left to right across twelve months while counters rise to 5,214 posts, 389,102 words, a 141-day streak and 12 channels, closing with a lime glow pulse.">
@@ -1857,14 +1877,14 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
   <section id="how" aria-labelledby="how-h">
     <div class="wrap">
       <div class="sec-head">
-        <span class="overline">how it works</span>
-        <h2 id="how-h">posts in, deck out.</h2>
+        <span class="overline reveal">how it works</span>
+        <h2 id="how-h" class="reveal">posts in, deck out.</h2>
       </div>
       <div class="how-grid">
         <div class="steps">
-          <div class="step"><span class="n">01</span><div><h3>connect</h3><p>sign in with buffer. read-only by default, tokens encrypted, one-click revoke.</p></div></div>
-          <div class="step"><span class="n">02</span><div><h3>yearize</h3><p>we pull your past 12 months and compute the story — cadence, streaks, channel mix, peaks.</p></div></div>
-          <div class="step"><span class="n">03</span><div><h3>your deck</h3><p>seven story cards render as shareable images in the recap-card palette. screenshot bait, earned.</p></div></div>
+          <div class="step reveal"><span class="n">01</span><div><h3>connect</h3><p>sign in with buffer. read-only by default, tokens encrypted, one-click revoke.</p></div></div>
+          <div class="step reveal"><span class="n">02</span><div><h3>yearize</h3><p>we pull your past 12 months and compute the story — cadence, streaks, channel mix, peaks.</p></div></div>
+          <div class="step reveal"><span class="n">03</span><div><h3>your deck</h3><p>seven story cards render as shareable images in the recap-card palette. screenshot bait, earned.</p></div></div>
         </div>
 <div class="fx fx-feed-to-deck" data-brand-name="fizzyfeed" role="img" aria-label="Eleven monogram channel tiles drift in from the left and right edges and stream toward a central deck hub with slowly turning rings, while seven gradient story cards emerge one by one and float away to the upper right.">
   <svg class="fx-feed-to-deck__svg" viewBox="0 0 1400 700" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -2035,9 +2055,9 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
   <section id="chapters" aria-labelledby="ch-h">
     <div class="wrap">
       <div class="sec-head">
-        <span class="overline">the deck</span>
-        <h2 id="ch-h">seven chapters.</h2>
-        <p class="sub">one card per moment, led by the brand gradients. feelable in one sitting — not a dashboard with a party hat.</p>
+        <span class="overline reveal">the deck</span>
+        <h2 id="ch-h" class="reveal">seven chapters.</h2>
+        <p class="sub reveal">one card per moment, led by the brand gradients. feelable in one sitting — not a dashboard with a party hat.</p>
       </div>
 <div class="fx fx-deck-fan" data-brand-name="fizzyfeed" role="img" aria-label="A deck of seven gradient story cards rests, fans out one by one to reveal the seven chapters of the posting year, holds, restacks in reverse order, and closes with a small white spark pulse on the top card.">
   <div class="fx-deck-fan__viewport">
@@ -2100,14 +2120,14 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
   </div>
 </div>
       <div class="chapters-grid">
-        <div class="chapter"><span class="cn">01</span><b>kickoff</b><span>where the year started</span></div>
-        <div class="chapter"><span class="cn">02</span><b>rhythm</b><span>best day, favorite hour</span></div>
-        <div class="chapter"><span class="cn">03</span><b>streaks</b><span>the grind you forgot</span></div>
-        <div class="chapter"><span class="cn">04</span><b>the mix</b><span>channels &amp; topics</span></div>
-        <div class="chapter"><span class="cn">05</span><b>peaks</b><span>biggest month, busiest week</span></div>
-        <div class="chapter"><span class="cn">06</span><b>alter ego</b><span>ai-named, data-derived</span></div>
-        <div class="chapter"><span class="cn">07</span><b>the recap</b><span>queue your recap post</span></div>
-        <div class="chapter"><span class="cn">+</span><b>greatest hits</b><span>opt-in real top posts</span></div>
+        <div class="chapter reveal"><span class="cn">01</span><b>kickoff</b><span>where the year started</span></div>
+        <div class="chapter reveal"><span class="cn">02</span><b>rhythm</b><span>best day, favorite hour</span></div>
+        <div class="chapter reveal"><span class="cn">03</span><b>streaks</b><span>the grind you forgot</span></div>
+        <div class="chapter reveal"><span class="cn">04</span><b>the mix</b><span>channels &amp; topics</span></div>
+        <div class="chapter reveal"><span class="cn">05</span><b>peaks</b><span>biggest month, busiest week</span></div>
+        <div class="chapter reveal"><span class="cn">06</span><b>alter ego</b><span>ai-named, data-derived</span></div>
+        <div class="chapter reveal"><span class="cn">07</span><b>the recap</b><span>queue your recap post</span></div>
+        <div class="chapter reveal"><span class="cn">+</span><b>greatest hits</b><span>opt-in real top posts</span></div>
       </div>
     </div>
 
@@ -2116,9 +2136,9 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
   <section id="persona" aria-labelledby="pe-h">
     <div class="wrap">
       <div class="sec-head">
-        <span class="overline">workers ai</span>
-        <h2 id="pe-h">an alter ego, earned.</h2>
-        <p class="sub">ai studies your real patterns — the hours, the streaks, the channels you fed —
+        <span class="overline reveal">workers ai</span>
+        <h2 id="pe-h" class="reveal">an alter ego, earned.</h2>
+        <p class="sub reveal">ai studies your real patterns — the hours, the streaks, the channels you fed —
         and names the posting persona you became this year. cross-check it: the numbers agree.</p>
       </div>
 <!-- MODULE ROOT: this whole div is what the landing page embeds -->
@@ -2523,12 +2543,12 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
   <section id="cta" aria-labelledby="cta-h">
     <div class="wrap">
       <div class="sec-head" style="align-items:center;text-align:center;margin-left:auto;margin-right:auto">
-        <span class="overline">the real action</span>
-        <h2 id="cta-h">one click, queued everywhere.</h2>
-        <p class="sub" style="margin:0 auto">this is what makes it a tool instead of a toy: the recap post is
+        <span class="overline reveal">the real action</span>
+        <h2 id="cta-h" class="reveal">one click, queued everywhere.</h2>
+        <p class="sub reveal" style="margin:0 auto">this is what makes it a tool instead of a toy: the recap post is
         composed from your year, previewed, and queued through buffer to all your channels. you approve; it publishes.</p>
       </div>
-      <div class="cta-box">
+      <div class="cta-box reveal">
 <!-- MODULE ROOT: this whole div is what the landing page embeds -->
 <div class="fx fx-queue-recap" data-brand-name="fizzyfeed" data-fx-state="idle" role="img"
      aria-label="Animation: a recap post reading ‘your year in posts.’ types itself onto a white card, a ‘queue the recap’ button presses once, the post condenses into a small deck-mark icon, and the icon ferries the recap to seven channel chips along the fan arc — each channel pops and receives a cyan checkmark as it lands.">
