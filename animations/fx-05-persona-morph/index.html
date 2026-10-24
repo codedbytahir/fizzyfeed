@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fx · persona-morph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  /* == page scaffold (standalone preview only — landing strips this block) == */
+  html, body { margin: 0; padding: 0; background: #05070E; }
+  body { min-height: 100vh; display: grid; place-items: center; }
+
+  /* == fx-05 persona-morph module styles — ALL selectors scoped under .fx-persona-morph == */
+  .fx-persona-morph {
+    /* design tokens · ANIMATIONS.md §1 (inlined, no external CSS imports) */
+    --electric-500: #0A5CFF; --electric-600: #0047E0; --volt-500: #00D5FF; --violet-500: #6333FF;
+    --spark-500: #C8FF4D; --ink-950: #05070E; --ink-900: #0A0E1A; --ink-800: #131A2B;
+    --ink-300: #9AA8C4; --ink-200: #C6D0E4; --ink-50: #F5F8FE; --white: #FFFFFF;
+    --grad-nebula: linear-gradient(135deg, #6333FF, #0A5CFF);
+    --radius-card: 28px;
+    --shadow-card: 0 8px 30px rgb(5 7 14 / .35);
+    --glow-electric: 0 0 0 1px rgb(10 92 255 / .25), 0 12px 48px rgb(10 92 255 / .35);
+    /* module vars */
+    --fx-card-scale: 1;
+    --fx-spark-len: 520px;
+
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    aspect-ratio: 16 / 9;
+    margin-inline: auto;
+    overflow: hidden;
+    background: var(--ink-950);
+    color: var(--white);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    contain: layout style;
+  }
+
+  /* soft violet radial glow behind the card — static, ≤ .22 opacity, never tweened */
+  .fx-persona-morph__glow {
+    position: absolute;
+    inset: -12%;
+    background: radial-gradient(ellipse 52% 46% at 50% 50%, rgb(99 51 255 / .22) 0%, rgb(99 51 255 / 0) 70%);
+    pointer-events: none;
+  }
+
+  .fx-persona-morph__stage {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  /* nebula card · breathes ±2° over 9s alternate (9s × 2 = 18s → loop-aligned) */
+  .fx-persona-morph__card {
+    position: relative;
+    width: 540px;
+    height: 310px;
+    border-radius: var(--radius-card);
+    background: var(--grad-nebula);
+    box-shadow:
+      var(--shadow-card),
+      inset 0 1px 0 rgb(255 255 255 / .08),
+      inset 0 0 0 1px rgb(255 255 255 / .08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 40px 64px;
+    text-align: center;
+    transform: scale(var(--fx-card-scale, 1));
+  }
+  .fx-persona-morph--live .fx-persona-morph__card {
+    animation: fx05-breathe 9s ease-in-out infinite alternate;
+  }
+  @keyframes fx05-breathe {
+    from { transform: scale(var(--fx-card-scale, 1)) rotate(-2deg); }
+    to   { transform: scale(var(--fx-card-scale, 1)) rotate(2deg); }
+  }
+
+  .fx-persona-morph__overline {
+    font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: .18em;
+    color: rgb(255 255 255 / .7);
+  }
+
+  /* persona name — fixed box so the morph engine never sees the container resize */
+  .fx-persona-morph__name {
+    position: relative;
+    margin-top: 22px;
+    width: 100%;
+    height: 56px;
+    font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 44px;
+    line-height: 56px;
+    letter-spacing: -0.01em;
+    color: var(--white);
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .fx-persona-morph__story-stack {
+    position: relative;
+    margin-top: 12px;
+    width: 100%;
+    height: 22px;
+  }
+  .fx-persona-morph__story {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    font-family: "Inter", system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 22px;
+    color: rgb(255 255 255 / .85);
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(5px);
+    transition: opacity .48s cubic-bezier(.33, 1, .68, 1), transform .48s cubic-bezier(.33, 1, .68, 1);
+  }
+  .fx-persona-morph__story--active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* yearline sparkline along the card's bottom inner edge */
+  .fx-persona-morph__sparkline {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    bottom: 26px;
+    width: calc(100% - 56px);
+    height: 44px;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .fx-persona-morph__sparkline-path {
+    fill: none;
+    stroke: rgb(255 255 255 / .92);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: var(--fx-spark-len, 520px);
+    /* +1px so the round cap never peeks before the draw begins */
+    stroke-dashoffset: calc(var(--fx-spark-len, 520px) + 1px);
+  }
+  .fx-persona-morph__spark-dot {
+    fill: var(--white);
+    opacity: 0;
+    transform: scale(0);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .fx-persona-morph--live .fx-persona-morph__sparkline-path {
+    animation: fx05-spark-draw 18s linear infinite;
+  }
+  .fx-persona-morph--live .fx-persona-morph__spark-dot {
+    animation: fx05-spark-dot 18s linear infinite;
+  }
+  .fx-persona-morph--paused .fx-persona-morph__sparkline-path,
+  .fx-persona-morph--paused .fx-persona-morph__spark-dot {
+    animation-play-state: paused;
+  }
+  @keyframes fx05-spark-draw {
+    0% {
+      stroke-dashoffset: calc(var(--fx-spark-len, 520px) + 1px);
+      opacity: 1;
+      animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); /* ease-out draw */
+    }
+    3.6% { stroke-dashoffset: 0px; opacity: 1; }        /* 648ms ease-out draw ≈ 600ms spec */
+    96.4% {
+      stroke-dashoffset: 0px;
+      opacity: 1;
+      animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+    }
+    100% { stroke-dashoffset: 0px; opacity: 0; }        /* gentle reset → seamless wrap */
+  }
+  @keyframes fx05-spark-dot {
+    0%, 3.2% { transform: scale(0); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+    3.9%     { transform: scale(1.45); opacity: 1; }    /* overshoot peak */
+    5%       { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1); }
+    96.4%    { transform: scale(1); opacity: 1; }
+    100%     { transform: scale(1); opacity: 0; }
+  }
+
+  /* mobile: stack to ~720px, card scales down via transform only */
+  @media (max-width: 720px) {
+    .fx-persona-morph { aspect-ratio: auto; height: 470px; --fx-card-scale: .78; }
+  }
+  @media (max-width: 430px) {
+    .fx-persona-morph { height: 420px; --fx-card-scale: .6; }
+  }
+
+  /* reduced motion: static composed frame — first persona shown, sparkline drawn */
+  @media (prefers-reduced-motion: reduce) {
+    .fx-persona-morph .fx-persona-morph__card {
+      animation: none !important;
+      transform: scale(var(--fx-card-scale, 1));
+    }
+    .fx-persona-morph .fx-persona-morph__sparkline-path {
+      animation: none !important;
+      stroke-dashoffset: 0 !important;
+      opacity: 1;
+    }
+    .fx-persona-morph .fx-persona-morph__spark-dot {
+      animation: none !important;
+      opacity: 1;
+      transform: none;
+    }
+    .fx-persona-morph .fx-persona-morph__story { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- FX-MODULE-START -->
+<!-- MODULE ROOT: this whole div is what the landing page embeds -->
+<div class="fx fx-persona-morph" data-brand-name="fizzyfeed" role="img"
+     aria-label="a gradient card breathing softly while the posting persona name morphs between four alter egos and a thin white yearline draws along its base">
+
+  <div class="fx-persona-morph__glow" aria-hidden="true"></div>
+
+  <div class="fx-persona-morph__stage">
+    <div class="fx-persona-morph__card">
+      <span class="fx-persona-morph__overline">your alter ego</span>
+
+      <div class="fx-persona-morph__name" data-fx-name>the midnight archivist</div>
+
+      <div class="fx-persona-morph__story-stack">
+        <p class="fx-persona-morph__story fx-persona-morph__story--active">posted 214 nights after 11pm — consistency masquerading as insomnia</p>
+        <p class="fx-persona-morph__story">49-post march, zero missed fridays</p>
+        <p class="fx-persona-morph__story">shows up twice a week, every week, since january</p>
+        <p class="fx-persona-morph__story">slow posts, long game, 12 months of compound interest</p>
+      </div>
+
+      <svg class="fx-persona-morph__sparkline" viewBox="0 0 484 44" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path class="fx-persona-morph__sparkline-path" d="M 2 34 C 30 31, 52 36, 82 33 C 112 30, 128 25, 158 26 C 188 27, 204 34, 234 33 C 264 32, 280 22, 310 20 C 340 18, 356 26, 386 24 C 416 22, 448 12, 482 9"/>
+        <circle class="fx-persona-morph__spark-dot" cx="482" cy="9" r="3.25"/>
+      </svg>
+    </div>
+  </div>
+
+</div>
+<!-- FX-MODULE-END -->
+
+<script type="module">
+/* fx-05 persona-morph — module script. No globals; loops driven by rAF clock + CSS. */
+(() => {
+  const PERSONAS = [
+    { name: 'the midnight archivist', story: 'posted 214 nights after 11pm — consistency masquerading as insomnia' },
+    { name: 'the quiet storm',        story: '49-post march, zero missed fridays' },
+    { name: 'the tuesday regular',    story: 'shows up twice a week, every week, since january' },
+    { name: 'the long-game builder',  story: 'slow posts, long game, 12 months of compound interest' }
+  ];
+  const LOOP_MS = 18000;
+  /* persona i holds slot [4500·i, 4500·(i+1)); at each boundary the name morphs to the
+     next persona — the last morph (P4 → P1) lands right on the 18s wrap, seamless. */
+  const BOUNDARIES = [4500, 9000, 13500, 17100];
+  const STAGGER_MS = 20;
+
+  /* -------- torph engine (preferred) --------
+     Names are handed over with nbsp for blanks: with no plain spaces in the string,
+     torph selects its grapheme segmenter → one span per CHARACTER (the brief's
+     character-wise morph). Display is unchanged (nbsp renders as a space). */
+  function toCharStream(text) { return text.replace(/ /g, '\u00A0'); }
+
+  function createTorphEngine(nameEl, Ctor, initialText) {
+    let morph = null;
+    return {
+      type: 'torph',
+      init() {
+        morph = new Ctor({
+          element: nameEl,
+          duration: 700,
+          ease: { stiffness: 120, damping: 20 } /* soft spring → letters slide/settle, no flicker */
+        });
+        morph.update(toCharStream(initialText)); /* initial render places spans, no animation */
+      },
+      morph(text) {
+        if (!morph) throw new Error('torph: not ready');
+        morph.update(toCharStream(text));
+        staggerChars(nameEl, STAGGER_MS);
+      },
+      setStatic(text) { nameEl.textContent = text; },
+      finishNow() { /* torph settles on its own */ }
+    };
+  }
+
+  /* per-character stagger: torph animates each glyph with WAAPI (fill both), so a
+     negative currentTime delays each char while it holds its from-state — a clean
+     left→right cascade with no flicker. Best-effort; torph timing is the fallback. */
+  function staggerChars(el, step) {
+    let i = 0;
+    for (const child of el.children) {
+      let anims = [];
+      try {
+        anims = typeof child.getAnimations === 'function' ? child.getAnimations({ subtree: true }) : [];
+      } catch (_) { anims = []; }
+      if (!anims.length) continue; /* sr-only node etc. */
+      for (const a of anims) {
+        try {
+          /* direct negative currentTime → the animation sits in its before-phase
+             (a pause/play roundtrip would clamp it to 0, so never use that here) */
+          if (a.playState !== 'running' && a.playState !== 'pending') continue;
+          a.currentTime = -(i * step);
+        } catch (_) { /* keep torph's default timing */ }
+      }
+      i++;
+    }
+  }
+
+  /* -------- hand-rolled per-char morph (fallback if the import fails) -------- */
+  function createFallbackEngine(nameEl) {
+    let spans = null;
+    let text = null;
+    let rafId = 0;
+    let items = [];
+
+    function buildChars(str) {
+      nameEl.textContent = '';
+      spans = [];
+      const frag = document.createDocumentFragment();
+      for (const ch of str) {
+        const s = document.createElement('span');
+        s.textContent = ch === ' ' ? '\u00A0' : ch;
+        frag.appendChild(s);
+        spans.push(s);
+      }
+      nameEl.appendChild(frag);
+    }
+
+    function finishNow() {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+      for (const it of items) {
+        if (it.ghost) { if (it.el.parentNode) it.el.remove(); }
+        else { it.el.style.opacity = ''; it.el.style.transform = ''; it.el.style.willChange = ''; }
+      }
+      items = [];
+    }
+
+    /* LCS pairing → shared glyphs slide between slots, the rest fades in/out */
+    function lcsPairs(a, b) {
+      const n = a.length, m = b.length;
+      const dp = [];
+      for (let i = 0; i <= n; i++) dp.push(new Array(m + 1).fill(0));
+      for (let i = n - 1; i >= 0; i--) {
+        for (let j = m - 1; j >= 0; j--) {
+          dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+        }
+      }
+      const pairs = [];
+      let i = 0, j = 0;
+      while (i < n && j < m) {
+        if (a[i] === b[j]) { pairs.push([i, j]); i++; j++; }
+        else if (dp[i + 1][j] >= dp[i][j + 1]) i++;
+        else j++;
+      }
+      return pairs;
+    }
+
+    function morph(target) {
+      if (text === null) { buildChars(target); text = target; return; }
+      if (text === target) return;
+      finishNow();
+      const from = text;
+      const pairs = lcsPairs(from, target);
+      const oldByNew = new Map(pairs.map(p => [p[1], p[0]]));
+      const newByOld = new Map(pairs.map(p => [p[0], p[1]]));
+
+      /* measure old slots in local coords (offsetParent = nameEl) */
+      const oldPos = spans.map(s => ({ x: s.offsetLeft, y: s.offsetTop }));
+      const exiting = [];
+      const kept = new Map();
+      spans.forEach((s, i) => {
+        const j = newByOld.get(i);
+        if (j === undefined) exiting.push({ el: s, oldIndex: i, pos: oldPos[i] });
+        else kept.set(j, s);
+      });
+
+      /* build the target line, reusing paired span elements */
+      nameEl.textContent = '';
+      const newSpans = [];
+      const frag = document.createDocumentFragment();
+      for (let j = 0; j < target.length; j++) {
+        let s = kept.get(j);
+        if (!s) {
+          s = document.createElement('span');
+          const ch = target[j];
+          s.textContent = ch === ' ' ? '\u00A0' : ch;
+        }
+        frag.appendChild(s);
+        newSpans.push(s);
+      }
+      nameEl.appendChild(frag);
+      const newPos = newSpans.map(s => ({ x: s.offsetLeft, y: s.offsetTop }));
+
+      const next = [];
+      newSpans.forEach((s, j) => {
+        const i = oldByNew.get(j);
+        if (i === undefined) {
+          s.style.opacity = '0';
+          next.push({ el: s, kind: 'enter', delay: j * STAGGER_MS, dur: 520 });
+        } else {
+          next.push({
+            el: s, kind: 'slide',
+            dx: oldPos[i].x - newPos[j].x, dy: oldPos[i].y - newPos[j].y,
+            delay: j * STAGGER_MS, dur: 620
+          });
+        }
+        s.style.willChange = 'transform, opacity';
+      });
+      /* removed glyphs become absolutely-placed ghosts that fade out */
+      for (const ex of exiting) {
+        ex.el.style.cssText = 'position:absolute;display:inline-block;margin:0;will-change:transform,opacity;';
+        ex.el.style.left = ex.pos.x + 'px';
+        ex.el.style.top = ex.pos.y + 'px';
+        nameEl.appendChild(ex.el);
+        next.push({ el: ex.el, kind: 'exit', delay: ex.oldIndex * STAGGER_MS, dur: 400, ghost: true });
+      }
+
+      spans = newSpans;
+      text = target;
+      items = next;
+
+      const t0 = performance.now();
+      const tick = (now) => {
+        rafId = 0;
+        const t = now - t0;
+        let pending = false;
+        for (const it of items) {
+          const p = Math.min(Math.max((t - it.delay) / it.dur, 0), 1);
+          if (p < 1) pending = true;
+          const e = 1 - Math.pow(1 - p, 3); /* cubic ease-out */
+          if (it.kind === 'slide') {
+            it.el.style.transform = p >= 1 ? '' :
+              'translate(' + (it.dx * (1 - e)).toFixed(2) + 'px,' + (it.dy * (1 - e)).toFixed(2) + 'px)';
+          } else if (it.kind === 'enter') {
+            it.el.style.opacity = e.toFixed(3);
+            it.el.style.transform = 'translateY(' + ((1 - e) * 8).toFixed(2) + 'px) scale(' + (0.94 + 0.06 * e).toFixed(3) + ')';
+            if (p >= 1) { it.el.style.opacity = ''; it.el.style.transform = ''; }
+          } else {
+            it.el.style.opacity = (1 - e).toFixed(3);
+            it.el.style.transform = 'translateY(' + (e * 7).toFixed(2) + 'px) scale(' + (1 - 0.06 * e).toFixed(3) + ')';
+          }
+        }
+        if (pending) rafId = requestAnimationFrame(tick);
+        else finishNow();
+      };
+      rafId = requestAnimationFrame(tick);
+    }
+
+    return {
+      type: 'fallback',
+      init() { if (text === null) { buildChars(PERSONAS[0].name); text = PERSONAS[0].name; } },
+      morph,
+      setStatic(str) { finishNow(); nameEl.textContent = str; spans = null; text = null; },
+      finishNow
+    };
+  }
+
+  /* -------- per-instance setup -------- */
+  function initModule(root) {
+    const nameEl = root.querySelector('[data-fx-name]');
+    const storyEls = Array.from(root.querySelectorAll('.fx-persona-morph__story'));
+    const sparkPath = root.querySelector('.fx-persona-morph__sparkline-path');
+    if (!nameEl || !storyEls.length) return;
+
+    /* exact sparkline length for the dash draw */
+    if (sparkPath && typeof sparkPath.getTotalLength === 'function') {
+      try {
+        const len = Math.ceil(sparkPath.getTotalLength()) + 2;
+        sparkPath.style.setProperty('--fx-spark-len', len + 'px'); /* length unit required: calc(var + 1px) must stay valid */
+      } catch (_) { /* CSS default 520 holds */ }
+    }
+
+    let currentName = PERSONAS[0].name;
+    let engine = createFallbackEngine(nameEl);
+    engine.init();
+
+    /* upgrade to torph when it loads (first morph usually lands after this) */
+    (async () => {
+      try {
+        const mod = await import('https://esm.sh/torph');
+        const Ctor = mod && (mod.TextMorph || (mod.default && mod.default.TextMorph));
+        if (typeof Ctor !== 'function') throw new Error('torph: TextMorph export missing');
+        engine.finishNow();
+        nameEl.textContent = currentName; /* hand the engine a clean plain-text element */
+        const torph = createTorphEngine(nameEl, Ctor, currentName);
+        torph.init();
+        engine = torph;
+      } catch (_) {
+        /* import failed or API mismatch → keep the hand-rolled engine */
+        try {
+          const fb = createFallbackEngine(nameEl);
+          nameEl.textContent = currentName;
+          fb.init();
+          engine = fb;
+        } catch (_) { /* text stays as-is; loop continues without morphs */ }
+      }
+    })();
+
+    function morphTo(index) {
+      const p = PERSONAS[index];
+      storyEls.forEach((el, i) => el.classList.toggle('fx-persona-morph__story--active', i === index));
+      if (p.name === currentName) return;
+      currentName = p.name;
+      try {
+        engine.morph(p.name);
+      } catch (_) {
+        try {
+          const fb = createFallbackEngine(nameEl);
+          nameEl.textContent = currentName;
+          fb.init();
+          engine = fb;
+          engine.morph(p.name);
+        } catch (_) { /* never break the loop */ }
+      }
+    }
+
+    /* ---- master clock (accumulated active time → pause-safe, seamless wrap) ---- */
+    let running = false;
+    let rafId = 0;
+    let lastNow = 0;
+    let elapsed = 0;
+    let lastT = 0;
+
+    function frame(now) {
+      if (!running) return;
+      const dt = Math.min(Math.max(now - lastNow, 0), 250);
+      lastNow = now;
+      elapsed += dt;
+      const t = elapsed % LOOP_MS;
+      for (let k = 0; k < BOUNDARIES.length; k++) {
+        const b = BOUNDARIES[k];
+        if (lastT < b && t >= b) morphTo((k + 1) % PERSONAS.length);
+      }
+      lastT = t;
+      rafId = requestAnimationFrame(frame);
+    }
+
+    function start() {
+      if (running || reduce.matches) return;
+      running = true;
+      root.classList.add('fx-persona-morph--live');
+      root.classList.remove('fx-persona-morph--paused');
+      lastNow = performance.now();
+      rafId = requestAnimationFrame(frame);
+    }
+
+    function pause() {
+      running = false;
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+      root.classList.add('fx-persona-morph--paused');
+    }
+
+    function restart() {
+      elapsed = 0;
+      lastT = 0;
+      if (currentName !== PERSONAS[0].name) morphTo(0);
+      start();
+    }
+
+    /* ---- visibility + orchestration hooks ---- */
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let ioVisible = true;
+    let stateLive = true;
+
+    function apply() {
+      if (reduce.matches) { pause(); return; }
+      if (ioVisible && stateLive && !document.hidden) start();
+      else pause();
+    }
+
+    if (typeof IntersectionObserver === 'function') {
+      new IntersectionObserver((entries) => {
+        ioVisible = entries[entries.length - 1].isIntersecting;
+        apply();
+      }, { threshold: 0.12 }).observe(root);
+    }
+
+    const readState = () => { stateLive = root.getAttribute('data-fx-state') !== 'idle'; };
+    if (root.hasAttribute('data-fx-state')) readState();
+    if (typeof MutationObserver === 'function') {
+      new MutationObserver(() => { readState(); apply(); })
+        .observe(root, { attributes: true, attributeFilter: ['data-fx-state'] });
+    }
+
+    document.addEventListener('visibilitychange', apply);
+
+    function onReduceChange() {
+      if (reduce.matches) {
+        pause();
+        elapsed = 0; lastT = 0;
+        currentName = PERSONAS[0].name;
+        engine.setStatic(PERSONAS[0].name);
+        storyEls.forEach((el, i) => el.classList.toggle('fx-persona-morph__story--active', i === 0));
+      } else {
+        restart();
+      }
+    }
+    if (typeof reduce.addEventListener === 'function') reduce.addEventListener('change', onReduceChange);
+    else if (typeof reduce.addListener === 'function') reduce.addListener(onReduceChange);
+
+    apply();
+  }
+
+  const roots = document.querySelectorAll('.fx-persona-morph');
+  roots.forEach((root) => {
+    if (root.dataset.fxPersonaMorphReady) return;
+    root.dataset.fxPersonaMorphReady = '1';
+    initModule(root);
+  });
+})();
+</script>
+</body>
+</html>

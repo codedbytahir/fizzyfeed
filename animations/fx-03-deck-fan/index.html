@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fx · deck-fan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* == FX-SCAFFOLD-START — standalone preview only; the landing assembler strips this block == */
+html,body{margin:0;padding:0;background:#05070E}
+body{min-height:100vh;min-height:100svh;display:grid;place-items:center}
+/* == FX-SCAFFOLD-END == */
+
+/* ===================================================================
+   fx-03 · deck-fan — "seven chapters"
+   12s seamless loop · CSS keyframes only · no JS
+   Only transform and opacity animate; card shadows are static (baked).
+
+   timeline (12s = 100% · 1% = 120ms):
+     0 – 16.667%     stacked deck at rest (±0.65° collective sway, 6s cycle)
+     14.4%           anticipation dip on the whole deck (beat layer)
+     16.667–37.333%  fan out — 80ms stagger, card-reveal grammar
+                     (rise 12px, scale .96→1) into a −24°…+24° spread
+     37.333–47.5%    fanned hold ≈1.2s
+     47.5–66.5%      restack — reverse 80ms stagger (card 7 lands first)
+     67.5–75.833%    small white spark overshoot-pulse on the top card
+     seam: every keyframe set satisfies 0% == 100% (last frame == first)
+
+   geometry: 1200×675 design grid; 1cqw = module width / 100 (= 12px at
+   full size). Cards pivot around a shared point 1004px below their
+   center (transform-origin 436.154%), so the fan reads as a held hand
+   of cards; positions inside the stage use %, type/shadows use cqw.
+   =================================================================== */
+
+.fx-deck-fan,.fx-deck-fan *,.fx-deck-fan *::before,.fx-deck-fan *::after{box-sizing:border-box}
+
+.fx-deck-fan{
+  /* ANIMATIONS.md §1 tokens (inlined) */
+  --electric-500:#0A5CFF; --electric-600:#0047E0; --volt-500:#00D5FF; --violet-500:#6333FF;
+  --spark-500:#C8FF4D; --ink-950:#05070E; --ink-900:#0A0E1A; --ink-800:#131A2B;
+  --ink-300:#9AA8C4; --ink-200:#C6D0E4; --ink-50:#F5F8FE; --white:#FFFFFF;
+  --grad-brand:linear-gradient(135deg,#6333FF,#0A5CFF,#00D5FF);
+  --grad-bolt:linear-gradient(135deg,#0A5CFF,#00D5FF);
+  --grad-nebula:linear-gradient(135deg,#6333FF,#0A5CFF);
+  --grad-aurora:linear-gradient(135deg,#00D5FF,#00FFA3);
+  --grad-fizz:linear-gradient(135deg,#C8FF4D,#00E5A0);
+  --grad-sunset:linear-gradient(135deg,#FF8A00,#FF3D77);
+  --grad-coral:linear-gradient(135deg,#FF5C5C,#FF9E2C);
+  --grad-grape:linear-gradient(135deg,#A855F7,#6366FA);
+  --radius-card:28px; --radius-md:14px; --radius-pill:999px;
+  --glow-electric:0 0 0 1px rgb(10 92 255/.25), 0 12px 48px rgb(10 92 255/.35);
+  --shadow-card:0 8px 30px rgb(5 7 14/.35);
+
+  position:relative;
+  isolation:isolate;
+  width:100%; max-width:1200px; margin-inline:auto;
+  background:var(--ink-950);
+  overflow:hidden;
+  container-type:inline-size;
+  font-family:'Inter',ui-sans-serif,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  user-select:none;
+}
+
+/* — frame, ambient glow, floor shadow — */
+.fx-deck-fan__viewport{position:relative;height:56.25vw;height:56.25cqw}
+.fx-deck-fan__glow{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(46% 54% at 50% 44%,
+    rgb(10 92 255/.20) 0%, rgb(10 92 255/.09) 42%, rgb(10 92 255/0) 72%)}
+.fx-deck-fan__stage{position:absolute;inset:0}
+.fx-deck-fan__floor{position:absolute;left:35.8333%;top:68.15%;width:28.3333%;height:6.5185%;
+  border-radius:50%;pointer-events:none;
+  background:radial-gradient(50% 50% at 50% 50%, rgb(0 0 0/.6) 0%, rgb(0 0 0/0) 72%);
+  animation:fx-deck-fan--floor 12s infinite;will-change:transform,opacity}
+
+/* — deck layers: beat (12s pacing) → sway (6s life) → cards —
+   beat carries the 200×260 deck box; sway fills it exactly — */
+.fx-deck-fan__beat{position:absolute;left:41.6667%;top:25.185%;
+  width:16.6667%;height:38.5185%;transform-origin:50% 436.154%;will-change:transform}
+.fx-deck-fan__sway{position:absolute;inset:0;transform-origin:50% 436.154%;will-change:transform}
+.fx-deck-fan__beat{animation:fx-deck-fan--beat 12s infinite}
+.fx-deck-fan__sway{animation:fx-deck-fan--sway 6s ease-in-out infinite}
+
+/* — story cards (200×260 @1200 grid, radius 28) —
+   static pose = the fanned frame (doubles as the reduced-motion state) — */
+.fx-deck-fan__card{position:absolute;inset:0;
+  border-radius:var(--radius-card);border-radius:min(var(--radius-card),2.3333cqw);
+  transform:translateY(0) scale(1) rotate(var(--fan-rot));
+  transform-origin:50% 436.154%;
+  box-shadow:0 30px 60px -12px rgb(0 0 0/.6), 0 14px 30px -10px rgb(0 0 0/.5),
+             var(--shadow-card), inset 0 1px 0 rgb(255 255 255/.16);
+  box-shadow:0 2.5cqw 5cqw -1cqw rgb(0 0 0/.6), 0 1.1667cqw 2.5cqw -.8333cqw rgb(0 0 0/.5),
+             var(--shadow-card), inset 0 1px 0 rgb(255 255 255/.16);
+  will-change:transform}
+.fx-deck-fan__card--1{--fan-rot:-24deg;z-index:1;background:var(--grad-bolt);animation:fx-deck-fan--card-1 12s infinite}
+.fx-deck-fan__card--2{--fan-rot:-16deg;z-index:2;background:var(--grad-aurora);animation:fx-deck-fan--card-2 12s infinite}
+.fx-deck-fan__card--3{--fan-rot:-8deg;z-index:3;background:var(--grad-fizz);animation:fx-deck-fan--card-3 12s infinite}
+.fx-deck-fan__card--4{--fan-rot:0deg;z-index:4;background:var(--grad-grape);animation:fx-deck-fan--card-4 12s infinite}
+.fx-deck-fan__card--5{--fan-rot:8deg;z-index:5;background:var(--grad-sunset);animation:fx-deck-fan--card-5 12s infinite}
+.fx-deck-fan__card--6{--fan-rot:16deg;z-index:6;background:var(--grad-nebula);animation:fx-deck-fan--card-6 12s infinite}
+.fx-deck-fan__card--7{--fan-rot:24deg;z-index:7;background:var(--grad-coral);animation:fx-deck-fan--card-7 12s infinite}
+
+/* — static scrim so white text holds ≥4.5:1 even on the lime/sunset heads
+   (worst case: white .75 over lime #C8FF4D under the .7 scrim ≈ 5.7:1) — */
+.fx-deck-fan__scrim{position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(170% 130% at 0% 0%,
+    rgb(5 7 14/.78) 0%, rgb(5 7 14/.5) 30%, rgb(5 7 14/.22) 48%, rgb(5 7 14/0) 66%)}
+.fx-deck-fan__num{position:absolute;top:1.8333cqw;left:1.8333cqw;
+  font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:500;
+  font-size:12px;font-size:1.0833cqw;line-height:1;letter-spacing:.14em;
+  font-variant-numeric:tabular-nums;
+  color:rgb(255 255 255/.75);
+  text-shadow:0 1px 6px rgb(5 7 14/.6);text-shadow:0 1px .5cqw rgb(5 7 14/.6)}
+.fx-deck-fan__label{position:absolute;top:3.6667cqw;left:1.8333cqw;
+  font-family:'Space Grotesk','Inter',ui-sans-serif,sans-serif;font-weight:500;
+  font-size:24px;font-size:2cqw;line-height:1.05;letter-spacing:-.01em;text-transform:lowercase;
+  color:var(--white);
+  text-shadow:0 1px 8px rgb(5 7 14/.45);text-shadow:0 1px .6667cqw rgb(5 7 14/.45)}
+
+/* — loop-closing spark on the top card (card 7) — */
+.fx-deck-fan__spark{position:absolute;top:1.8333cqw;right:1.8333cqw;width:1.8333cqw;height:1.8333cqw;
+  opacity:0;pointer-events:none;will-change:transform,opacity;
+  animation:fx-deck-fan--spark 12s infinite}
+.fx-deck-fan__spark::before{content:"";position:absolute;inset:-.9cqw;border-radius:50%;
+  background:radial-gradient(50% 50% at 50% 50%, rgb(255 255 255/.45) 0%, rgb(255 255 255/0) 70%)}
+.fx-deck-fan__spark svg{display:block;width:100%;height:100%}
+
+/* ===================================================================
+   keyframes
+   =================================================================== */
+
+/* beat: anticipation dip before the deal, tiny lift when the stack closes */
+@keyframes fx-deck-fan--beat{
+  0%,11.5%{transform:translateY(0) scale(1);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  14.4%{transform:translateY(.25cqw) scale(.993);animation-timing-function:cubic-bezier(.3,1.45,.45,1)}
+  17.5%,66.5%{transform:translateY(0) scale(1);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  68.1%{transform:translateY(-.15cqw) scale(1.007);animation-timing-function:cubic-bezier(.3,1,.5,1)}
+  70.8%,100%{transform:translateY(0) scale(1)}
+}
+
+/* collective breathing sway; 6s divides the 12s loop exactly */
+@keyframes fx-deck-fan--sway{
+  0%{transform:rotate(0deg)}
+  25%{transform:rotate(.65deg)}
+  50%{transform:rotate(0deg)}
+  75%{transform:rotate(-.65deg)}
+  100%{transform:rotate(0deg)}
+}
+
+/* floor pool widens + fades while the fan is open */
+@keyframes fx-deck-fan--floor{
+  0%,16.667%{opacity:.55;transform:scaleX(1);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  37.333%{opacity:.26;transform:scaleX(1.5);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  47.5%{opacity:.26;transform:scaleX(1.5);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  66.5%,100%{opacity:.55;transform:scaleX(1)}
+}
+
+/* cards — open: 2.0s + 80ms×(i−1), easeOutQuint; close: 5.7s + 80ms×(7−i), easeInOutQuart.
+   stacked pose = translateY(12px) scale(.96); fan pose = translateY(0) scale(1) rotate(var(--fan-rot)) */
+@keyframes fx-deck-fan--card-1{
+  0%,16.667%{transform:translateY(1cqw) scale(.96) rotate(0deg);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+  33.333%,51.5%{transform:translateY(0) scale(1) rotate(var(--fan-rot));animation-timing-function:cubic-bezier(.65,0,.35,1)}
+  66.5%,100%{transform:translateY(1cqw) scale(.96) rotate(0deg)}
+}
+@keyframes fx-deck-fan--card-2{
+  0%,17.333%{transform:translateY(1cqw) scale(.96) rotate(0deg);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+  34%,50.833%{transform:translateY(0) scale(1) rotate(var(--fan-rot));animation-timing-function:cubic-bezier(.65,0,.35,1)}
+  65.833%,100%{transform:translateY(1cqw) scale(.96) rotate(0deg)}
+}
+@keyframes fx-deck-fan--card-3{
+  0%,18%{transform:translateY(1cqw) scale(.96) rotate(0deg);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+  34.667%,50.167%{transform:translateY(0) scale(1) rotate(var(--fan-rot));animation-timing-function:cubic-bezier(.65,0,.35,1)}
+  65.167%,100%{transform:translateY(1cqw) scale(.96) rotate(0deg)}
+}
+@keyframes fx-deck-fan--card-4{
+  0%,18.667%{transform:translateY(1cqw) scale(.96) rotate(0deg);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+  35.333%,49.5%{transform:translateY(0) scale(1) rotate(var(--fan-rot));animation-timing-function:cubic-bezier(.65,0,.35,1)}
+  64.5%,100%{transform:translateY(1cqw) scale(.96) rotate(0deg)}
+}
+@keyframes fx-deck-fan--card-5{
+  0%,19.333%{transform:translateY(1cqw) scale(.96) rotate(0deg);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+  36%,48.833%{transform:translateY(0) scale(1) rotate(var(--fan-rot));animation-timing-function:cubic-bezier(.65,0,.35,1)}
+  63.833%,100%{transform:translateY(1cqw) scale(.96) rotate(0deg)}
+}
+@keyframes fx-deck-fan--card-6{
+  0%,20%{transform:translateY(1cqw) scale(.96) rotate(0deg);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+  36.667%,48.167%{transform:translateY(0) scale(1) rotate(var(--fan-rot));animation-timing-function:cubic-bezier(.65,0,.35,1)}
+  63.167%,100%{transform:translateY(1cqw) scale(.96) rotate(0deg)}
+}
+@keyframes fx-deck-fan--card-7{
+  0%,20.667%{transform:translateY(1cqw) scale(.96) rotate(0deg);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+  37.333%,47.5%{transform:translateY(0) scale(1) rotate(var(--fan-rot));animation-timing-function:cubic-bezier(.65,0,.35,1)}
+  62.5%,100%{transform:translateY(1cqw) scale(.96) rotate(0deg)}
+}
+
+/* spark pulse: 250ms back-out pop (sacred overshoot), then fade — invisible at both 0% and 100% */
+@keyframes fx-deck-fan--spark{
+  0%,67.5%{opacity:0;transform:scale(.3) rotate(0deg);animation-timing-function:cubic-bezier(.3,1.5,.55,1)}
+  69.583%{opacity:1;transform:scale(1.14) rotate(16deg);animation-timing-function:cubic-bezier(.3,0,.4,1)}
+  71.25%{opacity:1;transform:scale(1) rotate(20deg);animation-timing-function:cubic-bezier(.55,0,.7,.4)}
+  75.833%,100%{opacity:0;transform:scale(.3) rotate(0deg)}
+}
+
+/* — reduced motion: hold the fanned state statically (cards keep their
+   static fan pose; loops off; spark hidden; floor mid-spread) — */
+@media (prefers-reduced-motion: reduce){
+  .fx-deck-fan__beat,.fx-deck-fan__sway,.fx-deck-fan__floor,.fx-deck-fan__card,.fx-deck-fan__spark{animation:none}
+  .fx-deck-fan__beat,.fx-deck-fan__sway{transform:none}
+  .fx-deck-fan__floor{opacity:.34;transform:scaleX(1.3)}
+  .fx-deck-fan__spark{opacity:0}
+}
+</style>
+</head>
+<body>
+<!-- FX-MODULE-START -->
+<div class="fx fx-deck-fan" data-brand-name="fizzyfeed" role="img" aria-label="A deck of seven gradient story cards rests, fans out one by one to reveal the seven chapters of the posting year, holds, restacks in reverse order, and closes with a small white spark pulse on the top card.">
+  <div class="fx-deck-fan__viewport">
+    <div class="fx-deck-fan__glow"></div>
+    <div class="fx-deck-fan__stage">
+      <div class="fx-deck-fan__floor"></div>
+      <div class="fx-deck-fan__beat">
+        <div class="fx-deck-fan__sway">
+
+          <div class="fx-deck-fan__card fx-deck-fan__card--1">
+            <div class="fx-deck-fan__scrim"></div>
+            <span class="fx-deck-fan__num">01</span>
+            <span class="fx-deck-fan__label">kickoff</span>
+          </div>
+
+          <div class="fx-deck-fan__card fx-deck-fan__card--2">
+            <div class="fx-deck-fan__scrim"></div>
+            <span class="fx-deck-fan__num">02</span>
+            <span class="fx-deck-fan__label">rhythm</span>
+          </div>
+
+          <div class="fx-deck-fan__card fx-deck-fan__card--3">
+            <div class="fx-deck-fan__scrim"></div>
+            <span class="fx-deck-fan__num">03</span>
+            <span class="fx-deck-fan__label">streaks</span>
+          </div>
+
+          <div class="fx-deck-fan__card fx-deck-fan__card--4">
+            <div class="fx-deck-fan__scrim"></div>
+            <span class="fx-deck-fan__num">04</span>
+            <span class="fx-deck-fan__label">the mix</span>
+          </div>
+
+          <div class="fx-deck-fan__card fx-deck-fan__card--5">
+            <div class="fx-deck-fan__scrim"></div>
+            <span class="fx-deck-fan__num">05</span>
+            <span class="fx-deck-fan__label">peaks</span>
+          </div>
+
+          <div class="fx-deck-fan__card fx-deck-fan__card--6">
+            <div class="fx-deck-fan__scrim"></div>
+            <span class="fx-deck-fan__num">06</span>
+            <span class="fx-deck-fan__label">alter ego</span>
+          </div>
+
+          <div class="fx-deck-fan__card fx-deck-fan__card--7">
+            <div class="fx-deck-fan__scrim"></div>
+            <span class="fx-deck-fan__num">07</span>
+            <span class="fx-deck-fan__label">the recap</span>
+            <span class="fx-deck-fan__spark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                <path d="M12 0C13.1 6.9 17.1 10.9 24 12C17.1 13.1 13.1 17.1 12 24C10.9 17.1 6.9 13.1 0 12C6.9 10.9 10.9 6.9 12 0Z" fill="#FFFFFF"/>
+              </svg>
+            </span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- FX-MODULE-END -->
+</body>
+</html>
