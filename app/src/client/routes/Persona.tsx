@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Deck as DeckData, Persona as PersonaData } from "@shared/types";
 import { apiFetch, toFailure, useApi } from "../lib/api";
+import { BRAND_NAME } from "@shared/brand";
 import Chip from "../components/Chip";
 import EmptyState from "../components/EmptyState";
 import ErrorState from "../components/ErrorState";
@@ -12,6 +13,11 @@ const MAX_REGENERATIONS = 3;
 /** Step 4 — the alter ego (spec 05 §4): cached first name, ≤3 regenerations. */
 export default function Persona() {
   const deck = useApi<DeckData>("/api/deck");
+
+  useEffect(() => {
+    document.title = `${BRAND_NAME} — your alter ego`;
+  }, []);
+
   const [persona, setPersona] = useState<PersonaData | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -92,6 +98,7 @@ export default function Persona() {
     <div className="route route--narrow">
       <header className="deck-head">
         <p className="overline">step 04 — the alter ego</p>
+        <h1 className="headline headline--lg">your alter ego</h1>
         <p className="sub">
           the model reads your real stats — rhythm, streaks, topics — and names the poster behind
           them. no flattery, just a mirror.
@@ -100,7 +107,7 @@ export default function Persona() {
 
       {persona ? (
         <div className={revealed ? "persona-stage reveal-in is-in" : "persona-stage reveal-in"}>
-          <h1 className="persona-name">{persona.name}</h1>
+          <p className="persona-name">{persona.name}</p>
           <p className="persona-origin">{persona.origin}</p>
           <div className="traits">
             {persona.traits.map((trait) => (

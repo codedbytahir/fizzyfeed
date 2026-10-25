@@ -24,7 +24,7 @@ export default function Yearline({
       viewBox="0 0 100 40"
       preserveAspectRatio="none"
       role="img"
-      aria-label={`posts per day across ${year}`}
+      aria-label={`posting rhythm across ${year} — one bar per day`}
     >
       <line className="yearline__base" x1="0" y1="39" x2="100" y2="39" />
       <polyline className="yearline__spark" points={points} vectorEffect="non-scaling-stroke" />

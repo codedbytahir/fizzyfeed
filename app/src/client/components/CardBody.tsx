@@ -19,7 +19,7 @@ export default function CardBody({ card }: { card: CardData }) {
     case "kickoff":
       return (
         <div className="card__body">
-          <h3 className="card__headline">it started here</h3>
+          <h2 className="card__headline">it started here</h2>
           <p className="card__moment card__moment--md">{card.date}</p>
           <p className="card__caption">“{card.excerpt}”</p>
         </div>
@@ -27,7 +27,7 @@ export default function CardBody({ card }: { card: CardData }) {
     case "rhythm":
       return (
         <div className="card__body">
-          <h3 className="card__headline">a weekly pulse</h3>
+          <h2 className="card__headline">a weekly pulse</h2>
           <div className="card__moment card__moment--bars">
             <div className="rhythm-bars" aria-hidden="true">
               {barHeights(card.spark).map((h, i) => (
@@ -44,7 +44,7 @@ export default function CardBody({ card }: { card: CardData }) {
     case "streaks":
       return (
         <div className="card__body">
-          <h3 className="card__headline">the long run</h3>
+          <h2 className="card__headline">the long run</h2>
           <p className="card__moment">
             {formatCount(card.longest)}
             <span className="card__moment-unit">days in a row</span>
@@ -58,7 +58,7 @@ export default function CardBody({ card }: { card: CardData }) {
     case "mix":
       return (
         <div className="card__body">
-          <h3 className="card__headline">where you showed up</h3>
+          <h2 className="card__headline">where you showed up</h2>
           <div className="card__moment card__moment--bars">
             <div className="mix-bar" aria-hidden="true">
               {card.channels.map((c, i) => (
@@ -79,7 +79,7 @@ export default function CardBody({ card }: { card: CardData }) {
     case "peaks":
       return (
         <div className="card__body">
-          <h3 className="card__headline">the high point</h3>
+          <h2 className="card__headline">the high point</h2>
           <p className="card__moment">
             {formatCount(card.bestMonthPosts)}
             <span className="card__moment-unit">posts in {card.bestMonth}</span>
@@ -90,7 +90,7 @@ export default function CardBody({ card }: { card: CardData }) {
     case "persona":
       return (
         <div className="card__body">
-          <h3 className="card__headline card__headline--name">{card.name}</h3>
+          <h2 className="card__headline card__headline--name">{card.name}</h2>
           <p className="card__caption">{card.origin}</p>
         </div>
       );
@@ -103,7 +103,7 @@ export default function CardBody({ card }: { card: CardData }) {
       ];
       return (
         <div className="card__body">
-          <h3 className="card__headline">the year, in four numbers</h3>
+          <h2 className="card__headline">the year, in four numbers</h2>
           <dl className="totals-grid card__moment card__moment--grid">
             {rows.map((row) => (
               <div key={row.label} className="totals-cell">

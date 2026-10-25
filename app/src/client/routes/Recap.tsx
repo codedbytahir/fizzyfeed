@@ -13,6 +13,7 @@ import ErrorState from "../components/ErrorState";
 import Loading from "../components/Loading";
 import ChannelPicker from "../components/ChannelPicker";
 import RecapResults from "../components/RecapResults";
+import { BRAND_NAME } from "@shared/brand";
 
 const LIMIT = 500;
 
@@ -23,6 +24,10 @@ function withReturnTo(url: string): string {
 /** Step 5 — the only write in the product (spec 06 §2): preview, edit, consent by click. */
 export default function Recap() {
   const preview = useApi<RecapPreview>("/api/recap/preview");
+
+  useEffect(() => {
+    document.title = `${BRAND_NAME} — queue the recap`;
+  }, []);
 
   const [text, setText] = useState<string | null>(null);
   const [checked, setChecked] = useState<Set<string>>(new Set());
@@ -127,10 +132,15 @@ export default function Recap() {
         value={text}
         maxLength={LIMIT}
         rows={7}
+        aria-label="recap text"
+        aria-describedby="recap-charcount"
         onChange={(e) => setText(e.target.value.slice(0, LIMIT))}
       />
       <div className="charcount-row">
-        <span className={text.length > LIMIT - 20 ? "charcount charcount--warn" : "charcount"}>
+        <span
+          id="recap-charcount"
+          className={text.length > LIMIT - 20 ? "charcount charcount--warn" : "charcount"}
+        >
           {text.length} / {LIMIT}
         </span>
         <span className="charcount-hint">enforced here and again on the server.</span>

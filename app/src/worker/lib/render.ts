@@ -139,18 +139,50 @@ const LABEL: SatoriStyle = {
   marginTop: 14,
 };
 
+/**
+ * AA text panel (ink-950 @ 70%) — the fixed gradients are brand law, but white
+ * text on their bright stops fails hard (worst: white70 on spark-500 = 1.06:1).
+ * A 70% ink-950 panel restores AA without touching the gradients; worst case
+ * (spark-500): white70 4.95:1, white85 6.42:1, solid white 8.14:1. Mirrors the
+ * --card-scrim panel in client/styles/cards.css.
+ */
+const TEXT_PANEL = "rgba(5,7,14,0.7)"; /* token: ink-950 @ 70% */
+const PANEL_RADIUS = 14;
+const PANEL_PADDING = "14px 22px";
+
 function footer(): SatoriTree {
-  return el("div", { display: "flex", alignItems: "center" }, [
-    el("div", { width: 24, height: 24, borderRadius: 24, backgroundColor: DOT_WHITE }),
-    txt(
-      { fontFamily: DISPLAY, fontWeight: 700, fontSize: 26, color: TEXT_SOLID, marginLeft: 12 },
-      BRAND_NAME
-    ),
-  ]);
+  return el(
+    "div",
+    {
+      display: "flex",
+      alignItems: "center",
+      backgroundColor: TEXT_PANEL,
+      borderRadius: PANEL_RADIUS,
+      padding: PANEL_PADDING,
+      alignSelf: "flex-start",
+    },
+    [
+      el("div", { width: 24, height: 24, borderRadius: 24, backgroundColor: DOT_WHITE }),
+      txt(
+        { fontFamily: DISPLAY, fontWeight: 700, fontSize: 26, color: TEXT_SOLID, marginLeft: 12 },
+        BRAND_NAME
+      ),
+    ]
+  );
 }
 
 function midColumn(nodes: SatoriTree[]): SatoriTree {
-  return el("div", { display: "flex", flexDirection: "column" }, nodes);
+  return el(
+    "div",
+    {
+      display: "flex",
+      flexDirection: "column",
+      backgroundColor: TEXT_PANEL,
+      borderRadius: RADIUS_CARD,
+      padding: 28,
+    },
+    nodes
+  );
 }
 
 /** Minimal-height white bars, bottom-aligned (rhythm spark / peaks microbars). */
@@ -187,7 +219,20 @@ function cardShell(gradient: CardGradient, overlineText: string, mid: SatoriTree
           padding: MARGIN,
           overflow: "hidden",
         },
-        [txt(OVERLINE, overlineText), mid, footer()]
+        [
+          txt(
+            {
+              ...OVERLINE,
+              backgroundColor: TEXT_PANEL,
+              borderRadius: PANEL_RADIUS,
+              padding: PANEL_PADDING,
+              alignSelf: "flex-start",
+            },
+            overlineText
+          ),
+          mid,
+          footer(),
+        ]
       ),
     ]
   );

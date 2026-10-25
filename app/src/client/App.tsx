@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { BRAND_NAME } from "@shared/brand";
 import { MeProvider } from "./lib/me";
@@ -30,6 +31,9 @@ export default function App() {
 }
 
 function NotFound() {
+  useEffect(() => {
+    document.title = `${BRAND_NAME} — page not found`;
+  }, []);
   return (
     <main className="page">
       <h1 className="headline">page not found</h1>

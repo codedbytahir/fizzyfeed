@@ -33,7 +33,7 @@ export default function Shell() {
       <a className="skip-link" href="#main">
         skip to content
       </a>
-      <header className="app-nav">
+      <nav className="app-nav" aria-label="primary">
         <div className="app-nav__inner">
           <Link to="/" className="wordmark" aria-label={`${BRAND_NAME} — home`}>
             {BRAND_NAME}
@@ -63,7 +63,7 @@ export default function Shell() {
             )}
           </div>
         </div>
-      </header>
+      </nav>
       <main id="main" className="app-main">
         <Outlet />
       </main>

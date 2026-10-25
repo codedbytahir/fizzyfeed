@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMe } from "../lib/me";
+import { BRAND_NAME } from "@shared/brand";
 
 /**
  * Step 1 — connect (T13). Full navigation to the oauth endpoint, never a
@@ -9,6 +10,10 @@ import { useMe } from "../lib/me";
 export default function Connect() {
   const me = useMe();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.title = `${BRAND_NAME} — your year in posts`;
+  }, []);
 
   useEffect(() => {
     if (me.state.status === "ready" && me.state.me.connected) {

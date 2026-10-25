@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import type { GreatestHit } from "@shared/types";
 import { apiFetch, postJson, toFailure, useApi } from "../lib/api";
+import { BRAND_NAME } from "@shared/brand";
 import ErrorState from "../components/ErrorState";
 import Loading from "../components/Loading";
 import HitList from "../components/HitList";
@@ -27,6 +28,10 @@ function formatDate(unixSeconds: number): string {
 /** Optional chapter (spec 07 §2): absent is a fine state; deck is complete without it. */
 export default function GreatestHits() {
   const status = useApi<GhStatus>("/api/greatest-hits/status");
+
+  useEffect(() => {
+    document.title = `${BRAND_NAME} — greatest hits`;
+  }, []);
 
   const [token, setToken] = useState("");
   const [enableBusy, setEnableBusy] = useState(false);

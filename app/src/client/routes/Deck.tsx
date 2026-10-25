@@ -19,7 +19,7 @@ function PersonaPlaceholder() {
       <div className="card__face card__face--ghost">
         <p className="card__overline">chapter 06 — alter ego</p>
         <div className="card__body">
-          <h3 className="card__headline">naming you…</h3>
+          <h2 className="card__headline">naming you…</h2>
           <p className="card__caption">
             this slot waits for your alter ego — the deck is complete either way.
           </p>
@@ -42,6 +42,10 @@ export default function Deck() {
   const navigate = useNavigate();
   const deck = useApi<DeckData>("/api/deck");
   const reload = deck.reload;
+
+  useEffect(() => {
+    document.title = `${BRAND_NAME} — your deck`;
+  }, []);
 
   const [status, setStatus] = useState<YearizeStatus | null>(null);
   const [note, setNote] = useState<string | null>(null);

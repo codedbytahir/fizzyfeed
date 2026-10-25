@@ -231,7 +231,8 @@ body {
 }
 
 .linkbtn:disabled {
-  opacity: 0.5;
+  /* effective ink-300 at 65% ≥3:1 on ink-950 (0.5 was 2.82:1) */
+  opacity: 0.65;
   cursor: default;
 }
 
@@ -289,7 +290,8 @@ body {
 
 .btn--ghost {
   background: transparent;
-  border-color: var(--ink-700);
+  /* button boundary ≥3:1 vs ink-950 (WCAG 1.4.11) — ink-700 was 1.39:1 */
+  border-color: color-mix(in srgb, var(--ink-400) 50%, var(--ink-500));
   color: var(--ink-200);
 }
 
@@ -481,7 +483,8 @@ body {
 .textarea {
   width: 100%;
   background: var(--ink-900);
-  border: 1px solid var(--ink-700);
+  /* field boundary ≥3:1 vs ink-900 (WCAG 1.4.11) — ink-700 was 1.33:1 */
+  border: 1px solid color-mix(in srgb, var(--ink-400) 75%, var(--ink-700));
   color: var(--ink-50);
   border-radius: var(--radius-md);
   padding: 12px 14px;
@@ -489,7 +492,8 @@ body {
 }
 
 .input::placeholder {
-  color: var(--ink-500);
+  /* placeholder text ≥4.5:1 vs ink-900 (ink-500 was 2.67:1) */
+  color: color-mix(in srgb, var(--ink-300) 15%, var(--ink-400));
 }
 
 .textarea {
@@ -558,7 +562,8 @@ body {
   height: 18px;
   flex: none;
   border-radius: 5px;
-  border: 1px solid var(--ink-500);
+  /* control boundary ≥3:1 vs the ink-900 row (WCAG 1.4.11) — ink-500 was 2.67:1 */
+  border: 1px solid var(--ink-400);
   background: var(--ink-950);
   display: grid;
   place-items: center;

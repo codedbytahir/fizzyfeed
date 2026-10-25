@@ -1,6 +1,14 @@
 /* deck cards + yearline + reveal — the chroma layer.
    60/30/10 (BRAND-GUIDELINES §4.2): gradients live here, nowhere else. */
 
+/* Text panel: ink-950 at 70% behind white text. The fixed gradients are brand
+   law (never recolored) — on their bright stops white70 dips to ~1.1:1, so the
+   scrim carries AA instead: worst case (spark-500) white70 4.95:1, white85
+   6.42:1, solid white 8.14:1. Mirrored in worker/lib/render.ts for the PNGs. */
+:root {
+  --card-scrim: color-mix(in srgb, var(--ink-950) 70%, transparent);
+}
+
 .deck-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -33,15 +41,21 @@
   letter-spacing: 0.12em;
   text-transform: lowercase;
   color: color-mix(in srgb, var(--ink-50) 70%, transparent);
+  align-self: flex-start;
+  background: var(--card-scrim);
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
 }
 
 .card__body {
-  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 16px;
+  margin-top: auto; /* hug the text panel, pinned to the face bottom */
+  background: var(--card-scrim);
+  padding: 20px 22px;
+  border-radius: var(--radius-md);
 }
 
 .card__headline {
@@ -107,7 +121,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 18px;
+  margin-top: 14px;
+  align-self: flex-start;
+  background: var(--card-scrim);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
 }
 
 .card__dot {
@@ -198,8 +216,17 @@
   box-shadow: none;
 }
 
+/* ghost face sits on ink-900 — no scrim panels there, text already passes */
+.card__face--ghost .card__overline,
+.card__face--ghost .card__body,
+.card__face--ghost .card__footer {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
 .card__face--ghost .card__overline {
-  color: var(--ink-400);
+  color: var(--ink-300); /* 8.04:1 on ink-900 (ink-400 was 4.46) */
 }
 
 .card__face--ghost .card__headline {
@@ -258,7 +285,7 @@
   margin: 10px 0 0;
   font: 500 12px var(--font-mono);
   letter-spacing: 0.06em;
-  color: var(--ink-400);
+  color: var(--ink-300); /* 8.04:1 on ink-900 (ink-400 was 4.46) */
   font-variant-numeric: tabular-nums;
 }
 
