@@ -179,15 +179,9 @@ recap.post("/queue", async (c) => {
       count = 0; // unreadable counter → treat the day as fresh
     }
   }
-  if (count >= DAILY_QUEUE_LIMIT) {
-    return jsonError(c, 429, "rate_limited", "recap queue limit reached for today");
-  }
-  await c.env.CACHE.put(rateKey, JSON.stringify({ count: count + 1 }), {
-    expirationTtl: RATE_LIMIT_TTL,
-  });
-
-  // 7 · write-scope gate → OAuth upgrade hint (spec 06 §5, spec 02 §2; the
-  // /api/auth/buffer/upgrade endpoint itself is owned by routes/auth.ts)
+  // 7 · write-scope gate FIRST (critic r1: a scope-less user must never burn
+  // daily quota — the 5/day counter only counts queueable attempts). The
+  // /api/auth/buffer/upgrade endpoint is owned by routes/auth.ts (spec 06 §5).
   const scopes = await readScopes(c.env, userId);
   if (!hasWriteScope(scopes)) {
     return c.json(
@@ -201,6 +195,15 @@ recap.post("/queue", async (c) => {
       403
     );
   }
+
+  // 6 · rate limit: 5 queue operations/user/day (spec 06 §3) — checked after
+  // the scope gate so upgrade-required attempts don't consume the budget.
+  if (count >= DAILY_QUEUE_LIMIT) {
+    return jsonError(c, 429, "rate_limited", "recap queue limit reached for today");
+  }
+  await c.env.CACHE.put(rateKey, JSON.stringify({ count: count + 1 }), {
+    expirationTtl: RATE_LIMIT_TTL,
+  });
 
   // 8 · execute: one listChannels, then sequential per-channel creates.
   // Partial failure stays partial (spec 06 §3: no all-or-nothing).

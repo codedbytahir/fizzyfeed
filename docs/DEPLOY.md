@@ -44,8 +44,8 @@ it in. `npm run dev` serves everything on `http://localhost:8787`.
 ## 3 · First deploy
 
 ```bash
-npm run deploy          # typecheck + build + wrangler deploy
 npx wrangler d1 migrations apply fizzyfeed --remote
+npm run deploy          # typecheck + build + wrangler deploy
 ```
 
 Verify: `curl https://<your-worker>.workers.dev/api/health` → `{"ok":true,...}`.

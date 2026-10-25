@@ -168,7 +168,8 @@ export default function Deck() {
           <div className="yearline-wrap">
             <Yearline daily={deck.data.stats.daily} year={deck.data.stats.year} />
             <p className="yearline-caption">
-              {formatCount(deck.data.stats.totals.activeDays)} active days · every one real
+              {formatCount(deck.data.stats.totals.activeDays)} active days · every one real ·
+              hours are UTC (your channels are global)
             </p>
           </div>
         )}

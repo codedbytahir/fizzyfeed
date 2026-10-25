@@ -206,6 +206,8 @@ auth.post("/revoke", async (c) => {
     c.env.DB.prepare("DELETE FROM sync_state WHERE user_id = ?").bind(userId),
     c.env.DB.prepare("DELETE FROM metrics_tokens WHERE user_id = ?").bind(userId),
   ]);
+  // critic r1: purge the greatest-hits cache too — spec 07 revoke semantics
+  await c.env.CACHE.delete(`gh:${userId}`);
   clearSessionCookie(c);
   console.log(`buffer disconnect ok user=${userId}`);
   return c.body(null, 204);
