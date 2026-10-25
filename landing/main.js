@@ -36,9 +36,22 @@
       a.href = REPO + "/blob/main/" + a.getAttribute("href").replace(/^\.\.\//, "");
     });
   } else {
-    document.querySelectorAll("[data-connect]").forEach(function (a) {
-      a.setAttribute("href", "/api/auth/buffer/login");
-    });
+    // app backend may not be deployed behind this copy of the landing page —
+    // probe the login endpoint once; if it's not live, CTAs fall back to the repo
+    // (never a 404). the probe never throws into the page.
+    var fallBackToRepo = function () {
+      document.querySelectorAll("[data-connect]").forEach(function (a) { a.href = REPO; });
+      document.querySelectorAll('a[href^="../"]').forEach(function (a) {
+        a.href = REPO + "/blob/main/" + a.getAttribute("href").replace(/^\.\.\//, "");
+      });
+    };
+    var probe = false;
+    try {
+      probe = fetch("/api/auth/buffer/login", { method: "HEAD" })
+        .then(function (r) { return r.ok; })
+        .catch(function () { return false; });
+    } catch (e) { probe = false; }
+    Promise.resolve(probe).then(function (ok) { if (!ok) fallBackToRepo(); });
   }
 
   // CPU guard: pause CSS animation loops for modules scrolled out of view
@@ -78,7 +91,47 @@
           rio.unobserve(e.target);
         }
       });
-    }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+    }, { threshold: 0.1, rootMargin: "0px 0px 0px 0px" });
     reveals.forEach(function (el) { rio.observe(el); });
+    // force-reveal fallback, two layers:
+    // 1. capture signature — full-page screenshot tools (captureBeyondViewport) never
+    //    scroll and never resize the viewport; some resize it to page height. either
+    //    way, if the viewport ever covers most of the document, reveal everything now.
+    // 2. time sweep at 10s — humans trigger reveals by scrolling long before this;
+    //    anything still hidden by then is only reachable by bots/crawlers/captures.
+    var sweepAll = function (freeze) {
+      reveals.forEach(function (el) {
+        if (!el.classList.contains("is-in")) {
+          el.classList.add("is-in");
+          if (rio) rio.unobserve(el);
+        }
+      });
+      // tell loop modules to hold their composed frame for the render (fx-04/fx-06 listen)
+      if (typeof CustomEvent === "function") {
+        document.querySelectorAll(".fx-yearline-draw, .fx-queue-recap").forEach(function (m) {
+          m.dispatchEvent(new CustomEvent("fx-capture-static", { detail: { freeze: !!freeze } }));
+        });
+      }
+    };
+    var lastH = window.innerHeight;
+    var lastW = window.innerWidth;
+    var lastOrientation = 0;
+    window.addEventListener("orientationchange", function () {
+      lastOrientation = Date.now();
+    }, { passive: true });
+    window.addEventListener("resize", function () {
+      var h = window.innerHeight, w = window.innerWidth;
+      var doc = document.documentElement.scrollHeight;
+      var captureSignature = h >= doc * 0.8;
+      var rotation = Date.now() - lastOrientation < 400;
+      // iOS Safari can fire resize before orientationchange — also treat an aspect
+      // flip (one axis grows while the other shrinks) as a rotation, not a capture
+      var aspectFlip = (h > lastH * 1.4 && w < lastW * 0.8) ||
+                       (w > lastW * 1.4 && h < lastH * 0.8);
+      if (captureSignature) { sweepAll(true); }
+      else if (h > lastH * 1.6 && !rotation && !aspectFlip) { sweepAll(false); }
+      lastH = h; lastW = w;
+    }, { passive: true });
+    setTimeout(function () { sweepAll(false); }, 10000);
   }
 })();

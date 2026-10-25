@@ -22,9 +22,9 @@ graphify-out/
 
 # impeccable engine binary — platform-specific, self-downloads on first run
 .claude/skills/impeccable/scripts/bin/
-
 # critic review output
 landing/_critic/
+critic/shots/
 
 # test/screenshot output dirs
 scripts/_benchmark/

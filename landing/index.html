@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>fizzyfeed — your year in posts</title>
-<meta name="description" content="connect buffer, and twelve months of publishing become a deck of seven story cards, an ai-named alter ego, and a recap post queued to every channel — in one click.">
+<meta name="description" content="connect buffer, and twelve months of publishing become a deck of seven story cards, an ai-named alter ego, and a recap post queued to every channel. you approve; it publishes.">
 <link rel="canonical" href="https://codedbytahir.github.io/fizzyfeed/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://codedbytahir.github.io/fizzyfeed/">
@@ -22,7 +22,7 @@
   "@type": "WebSite",
   "name": "fizzyfeed",
   "url": "https://codedbytahir.github.io/fizzyfeed/",
-  "description": "connect buffer, and twelve months of publishing become a deck of seven story cards, an ai-named alter ego, and a recap post queued to every channel — in one click.",
+  "description": "connect buffer, and twelve months of publishing become a deck of seven story cards, an ai-named alter ego, and a recap post queued to every channel. you approve; it publishes.",
   "inLanguage": "en",
   "about": "your year in posts — a buffer commit 2026 hackathon project",
   "publisher": { "@type": "Organization", "name": "fizzyfeed", "url": "https://github.com/codedbytahir/fizzyfeed" }
@@ -450,7 +450,7 @@
     --ink-300:#9AA8C4; --ink-200:#C6D0E4; --ink-50:#F5F8FE; --white:#FFFFFF;
 
     position:relative; overflow:hidden; box-sizing:border-box;
-    width:100%; max-width:1200px;
+    width:100%; max-width:1272px;
     padding:30px 56px 24px;
     background:
       radial-gradient(720px 320px at 88% -20%, rgb(10 92 255 / .12), transparent 62%),
@@ -466,6 +466,10 @@
   .fx-yearline-draw__tagline{
     font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;
     letter-spacing:.01em;color:var(--ink-200);
+  }
+  .fx-yearline-draw__sample{
+    margin-left:auto;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:11px;
+    letter-spacing:.06em;color:var(--ink-300);
   }
 
   .fx-yearline-draw__anim{transition:opacity .45s ease}
@@ -543,7 +547,11 @@
     .fx-yearline-draw{padding:22px 20px 16px}
     .fx-yearline-draw__stats{grid-template-columns:repeat(2,1fr);gap:18px 16px;margin-bottom:14px}
     .fx-yearline-draw__value{font-size:32px}
-    .fx-yearline-draw__head{margin-bottom:12px}
+    .fx-yearline-draw__head{margin-bottom:12px;flex-wrap:wrap;row-gap:4px}
+    .fx-yearline-draw__sample{margin-left:0;width:100%;font-size:10.5px}
+  }
+  @media (max-width:360px){
+    .fx-yearline-draw__value{font-size:28px}
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -1279,7 +1287,7 @@
     <nav aria-label="sections">
       <a href="#how">how it works</a>
       <a href="#chapters">chapters</a>
-      <a href="#persona">alter ego</a>
+      <a href="#persona">posting shadow</a>
     </nav>
     <a class="btn small" data-connect href="/api/auth/buffer/login">connect buffer</a>
   </div>
@@ -1292,7 +1300,8 @@
       <span class="overline reveal">built for buffer commit 2026</span>
       <h1 id="hero-h" class="reveal">your year in posts.</h1>
       <p class="sub reveal">connect buffer, and twelve months of publishing become a deck of seven story
-      cards, an ai-named posting alter ego, and a recap post queued to every channel — in one click.</p>
+      cards, an ai-named posting alter ego, and a recap post queued to every channel.
+      you approve; it publishes.</p>
       <div class="hero-cta reveal">
         <a class="btn" data-connect href="/api/auth/buffer/login">connect buffer</a>
         <a class="btn ghost" href="#chapters">see the deck</a>
@@ -1300,6 +1309,7 @@
       <p class="hero-note reveal"><b>read-only</b> oauth by default · one-click revoke · honest numbers only</p>
     </div>
     <div class="wrap hero-fx">
+<span class="hero-ghost" aria-hidden="true">2026</span>
 <div class="fx fx-hero-deck" data-brand-name="fizzyfeed" role="img" aria-label="an animated loop: a bright line draws across a dark grid, twelve month ticks light up along it, then the line folds into a fan of three gradient cards whose white spark pops and the deck sways gently">
   <div class="fx-hero-deck__stage">
 
@@ -1522,11 +1532,14 @@
         <p class="sub reveal">the chart is the aesthetic. we draw your actual year — real days, real
         streaks, real quiet months. nothing inflated, nothing invented.</p>
       </div>
+    </div>
+    <div class="bleed">
 <div class="fx fx-yearline-draw" data-brand-name="fizzyfeed" role="img" aria-label="Animated stat band: a year of posting activity draws left to right across twelve months while counters rise to 5,214 posts, 389,102 words, a 141-day streak and 12 channels, closing with a lime glow pulse.">
   <div class="fx-yearline-draw__frame">
     <div class="fx-yearline-draw__head">
       <span class="fx-yearline-draw__sparkdot" aria-hidden="true"></span>
-      <span class="fx-yearline-draw__tagline">your rhythm, honestly</span>
+      <span class="fx-yearline-draw__tagline">twelve months, one line</span>
+      <span class="fx-yearline-draw__sample">sample year — yours replaces this</span>
     </div>
 
     <div class="fx-yearline-draw__anim">
@@ -1621,7 +1634,7 @@
 </div>
     </div>
 <script type="module">
-/* fx-04 yearline-draw — module script, no globals, no network except the torph import below. */
+/* fx-04 yearline-draw — module script, no globals, no network (torph is vendored at ./vendor/torph.mjs). */
 const CYCLE = 16000;    // full loop
 const DRAW = 10800;     // left→right draw window (ease-out)
 const OUT_AT = 13200;   // dissolve begins (≈2s hold after the dot lands)
@@ -1702,7 +1715,8 @@ function cumArea(v) {
 }
 
 /* ---- torph loader: dynamic import in try/catch, never blocks or breaks the loop ----
-   (esm.sh/torph exports the vanilla class as TextMorph; inspected at runtime with
+   (vendored locally at vendor/torph.mjs — torph@0.1.3 from esm.sh, no third-party CDN
+   dependency. Exports the vanilla class as TextMorph; inspected at runtime with
    fallbacks for other shapes. If it fails or times out we simply keep the rAF count-up.) */
 let TextMorphCtor = null, torphSettled = false, torphStarted = false;
 const loadTorph = () => {
@@ -1710,7 +1724,7 @@ const loadTorph = () => {
   torphStarted = true;
   try {
     Promise.race([
-      import('https://esm.sh/torph'),
+      import('./vendor/torph.mjs'),
       new Promise(res => setTimeout(() => res(null), 2500)),
     ]).then(m => {
       TextMorphCtor = (m && (m.TextMorph || m.textMorph
@@ -1930,6 +1944,25 @@ function initModule(root) {
   toStartState();
   didPrepare = true; /* the first cycle starts from the boot reset, not the wrap handler */
   setActive(true);
+
+  /* capture/print safety: a static render can land in the dissolve window (~2.7s of
+     every 16s loop) and capture a blank band. on fx-capture-static (main.js capture
+     signature) or beforeprint, hold the composed final frame instead. freeze=true
+     also stops the loop — used when a screenshot is imminent (huge viewport). */
+  const snapToFinal = freeze => {
+    if (freeze) setActive(false);
+    root.classList.remove('is-out');
+    for (const path of paths) path.style.strokeDashoffset = '0';
+    spark.setAttribute('transform', 'translate(' + xOf(N - 1).toFixed(1) + ' ' + yOf(1).toFixed(1) + ')');
+    popThrough(12);
+    spark.classList.add('is-landed');
+    landed = true; outSet = false; didPrepare = true;
+    start = performance.now() - (DRAW + 120); /* park the clock in the landed hold zone */
+    lastCyc = 0;
+    setCounters(FINALS.slice(), true);
+  };
+  root.addEventListener('fx-capture-static', e => snapToFinal(!!(e.detail && e.detail.freeze)));
+  window.addEventListener('beforeprint', () => snapToFinal(false));
 }
 
 document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
@@ -1945,8 +1978,8 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
       <div class="how-grid">
         <div class="steps">
           <div class="step reveal"><span class="n">01</span><div><h3>connect</h3><p>sign in with buffer. read-only by default, tokens encrypted, one-click revoke.</p></div></div>
-          <div class="step reveal"><span class="n">02</span><div><h3>yearize</h3><p>we pull your past 12 months and compute the story — cadence, streaks, channel mix, peaks.</p></div></div>
-          <div class="step reveal"><span class="n">03</span><div><h3>your deck</h3><p>seven story cards render as shareable images in the recap-card palette. built to be screenshotted.</p></div></div>
+          <div class="step reveal step--core"><span class="n">02</span><div><h3>yearize</h3><p>we pull your past 12 months and compute the story — cadence, streaks, channel mix, peaks.</p></div></div>
+          <div class="step reveal"><span class="n">03</span><div><h3>your deck</h3><p>seven story cards render as shareable images in the recap-card palette. screenshot bait, earned.</p></div></div>
         </div>
 <div class="fx fx-feed-to-deck" data-brand-name="fizzyfeed" role="img" aria-label="Eleven monogram channel tiles drift in from the left and right edges and stream toward a central deck hub with slowly turning rings, while seven gradient story cards emerge one by one and float away to the upper right.">
   <svg class="fx-feed-to-deck__svg" viewBox="0 0 1400 700" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -1976,8 +2009,8 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
         <stop offset="1" stop-color="#0A5CFF" stop-opacity="0"/>
       </radialGradient>
       <linearGradient id="fx2Slab" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#070d22"/>
-        <stop offset="1" stop-color="#0c1634"/>
+        <stop offset="0" stop-color="#0A0E1A"/>
+        <stop offset="1" stop-color="#131A2B"/>
       </linearGradient>
       <linearGradient id="fx2Intake" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stop-color="#0A0E1A"/>
@@ -2119,7 +2152,7 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
       <div class="sec-head">
         <span class="overline reveal">the deck</span>
         <h2 id="ch-h" class="reveal">seven chapters.</h2>
-        <p class="sub reveal">one card per moment, led by the brand gradients. the whole year in one sitting — not a dashboard.</p>
+        <p class="sub reveal">one card per moment, led by the brand gradients. read in one sitting — not a dashboard with a party hat.</p>
       </div>
 <div class="fx fx-deck-fan" data-brand-name="fizzyfeed" role="img" aria-label="A deck of seven gradient story cards rests, fans out one by one to reveal the seven chapters of the posting year — each card printed with its chapter illustration in halftone dots — holds, restacks in reverse order, and closes with a small white spark pulse on the top card.">
   <div class="fx-deck-fan__viewport">
@@ -2188,28 +2221,34 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
     </div>
   </div>
 </div>
-      <div class="chapters-grid">
-        <div class="chapter reveal"><span class="cn">01</span><b>kickoff</b><span>where the year started</span></div>
-        <div class="chapter reveal"><span class="cn">02</span><b>rhythm</b><span>best day, favorite hour</span></div>
-        <div class="chapter reveal"><span class="cn">03</span><b>streaks</b><span>the grind you forgot</span></div>
-        <div class="chapter reveal"><span class="cn">04</span><b>the mix</b><span>channels &amp; topics</span></div>
-        <div class="chapter reveal"><span class="cn">05</span><b>peaks</b><span>biggest month, busiest week</span></div>
-        <div class="chapter reveal"><span class="cn">06</span><b>alter ego</b><span>ai-named, data-derived</span></div>
-        <div class="chapter reveal"><span class="cn">07</span><b>the recap</b><span>queue your recap post</span></div>
-        <div class="chapter reveal"><span class="cn">+</span><b>greatest hits</b><span>opt-in real top posts</span></div>
-      </div>
     </div>
+    <div class="bleed">
+        <div class="chapters-panel">
+          <div class="chapters-grid">
+            <div class="chapter reveal"><span class="cn">01</span><b>kickoff</b><span>where the year started</span></div>
+            <div class="chapter reveal"><span class="cn">02</span><b>rhythm</b><span>best day, favorite hour</span></div>
+            <div class="chapter reveal"><span class="cn">03</span><b>streaks</b><span>the grind you forgot</span></div>
+            <div class="chapter reveal"><span class="cn">04</span><b>the mix</b><span>channels &amp; topics</span></div>
+            <div class="chapter reveal"><span class="cn">05</span><b>peaks</b><span>biggest month, busiest week</span></div>
+            <div class="chapter reveal"><span class="cn">06</span><b>alter ego</b><span>ai-named, data-derived</span></div>
+            <div class="chapter reveal"><span class="cn">07</span><b>the recap</b><span>queue your recap post</span></div>
+            <div class="chapter reveal chapter--plus"><span class="cn">+</span><b>greatest hits</b><span>opt-in real top posts</span></div>
+          </div>
+        </div>
+      </div>
 
   </section>
 
   <section id="persona" aria-labelledby="pe-h">
     <div class="wrap">
       <div class="sec-head">
-        <span class="overline reveal">named by the numbers</span>
-        <h2 id="pe-h" class="reveal">an alter ego, earned.</h2>
-        <p class="sub reveal">ai studies your real patterns — the hours, the streaks, the channels you fed —
-        and names the posting persona you became this year. cross-check it: the numbers agree.</p>
+        <span class="overline reveal">the naming engine</span>
+        <h2 id="pe-h" class="reveal">meet your posting shadow.</h2>
+        <p class="sub reveal">ai reads your real patterns — the hours, the streaks, the channels you fed — and
+        names the persona you became. the numbers agree.</p>
       </div>
+    </div>
+    <div class="bleed">
 <!-- MODULE ROOT: this whole div is what the landing page embeds -->
 <div class="fx fx-persona-morph" data-brand-name="fizzyfeed" role="img"
      aria-label="a gradient card breathing softly while the posting persona name morphs between four alter egos and a thin white yearline draws along its base">
@@ -2223,7 +2262,7 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
       <div class="fx-persona-morph__name" data-fx-name>the midnight archivist</div>
 
       <div class="fx-persona-morph__story-stack">
-        <p class="fx-persona-morph__story fx-persona-morph__story--active">posted 214 nights after 11pm — consistency masquerading as insomnia</p>
+        <p class="fx-persona-morph__story fx-persona-morph__story--active">214 nights after 11pm — insomnia, but consistent</p>
         <p class="fx-persona-morph__story">49-post march, zero missed fridays</p>
         <p class="fx-persona-morph__story">shows up twice a week, every week, since january</p>
         <p class="fx-persona-morph__story">slow posts, long game, 12 months of compound interest</p>
@@ -2249,7 +2288,7 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
 /* fx-05 persona-morph — module script. No globals; loops driven by rAF clock + CSS. */
 (() => {
   const PERSONAS = [
-    { name: 'the midnight archivist', story: 'posted 214 nights after 11pm — consistency masquerading as insomnia' },
+    { name: 'the midnight archivist', story: '214 nights after 11pm — insomnia, but consistent' },
     { name: 'the quiet storm',        story: '49-post march, zero missed fridays' },
     { name: 'the tuesday regular',    story: 'shows up twice a week, every week, since january' },
     { name: 'the long-game builder',  story: 'slow posts, long game, 12 months of compound interest' }
@@ -2483,7 +2522,7 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
     /* upgrade to torph when it loads (first morph usually lands after this) */
     (async () => {
       try {
-        const mod = await import('https://esm.sh/torph');
+        const mod = await import('./vendor/torph.mjs');
         const Ctor = mod && (mod.TextMorph || (mod.default && mod.default.TextMorph));
         if (typeof Ctor !== 'function') throw new Error('torph: TextMorph export missing');
         engine.finishNow();
@@ -2622,9 +2661,9 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
     <div class="wrap">
       <div class="sec-head sec-head--center">
         <span class="overline reveal">the real action</span>
-        <h2 id="cta-h" class="reveal">one click, queued everywhere.</h2>
-        <p class="sub reveal">the recap post is composed from your year, previewed, and queued through buffer to
-        every channel. you approve; it publishes.</p>
+        <h2 id="cta-h" class="reveal">composed once. queued everywhere.</h2>
+        <p class="sub reveal">a tool, not a toy: the recap post is composed from your
+        year, previewed, and queued to every channel. you approve; it publishes.</p>
       </div>
       <div class="cta-box reveal">
 <!-- MODULE ROOT: this whole div is what the landing page embeds -->
@@ -2659,7 +2698,7 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
         <div class="fx-queue-recap__meta">
           <span class="fx-queue-recap__meta-dot"></span>
           <span class="fx-queue-recap__meta-label">new post</span>
-          <span class="fx-queue-recap__meta-tag">draft</span>
+          <span class="fx-queue-recap__meta-tag">draft · sample year</span>
         </div>
         <p class="fx-queue-recap__line fx-queue-recap__line--head"><span class="fx-queue-recap__type" data-type="head">your year in posts.</span><span class="fx-queue-recap__caret fx-queue-recap__caret--head" data-caret="head"></span></p>
         <div class="fx-queue-recap__rule"></div>
@@ -2765,7 +2804,7 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
       let morphs = null;
       (async () => {
         try {
-          const m = await import('https://esm.sh/torph');
+          const m = await import('./vendor/torph.mjs');
           if (!m || typeof m.TextMorph !== 'function') return;
           const next = {};
           for (const key in LINES) {
@@ -2953,6 +2992,18 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
       const rmQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
       let staticMode = rmQuery.matches;
 
+      /* capture/print safety: hold the composed frame for static renders (card + typed
+         lines + 7 checks — a state the live loop never reaches), pause, and re-anchor
+         the clock at t=13.6 — a cardless live state, all checks landed, pre-reset — so
+         the composed→live handoff never hard-cuts the focal card. */
+      root.addEventListener('fx-capture-static', () => {
+        renderStatic();
+        pauseLoop();
+        lastT = 13.85; /* pulse done (13.8), chip reset not yet (13.9) — no glow blip on resume */
+        t0 = performance.now() - lastT * 1000;
+        root.classList.remove('is-static'); /* inline composed styles stay; the class must not */
+      });
+
       function renderStatic() {
         for (const key in LINES) {
           const L = LINES[key];
@@ -3004,22 +3055,27 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
         running = false;
       }
       function resumeLoop() {
+        root.classList.remove('is-static'); /* a capture freeze must not mute the live loop */
         if (running || staticMode) return;
         running = true;
         t0 = performance.now() - lastT * 1000;
+        /* soften the composed→live handoff: the parked frame shows the recap card, the
+           re-anchored live state may not — fade rather than hard-cut the focal element */
+        card.style.transition = 'opacity .3s ease, transform .3s ease';
+        content.style.transition = 'opacity .3s ease';
+        setTimeout(() => { card.style.transition = ''; content.style.transition = ''; }, 450);
         rafId = requestAnimationFrame(frame);
       }
 
-      /* ---------- visibility (landing orchestrator hooks data-fx-state) ---------- */
+      /* ---------- visibility (main.js owns data-fx-state; this IO only drives the
+         module's own rAF loop + is-paused class — never a second writer) ---------- */
       if ('IntersectionObserver' in window) {
         const io = new IntersectionObserver(entries => {
           for (const en of entries) {
             if (en.isIntersecting && !staticMode) {
-              root.dataset.fxState = 'live';
               root.classList.remove('is-paused');
               resumeLoop();
             } else {
-              root.dataset.fxState = 'idle';
               root.classList.add('is-paused');
               pauseLoop();
             }
@@ -3027,7 +3083,6 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
         }, { threshold: 0.15 });
         io.observe(root);
       } else {
-        root.dataset.fxState = 'live';
         resumeLoop();
       }
 

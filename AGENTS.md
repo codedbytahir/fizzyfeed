@@ -78,6 +78,10 @@ app/                        ← (future) the product code — scaffold per spec 
    it ships at before calling it done.
 5. **Update state**: set the task to `"done"` with evidence notes; append a short section
    to `worklog.md` (`---` header, Task ID, what changed, risks). Append — never overwrite.
+6. **Critic gate (landing page only)**: after ANY round of landing-page changes, dispatch
+   a fresh Critic subagent whose system prompt is [`critic/CRITIC.md`](critic/CRITIC.md)
+   before committing. Loop: fix → re-critic → fix. Ship only when the Critic reports
+   **≥ 9/10 overall**. Log every score (append-only) in `critic/score-log.md`.
 
 ## 4 · Commands
 
