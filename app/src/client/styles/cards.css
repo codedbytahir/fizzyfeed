@@ -1,0 +1,278 @@
+/* deck cards + yearline + reveal — the chroma layer.
+   60/30/10 (BRAND-GUIDELINES §4.2): gradients live here, nowhere else. */
+
+.deck-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card__face {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-card);
+  padding: 28px;
+  color: var(--ink-50);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.card__overline {
+  margin: 0;
+  font: 500 12px/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  color: color-mix(in srgb, var(--ink-50) 70%, transparent);
+}
+
+.card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.card__headline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: lowercase;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  font-size: clamp(24px, 2.6vw, 32px);
+}
+
+.card__headline--name {
+  font-size: clamp(28px, 3.2vw, 40px);
+}
+
+.card__moment {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(40px, 5vw, 60px);
+  line-height: 1;
+}
+
+.card__moment--md {
+  font-size: clamp(22px, 2.6vw, 30px);
+  line-height: 1.2;
+}
+
+.card__moment--bars,
+.card__moment--grid {
+  font-family: var(--font-sans);
+}
+
+.card__moment-unit {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: color-mix(in srgb, var(--ink-50) 85%, transparent);
+}
+
+.card__dataline {
+  margin: 10px 0 0;
+  font: 500 12px/1.5 var(--font-mono);
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--ink-50) 85%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+.card__caption {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--ink-50) 85%, transparent);
+  max-width: 36ch;
+}
+
+.card__footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.card__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink-50);
+}
+
+.card__brand {
+  font: 700 13px var(--font-display);
+  text-transform: lowercase;
+  letter-spacing: -0.01em;
+  color: color-mix(in srgb, var(--ink-50) 92%, transparent);
+}
+
+/* ── card bodies (spec 04 §2 anchors) ───────────────────────────────────── */
+
+.rhythm-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 84px;
+}
+
+.rhythm-bars span {
+  flex: 1;
+  min-height: 4px;
+  border-radius: 3px 3px 0 0;
+  background: color-mix(in srgb, var(--ink-50) 92%, transparent);
+}
+
+.mix-bar {
+  display: flex;
+  gap: 2px;
+  height: 22px;
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.mix-bar span {
+  height: 100%;
+  background: color-mix(in srgb, var(--ink-50) 92%, transparent);
+}
+
+.mix-bar span:nth-child(2) {
+  opacity: 0.72;
+}
+
+.mix-bar span:nth-child(3) {
+  opacity: 0.52;
+}
+
+.mix-bar span:nth-child(4) {
+  opacity: 0.38;
+}
+
+.mix-bar span:nth-child(5) {
+  opacity: 0.26;
+}
+
+.totals-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 22px;
+  margin: 0;
+}
+
+.totals-cell dt {
+  margin: 0 0 2px;
+  font: 500 11px var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: lowercase;
+  color: color-mix(in srgb, var(--ink-50) 65%, transparent);
+}
+
+.totals-cell dd {
+  margin: 0;
+  font: 500 22px var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── ghost slot: persona pending, quiet and honest ──────────────────────── */
+
+.card__face--ghost {
+  background: var(--ink-900);
+  border: 1px dashed var(--ink-600);
+  box-shadow: none;
+}
+
+.card__face--ghost .card__overline {
+  color: var(--ink-400);
+}
+
+.card__face--ghost .card__headline {
+  color: var(--ink-100);
+}
+
+.card__face--ghost .card__caption {
+  color: var(--ink-300);
+}
+
+.card__dot--ghost {
+  background: var(--ink-500);
+}
+
+.card__brand--ghost {
+  color: var(--ink-300);
+}
+
+/* share row under each card */
+.card__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 4px;
+}
+
+/* ── yearline spark (BRAND-GUIDELINES §3: the recap moment) ─────────────── */
+
+.yearline-wrap {
+  border: 1px solid var(--ink-800);
+  background: var(--ink-900);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px 12px;
+}
+
+.yearline {
+  display: block;
+  width: 100%;
+  height: 64px;
+}
+
+.yearline__base {
+  stroke: var(--ink-700);
+  stroke-width: 1;
+}
+
+.yearline__spark {
+  fill: none;
+  stroke: var(--electric-400);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.yearline-caption {
+  margin: 10px 0 0;
+  font: 500 12px var(--font-mono);
+  letter-spacing: 0.06em;
+  color: var(--ink-400);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── gentle reveal (persona, greatest hits) ─────────────────────────────── */
+
+.reveal-in {
+  opacity: 0;
+  transform: translateY(14px) scale(0.985);
+}
+
+.reveal-in.is-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 500ms var(--ease-out-expo),
+    transform 500ms var(--ease-out-expo);
+}

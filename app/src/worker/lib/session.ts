@@ -58,6 +58,8 @@ export async function slideSession(c: Context<HonoEnv>, userId: string): Promise
 export interface OAuthStatePayload {
   state: string;
   verifier: string;
+  /** Optional post-consent redirect path (upgrade flow, spec 06 §2.3). */
+  returnTo?: string;
 }
 
 export async function setOAuthCookie(

@@ -34,6 +34,9 @@ const auth = new Hono<HonoEnv>();
 // spec 02 §2: login requests read-only scopes only; the write scope is a
 // separate upgrade consent at recap time (spec 06) — never bundled here.
 const LOGIN_SCOPES = "read";
+// upgrade consent requests the write scope alone (spec 02 §2 — separate consent,
+// never bundled into login)
+const UPGRADE_SCOPES = "write";
 
 function bufferClientFrom(env: Env) {
   return createBufferClient({
@@ -66,6 +69,31 @@ auth.get("/buffer/login", async (c) => {
     clientId: c.env.BUFFER_CLIENT_ID,
     redirectUri: c.env.BUFFER_REDIRECT_URI,
     scope: LOGIN_SCOPES,
+    state,
+    codeChallenge: challenge,
+  });
+  return c.redirect(authorizeUrl, 302);
+});
+
+// GET /api/auth/buffer/upgrade → write-scope consent (spec 02 §2, spec 06 §2.3):
+// a SEPARATE consent — the user approves the write scope alone on Buffer's
+// screen; edited recap text is preserved client-side via the returnTo path.
+auth.get("/buffer/upgrade", async (c) => {
+  const userId = await readSessionUserId(c);
+  if (!userId) return c.redirect("/api/auth/buffer/login", 302);
+  const state = randomToken(32);
+  const verifier = randomToken(48);
+  const challenge = bytesToBase64Url(
+    new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier)))
+  );
+  // returnTo must be a local path — no open redirects
+  const raw = c.req.query("returnTo") ?? "/app/recap";
+  const returnTo = raw.startsWith("/") && !raw.startsWith("//") ? raw : "/app/recap";
+  await setOAuthCookie(c, { state, verifier, returnTo });
+  const authorizeUrl = buildAuthorizeUrl({
+    clientId: c.env.BUFFER_CLIENT_ID,
+    redirectUri: c.env.BUFFER_REDIRECT_URI,
+    scope: UPGRADE_SCOPES,
     state,
     codeChallenge: challenge,
   });
@@ -154,7 +182,13 @@ auth.get("/buffer/callback", async (c) => {
     }
   })());
 
-  return c.redirect(`${c.env.APP_ORIGIN}/app`, 302);
+  // upgrade consent returns to the flow that requested it (spec 06 §2.3);
+  // plain logins land on the deck. Path-only values, re-sanitized.
+  const returnTo =
+    oauth.returnTo && oauth.returnTo.startsWith("/") && !oauth.returnTo.startsWith("//")
+      ? oauth.returnTo
+      : "/app";
+  return c.redirect(`${c.env.APP_ORIGIN}${returnTo}`, 302);
 });
 
 // POST /api/auth/logout → 204 (tokens retained so re-login is instant, spec 02 §4)
