@@ -7,7 +7,7 @@
   "rules": [
     {
       "type": "CompiledWasm",
-      "include": ["**/*.wasm"],
+      "globs": ["**/*.wasm"],
       "fallthrough": false
     }
   ],
