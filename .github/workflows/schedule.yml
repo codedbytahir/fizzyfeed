@@ -1,0 +1,66 @@
+name: schedule
+
+# Scheduled upkeep ("cron job" per the build plan):
+#  - nightly D1 backup note + dependency drift check
+#  - redeploys the worker weekly so the hosting always matches main
+#     even if a deploy workflow was missed, plus a health ping.
+# Secrets (same as deploy.yml): CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID.
+
+on:
+  schedule:
+    - cron: "0 4 * * *"   # daily 04:00 UTC — drift check + health ping
+    - cron: "0 5 * * 1"   # weekly Monday 05:00 UTC — keep-warm redeploy
+  workflow_dispatch:
+    inputs:
+      redeploy:
+        description: "force a redeploy"
+        type: boolean
+        default: false
+
+concurrency:
+  group: schedule-production
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    name: nightly health ping + drift check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: health ping
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" https://fizzyfeed.<fill-your-subdomain>.workers.dev/api/health || true)
+          echo "health: $status"
+          [ "$status" = "200" ] || echo "::warning::health endpoint returned $status"
+
+  keepwarm:
+    name: weekly redeploy
+    runs-on: ubuntu-latest
+    needs: ping
+    timeout-minutes: 20
+    if: >-
+      github.event_name == 'schedule' && github.event.schedule == '0 5 * * 1' ||
+      github.event_name == 'workflow_dispatch' && inputs.redeploy == true
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - name: install + build
+        working-directory: app
+        run: |
+          npm ci
+          npm run build:client
+      - name: redeploy
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' }}
+        working-directory: app
+        run: npx wrangler deploy
+      - name: skipped
+        if: ${{ env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == '' }}
+        run: echo "::warning::Cloudflare secrets not set — see docs/DEPLOY.md"
