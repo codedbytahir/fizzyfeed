@@ -1,0 +1,37 @@
+{
+  "name": "fizzyfeed-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "npm run build:client",
+    "dev": "wrangler dev",
+    "dev:client": "vite build --watch",
+    "build": "npm run typecheck && npm run build:client",
+    "build:client": "vite build",
+    "deploy": "npm run build && wrangler deploy",
+    "typecheck": "tsc -p tsconfig.client.json --noEmit && tsc -p tsconfig.worker.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.1.0",
+    "@fontsource/jetbrains-mono": "^5.1.0",
+    "@fontsource/space-grotesk": "^5.1.0",
+    "@resvg/resvg-wasm": "^2.6.2",
+    "hono": "^4.6.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "satori": "^0.10.14"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241112.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.5",
+    "wrangler": "^3.90.0"
+  }
+}

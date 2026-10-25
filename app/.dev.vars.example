@@ -1,0 +1,8 @@
+# fizzyfeed local dev secrets (spec 01 §4) — NEVER commit real values.
+# Copy to `.dev.vars` and fill in. `wrangler dev` reads this file automatically.
+
+BUFFER_CLIENT_ID=your-buffer-client-id
+BUFFER_CLIENT_SECRET=your-buffer-client-secret
+# SESSION_SECRET / TOKEN_AES_KEY: generate with `openssl rand -base64 32`
+SESSION_SECRET=base64-32-bytes-hmac-key
+TOKEN_AES_KEY=base64-32-bytes-aes-key
