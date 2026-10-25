@@ -12,10 +12,12 @@ landing/
   index.html      # ~2,990 lines: <head> + chrome <style id="fx-css"> (6 inlined modules) + body + 4 module scripts
   styles.css      # 153 lines: page chrome only (tokens, nav, sections, reveal system, responsive)
   main.js         # 85 lines: brand injection, hosting-aware links, fx CPU guard, reveal observer, footer year
+  halftone.js     # vanilla port of the HalftoneDots React component — chapter card dot art (see §4.5)
   robots.txt      # pages-root crawl policy + sitemap pointer
   sitemap.xml     # single URL (the landing)
   logo/           # favicon-48.png, lockup-on-dark.svg (main.js swaps .brand src to the svg)
   social/         # og-image.png (1200×630)
+  img/chapters/   # 8 webp artworks (512px, white-point normalized) sampled by halftone.js
   animations/     # standalone module sources (each fx-0*/index.html opens directly)
 ```
 
@@ -74,6 +76,29 @@ hovers 150–250ms with translateY ≤ 2px or scale ≤ 1.03; `transition: all` 
 4. **Reveal observer** — §3 above.
 5. **Footer year** — `[data-year]` ← current year.
 
+## 4.5 · Chapter halftone cards (halftone.js)
+
+Vanilla port of the uploaded `HalftoneDots` React component (no build step). Each of the 8
+`.chapter` cards holds a `.chapter-media[data-halftone]` plate that renders its chapter
+artwork (`img/chapters/ch-0*.webp`) as an interactive dot lattice on a canvas:
+
+- **Config via data attrs**: `data-src`, `data-from`/`data-to` (force the chapter's brand
+  gradient as dot color — same 7 gradients as the deck-fan cards), `data-accent`
+  (corner registration marks), `data-displace="1"` (hover lens parts the dots).
+- **Interactions**: staggered radial morph reveal on first view, hover lens boost +
+  spring-displaced dots, click ripples; 7 presses <500ms apart burst the card into
+  physics dots that bounce on `[data-halftone-solid]` plates — then the card re-renders
+  (fix over the React source, which stayed empty after bursting).
+- **Performance/a11y**: lazy load at 480px approach, render loop only while morphing or
+  interacting, `prefers-reduced-motion` = static single render with no listeners,
+  canvases `aria-hidden` + media plate `role="img"` with a descriptive label,
+  `touch-action: manipulation`.
+- **Resilience**: `crossOrigin` only on http(s); a taint probe falls back to the
+  `.halftone-failed` gradient plate when pixel sampling is impossible (file://, CORS-less
+  hosts) — smoke stays console-clean.
+- Cards are laid out vertically (media plate over a hairline-ruled body row); grid and
+  hover transforms unchanged.
+
 ## 5 · SEO & meta (C gates)
 
 `<head>` carries: canonical → the pages URL; `og:type/url/title/description/image` +
@@ -100,6 +125,7 @@ H1 ≤ 10 words ("your year in posts." = 4), subhead names concrete nouns, CTAs 
 | Script | Proves |
 |---|---|
 | `node scripts/smoke-test-landing.js` | landing + 6 standalone modules render console-clean |
+| `node scripts/halftone-check.js` | 8 chapter dot canvases paint, hover lens, 7-press burst + recovery, mobile, reduced-motion |
 | `node scripts/responsive-test.js` | 390/768 sweep + overflow detector (baseline: §6) |
 | `node scripts/benchmark-verify.js` | reveals fire on load/scroll, reduced-motion shows 31/31, link rewrite logic |
 | `node scripts/fx06-tour-test.js` | courier choreography beats + mobile fit |

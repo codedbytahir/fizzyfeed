@@ -101,14 +101,18 @@ section[id],main[id]{scroll-margin-top:76px}
 
 /* chapters — bento list */
 .chapters-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px}
-.chapter{display:flex; gap:12px; align-items:baseline; padding:16px 18px;
+.chapter{display:flex; flex-direction:column; padding:0; overflow:hidden;
   background:var(--ink-900); border:1px solid var(--line); border-radius:var(--radius-md);
   transition:transform var(--dur-hover) var(--ease-out-quart),
              border-color var(--dur-hover) var(--ease-out-quart)}
 .chapter:hover{transform:translateY(-2px); border-color:rgb(10 92 255 / .4)}
+.chapter-media{position:relative; height:150px; color:var(--ink-50); touch-action:manipulation}
+.chapter-media.halftone-failed{background:linear-gradient(135deg,var(--hf-from,#0A5CFF),var(--hf-to,#00D5FF))}
+.chapter-body{display:flex; gap:12px; align-items:baseline; padding:13px 18px 15px; border-top:1px solid var(--line)}
 .chapter .cn{font:500 12px "JetBrains Mono",monospace; color:var(--ink-300)}
 .chapter b{color:var(--ink-50); font-weight:600; font-size:14px}
 .chapter span{color:var(--ink-300); font-size:13.5px}
+.hf-canvas{display:block}
 .chapters-fx{margin:36px 0 28px}
 
 /* cta */
@@ -139,6 +143,7 @@ footer a{color:var(--ink-200); text-decoration:underline; text-underline-offset:
   section{padding:72px 0}
   .hero{padding:132px 0 48px}
   .nav nav{display:none}
+  .chapter-media{height:132px}
 }
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto}
