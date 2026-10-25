@@ -27,7 +27,7 @@
     { "id": "T18", "phase": 3, "title": "Queue endpoint with idempotency + per-channel results", "status": "todo", "spec_ref": "docs/specs/06-RECAP-QUEUE.md#3", "acceptance": ["double-submit safe via queueId", "visible in Buffer dashboard"] },
     { "id": "T19", "phase": 4, "title": "Greatest Hits enable/refresh/revoke (PAT, AES-GCM)", "status": "todo", "spec_ref": "docs/specs/07-GREATEST-HITS.md", "acceptance": ["PAT never in logs (sentinel test)", "revoke purges row+cache"] },
     { "id": "T20", "phase": 4, "title": "A11y pass (focus rings, contrast, reduced motion, labels)", "status": "todo", "spec_ref": "BRAND-GUIDELINES.md#9", "acceptance": ["axe clean", "reduced-motion verified on all animations"] },
-    { "id": "T21", "phase": 4, "title": "Landing page final copy + OG wiring + deploy", "status": "todo", "spec_ref": "docs/ANIMATIONS.md#4", "acceptance": ["<2s load", "no banned word", "BRAND_NAME injection works"] },
+    { "id": "T21", "phase": 4, "title": "Landing page final copy + OG wiring + deploy", "status": "done", "claimant": "z.ai", "spec_ref": "docs/ANIMATIONS.md#4 + docs/specs/09-LANDING.md", "acceptance": ["<2s load", "no banned word", "BRAND_NAME injection works"], "evidence": "commit 07899f3: OG/Twitter cards + canonical + JSON-LD live, banned-word grep clean, BRAND_NAME injection smoke-tested 7/7 console-clean; live at https://codedbytahir.github.io/fizzyfeed/ (gh-pages 383b4c1); as-built spec 09 + verification scripts (smoke/responsive/benchmark-verify/fx06-tour) in scripts/" },
     { "id": "T22", "phase": 4, "title": "Demo video (90s) + final end-to-end fresh-account test", "status": "todo", "spec_ref": "docs/specs/08-BUILD-PLAN.md#final-48h-demo-checklist", "acceptance": ["full flow <=5min", "video recorded"] }
   ]
 }

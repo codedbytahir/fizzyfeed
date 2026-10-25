@@ -9,6 +9,23 @@ npx serve landing/            # or: python3 -m http.server -d landing 8080
 # individual animations: landing/animations/fx-0*/index.html (each is standalone)
 ```
 
+### Landing verification (run before every push that touches landing/)
+
+```bash
+node scripts/smoke-test-landing.js     # landing + 6 modules render console-clean
+node scripts/responsive-test.js        # 390/768 sweep + overflow detector
+node scripts/benchmark-verify.js       # reveals, reduced-motion, link rewrite
+node scripts/fx06-tour-test.js         # courier choreography beats + mobile fit
+```
+
+### Landing deploy (GitHub Pages)
+
+```bash
+bash scripts/deploy-gh-pages.sh        # force-rebuilds orphan gh-pages from landing/*
+# verify: curl the live URL with a cache-busting query, grep the markers you changed
+# never edit the gh-pages branch directly; as-built details in docs/specs/09-LANDING.md
+```
+
 ## Brand board
 
 Open `preview/index.html` in any browser — logo variants, clearspace, palette, card

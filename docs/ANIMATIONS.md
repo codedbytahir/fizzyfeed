@@ -123,18 +123,24 @@ sparkline draws itself along the card's bottom edge each cycle. 18s loop.
 ### fx-06 `queue-recap` — "one click, queued everywhere" (CTA section)
 The recap post card (white surface on ink) composes itself line by line (typewriter,
 torph cursorIndex if loaded); a primary "queue the recap" button (#0A5CFF, glow ON —
-this is the CTA exception) presses once; the card then **fans into mini channel chips**
-(same monogram tiles as fx-02) each gaining a #00D5FF checkmark in 80ms-stagger; ends
-on the button glow pulse. 15s loop. This module doubles as the landing's final CTA visual.
+this is the CTA exception) presses once; the post **condenses into a courier icon**
+(44px white tile carrying the inline-SVG deck mark — violet/volt flanks + brand-gradient
+core + white yearline) that pops at the card centre, then **flies tossed quadratic arcs
+to all seven channel chips** left→right (leg .42s + dwell .07s, easeInOutCubic, ±7° wobble);
+each chip receive-pops (scale 1.13) and draws its #00D5FF checkmark **at arrival** (not on
+a uniform stagger); the courier returns to centre, dissolves; all-queued hold → button glow
+pulse. 15s loop. This module doubles as the landing's final CTA visual.
 
 ## 4 · Landing page integration (assembled by the orchestrator, not modules)
 
-- Page skeleton: `landing/index.html` + `landing/styles.css` + `landing/main.js`.
+- Page skeleton: `landing/index.html` + `landing/styles.css` + `landing/main.js` — full as-built detail in [`specs/09-LANDING.md`](specs/09-LANDING.md).
 - Sections: nav → hero (fx-01) → proof band (fx-04) → how it works (fx-02) → chapters (fx-03) → alter ego (fx-05) → CTA (fx-06) → footer.
 - Copy voice: playful-precise, sentence case, lowercase headlines; the word "wrapped" is BANNED everywhere.
 - One `<section>` per module; each embeds the `fx-<id>` root div with its scoped styles + script, inlined at assemble time by the orchestrator.
 - IntersectionObserver: modules animate only when in view (`data-fx-state="idle|live"`), saving CPU.
 - `BRAND_NAME` const in main.js injects the name into `[data-brand-name]` slots.
+- Page-level motion (chrome, not modules): benchmark easing tokens + `.reveal` entrances (500ms ease-out-expo, 64ms stagger, reduced-motion + no-js safe) — see spec 09 §2–3. Module timings stay governed by §0–§1 here.
+- On `*.github.io` hosting, main.js points `[data-connect]` CTAs and footer `../` links at the repo (no backend exists there) so the live deploy has zero dead links.
 
 ## 5 · Acceptance checklist (every module must pass)
 

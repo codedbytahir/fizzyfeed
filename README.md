@@ -93,9 +93,10 @@ Serve locally with `npx serve landing/`. Each module is self-contained in
 This codebase is built to be worked on by AI agents (and humans):
 
 - **[`AGENTS.md`](AGENTS.md)** — the operating manual: read order, non-negotiables, workflow protocol, definition of done.
-- **[`docs/specs/`](docs/specs/)** — the build specs (00 product → 08 build plan) for the app itself: architecture, D1 schema, Buffer OAuth PKCE, yearize pipeline, satori deck rendering, AI persona, recap queue, Greatest Hits.
+- **[`docs/specs/`](docs/specs/)** — the build specs (00 product → 08 build plan) for the app itself: architecture, D1 schema, Buffer OAuth PKCE, yearize pipeline, satori deck rendering, AI persona, recap queue, Greatest Hits. **[`09-LANDING.md`](docs/specs/09-LANDING.md)** is the landing page as-built spec: benchmark motion system (vibrant.design-measured easings/durations), reveal system, SEO, responsive fits, verification + deploy.
 - **[`tasks/TASKS.json`](tasks/TASKS.json)** — machine-readable task queue; agents claim → build → verify → close.
 - **`scripts/agent-check.sh`** — guardrails (banned word, name-agnosticism, token discipline, secrets); run before every commit.
+- **Landing verification scripts** — `scripts/smoke-test-landing.js`, `responsive-test.js`, `benchmark-verify.js`, `fx06-tour-test.js`; run all four before landing changes (see [`docs/RUNBOOK.md`](docs/RUNBOOK.md)).
 - **Skills in-repo**: impeccable (`.claude/skills/`), ponytail, graphify, vercel web-design-guidelines + react-best-practices (`skills/`).
 - Multi-agent harness files: `CLAUDE.md`, `.cursor/rules/`, `.github/copilot-instructions.md`.
 
