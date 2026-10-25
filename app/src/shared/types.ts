@@ -35,12 +35,24 @@ export interface CreatePostInput {
   now?: boolean;
 }
 
+export interface BufferProfile {
+  id: string;
+  name: string;
+  avatar?: string;
+}
+
 /** Port the worker code codes against; the only implementation is lib/buffer.ts. */
 export interface BufferClient {
+  getProfile(accessToken: string): Promise<BufferProfile>;
   listChannels(accessToken: string): Promise<BufferChannel[]>;
+  /**
+   * Buffer's posts API is per-channel; omitting channelId iterates the user's
+   * channels and merges results. Posts come newest-first — implementers stop
+   * paging once createdAt < since.
+   */
   listPosts(
     accessToken: string,
-    opts: { since?: number; until?: number; page?: number; count?: number }
+    opts: { channelId?: string; since?: number; until?: number; page?: number; count?: number }
   ): Promise<{ posts: BufferPost[]; hasMore: boolean }>;
   createPost(accessToken: string, input: CreatePostInput): Promise<{ id: string }>;
   refreshAccessToken(refreshToken: string): Promise<TokenPair>;

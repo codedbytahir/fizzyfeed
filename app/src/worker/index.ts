@@ -29,7 +29,7 @@ api.get("/health", (c) =>
 );
 
 // feature routes (each module owns its own auth + validation)
-api.route("/auth/buffer", auth);
+api.route("/auth", auth); // /api/auth/buffer/*, /api/auth/logout, /api/me, /api/auth/revoke
 api.route("/yearize", yearize);
 api.route("/deck", deck);
 api.route("/cards", cards);
