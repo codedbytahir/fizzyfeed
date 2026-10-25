@@ -723,6 +723,13 @@
   background:radial-gradient(50% 50% at 50% 50%, rgb(255 255 255/.45) 0%, rgb(255 255 255/0) 70%)}
 .fx-deck-fan__spark svg{display:block;width:100%;height:100%}
 
+/* — halftone chapter art (landing integration; canvas injected by halftone.js) —
+   ink dot print over the brand gradient, white registration marks.
+   pointer-events none: the fan is role="img" — dots are decorative,
+   no lens/ripple/burst here (those live on the chapter cards' plates). */
+.fx-deck-fan__art{position:absolute;inset:0;overflow:hidden;pointer-events:none;
+  border-radius:inherit;color:#FFFFFF}
+
 /* ===================================================================
    keyframes
    =================================================================== */
@@ -2059,7 +2066,7 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
         <h2 id="ch-h" class="reveal">seven chapters.</h2>
         <p class="sub reveal">one card per moment, led by the brand gradients. feelable in one sitting — not a dashboard with a party hat.</p>
       </div>
-<div class="fx fx-deck-fan" data-brand-name="fizzyfeed" role="img" aria-label="A deck of seven gradient story cards rests, fans out one by one to reveal the seven chapters of the posting year, holds, restacks in reverse order, and closes with a small white spark pulse on the top card.">
+<div class="fx fx-deck-fan" data-brand-name="fizzyfeed" role="img" aria-label="A deck of seven gradient story cards rests, fans out one by one to reveal the seven chapters of the posting year — each card printed with its chapter illustration in halftone dots — holds, restacks in reverse order, and closes with a small white spark pulse on the top card.">
   <div class="fx-deck-fan__viewport">
     <div class="fx-deck-fan__glow"></div>
     <div class="fx-deck-fan__stage">
@@ -2068,42 +2075,49 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
         <div class="fx-deck-fan__sway">
 
           <div class="fx-deck-fan__card fx-deck-fan__card--1">
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-01-kickoff.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
             <div class="fx-deck-fan__scrim"></div>
             <span class="fx-deck-fan__num">01</span>
             <span class="fx-deck-fan__label">kickoff</span>
           </div>
 
           <div class="fx-deck-fan__card fx-deck-fan__card--2">
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-02-rhythm.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
             <div class="fx-deck-fan__scrim"></div>
             <span class="fx-deck-fan__num">02</span>
             <span class="fx-deck-fan__label">rhythm</span>
           </div>
 
           <div class="fx-deck-fan__card fx-deck-fan__card--3">
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-03-streaks.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
             <div class="fx-deck-fan__scrim"></div>
             <span class="fx-deck-fan__num">03</span>
             <span class="fx-deck-fan__label">streaks</span>
           </div>
 
           <div class="fx-deck-fan__card fx-deck-fan__card--4">
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-04-the-mix.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
             <div class="fx-deck-fan__scrim"></div>
             <span class="fx-deck-fan__num">04</span>
             <span class="fx-deck-fan__label">the mix</span>
           </div>
 
           <div class="fx-deck-fan__card fx-deck-fan__card--5">
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-05-peaks.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
             <div class="fx-deck-fan__scrim"></div>
             <span class="fx-deck-fan__num">05</span>
             <span class="fx-deck-fan__label">peaks</span>
           </div>
 
           <div class="fx-deck-fan__card fx-deck-fan__card--6">
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-06-alter-ego.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
             <div class="fx-deck-fan__scrim"></div>
             <span class="fx-deck-fan__num">06</span>
             <span class="fx-deck-fan__label">alter ego</span>
           </div>
 
           <div class="fx-deck-fan__card fx-deck-fan__card--7">
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-07-the-recap.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
             <div class="fx-deck-fan__scrim"></div>
             <span class="fx-deck-fan__num">07</span>
             <span class="fx-deck-fan__label">the recap</span>
@@ -2120,62 +2134,14 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
   </div>
 </div>
       <div class="chapters-grid">
-        <div class="chapter reveal" data-halftone-solid>
-          <div class="chapter-media" role="img" aria-label="chapter 01 · kickoff — halftone dot illustration of a rocket lifting off"
-            data-halftone data-src="img/chapters/ch-01-kickoff.webp"
-            data-from="#0A5CFF" data-to="#00D5FF" data-accent="#0A5CFF" data-displace="1"
-            style="--hf-from:#0A5CFF;--hf-to:#00D5FF"></div>
-          <div class="chapter-body"><span class="cn">01</span><b>kickoff</b><span>where the year started</span></div>
-        </div>
-        <div class="chapter reveal" data-halftone-solid>
-          <div class="chapter-media" role="img" aria-label="chapter 02 · rhythm — halftone dot illustration of a vinyl record with sound waves"
-            data-halftone data-src="img/chapters/ch-02-rhythm.webp"
-            data-from="#00D5FF" data-to="#00FFA3" data-accent="#00D5FF" data-displace="1"
-            style="--hf-from:#00D5FF;--hf-to:#00FFA3"></div>
-          <div class="chapter-body"><span class="cn">02</span><b>rhythm</b><span>best day, favorite hour</span></div>
-        </div>
-        <div class="chapter reveal" data-halftone-solid>
-          <div class="chapter-media" role="img" aria-label="chapter 03 · streaks — halftone dot illustration of a rising flame built from linked days"
-            data-halftone data-src="img/chapters/ch-03-streaks.webp"
-            data-from="#C8FF4D" data-to="#00E5A0" data-accent="#00E5A0" data-displace="1"
-            style="--hf-from:#C8FF4D;--hf-to:#00E5A0"></div>
-          <div class="chapter-body"><span class="cn">03</span><b>streaks</b><span>the grind you forgot</span></div>
-        </div>
-        <div class="chapter reveal" data-halftone-solid>
-          <div class="chapter-media" role="img" aria-label="chapter 04 · the mix — halftone dot illustration of mixing console faders"
-            data-halftone data-src="img/chapters/ch-04-the-mix.webp"
-            data-from="#A855F7" data-to="#6366FA" data-accent="#6366FA" data-displace="1"
-            style="--hf-from:#A855F7;--hf-to:#6366FA"></div>
-          <div class="chapter-body"><span class="cn">04</span><b>the mix</b><span>channels &amp; topics</span></div>
-        </div>
-        <div class="chapter reveal" data-halftone-solid>
-          <div class="chapter-media" role="img" aria-label="chapter 05 · peaks — halftone dot illustration of a mountain peak over bar-chart foothills"
-            data-halftone data-src="img/chapters/ch-05-peaks.webp"
-            data-from="#FF8A00" data-to="#FF3D77" data-accent="#FF3D77" data-displace="1"
-            style="--hf-from:#FF8A00;--hf-to:#FF3D77"></div>
-          <div class="chapter-body"><span class="cn">05</span><b>peaks</b><span>biggest month, busiest week</span></div>
-        </div>
-        <div class="chapter reveal" data-halftone-solid>
-          <div class="chapter-media" role="img" aria-label="chapter 06 · alter ego — halftone dot illustration of an ai face made of circuit traces"
-            data-halftone data-src="img/chapters/ch-06-alter-ego.webp"
-            data-from="#6333FF" data-to="#0A5CFF" data-accent="#6333FF" data-displace="1"
-            style="--hf-from:#6333FF;--hf-to:#0A5CFF"></div>
-          <div class="chapter-body"><span class="cn">06</span><b>alter ego</b><span>ai-named, data-derived</span></div>
-        </div>
-        <div class="chapter reveal" data-halftone-solid>
-          <div class="chapter-media" role="img" aria-label="chapter 07 · the recap — halftone dot illustration of a queue of cards with a spark"
-            data-halftone data-src="img/chapters/ch-07-the-recap.webp"
-            data-from="#FF5C5C" data-to="#FF9E2C" data-accent="#FF5C5C" data-displace="1"
-            style="--hf-from:#FF5C5C;--hf-to:#FF9E2C"></div>
-          <div class="chapter-body"><span class="cn">07</span><b>the recap</b><span>queue your recap post</span></div>
-        </div>
-        <div class="chapter reveal" data-halftone-solid>
-          <div class="chapter-media" role="img" aria-label="bonus · greatest hits — halftone dot illustration of an award trophy with stars"
-            data-halftone data-src="img/chapters/ch-08-greatest-hits.webp"
-            data-from="#6333FF" data-to="#00D5FF" data-accent="#0A5CFF" data-displace="1"
-            style="--hf-from:#6333FF;--hf-to:#00D5FF"></div>
-          <div class="chapter-body"><span class="cn">+</span><b>greatest hits</b><span>opt-in real top posts</span></div>
-        </div>
+        <div class="chapter reveal"><span class="cn">01</span><b>kickoff</b><span>where the year started</span></div>
+        <div class="chapter reveal"><span class="cn">02</span><b>rhythm</b><span>best day, favorite hour</span></div>
+        <div class="chapter reveal"><span class="cn">03</span><b>streaks</b><span>the grind you forgot</span></div>
+        <div class="chapter reveal"><span class="cn">04</span><b>the mix</b><span>channels &amp; topics</span></div>
+        <div class="chapter reveal"><span class="cn">05</span><b>peaks</b><span>biggest month, busiest week</span></div>
+        <div class="chapter reveal"><span class="cn">06</span><b>alter ego</b><span>ai-named, data-derived</span></div>
+        <div class="chapter reveal"><span class="cn">07</span><b>the recap</b><span>queue your recap post</span></div>
+        <div class="chapter reveal"><span class="cn">+</span><b>greatest hits</b><span>opt-in real top posts</span></div>
       </div>
     </div>
 
