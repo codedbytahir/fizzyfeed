@@ -388,7 +388,7 @@
     font:500 12.5px 'JetBrains Mono',ui-monospace,monospace;
     font-variant-numeric:tabular-nums;
     fill:var(--white);
-    fill-opacity:.78;
+    fill-opacity:.92; /* the hero's 'honest numbers' stat must clear 4.5:1 on the bolt gradient */
   }
 
   .fx-hero-deck__caption{
@@ -398,9 +398,9 @@
     text-align:center;
     font-family:'Inter',system-ui,sans-serif;
     font-weight:400;
-    font-size:clamp(10px,1.15cqi,13.5px);
+    font-size:clamp(12px,1.15cqi,13.5px);
     letter-spacing:.02em;
-    color:rgb(255 255 255 / .55);
+    color:rgb(255 255 255 / .62);
     pointer-events:none;
   }
 
@@ -434,6 +434,11 @@
         <linearGradient id="fx01-shade" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stop-color="#05070E" stop-opacity="0"/>
           <stop offset="1" stop-color="#05070E" stop-opacity=".38"/>
+        </linearGradient>
+        <linearGradient id="fx01-shade-top" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#05070E" stop-opacity=".35"/>
+          <stop offset=".35" stop-color="#05070E" stop-opacity="0"/>
+          <stop offset="1" stop-color="#05070E" stop-opacity="0"/>
         </linearGradient>
         <radialGradient id="fx01-halog">
           <stop offset="0" stop-color="#FFFFFF" stop-opacity=".9"/>
@@ -609,6 +614,7 @@
         </g>
         <g class="fx-hero-deck__card fx-hero-deck__card--fr">
           <rect x="465" y="205" width="270" height="340" rx="28" fill="url(#fx01-bolt)"/>
+          <rect x="465" y="205" width="270" height="340" rx="28" fill="url(#fx01-shade-top)"/>
           <text class="fx-hero-deck__cardstat" x="497" y="250">5,214 posts</text>
           <text class="fx-hero-deck__cardlabel" x="497" y="278">your year in posts</text>
           <circle class="fx-hero-deck__sparkhalo" cx="700" cy="390" r="11" fill="url(#fx01-halog)"/>

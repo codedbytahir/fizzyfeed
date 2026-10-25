@@ -130,6 +130,7 @@ H1 ≤ 10 words ("your year in posts." = 4), subhead names concrete nouns, CTAs 
 | `node scripts/responsive-test.js` | 390/768 sweep + overflow detector (baseline: §6) |
 | `node scripts/benchmark-verify.js` | reveals fire on load/scroll, reduced-motion shows 31/31, link rewrite logic |
 | `node scripts/fx06-tour-test.js` | courier choreography beats + mobile fit |
+| `node scripts/critic-shots.js` + critic agent (scripts/critic-brief.md) | design-critic review set: 10 screenshots + rubric prompt for the 9/10 elite-bar loop |
 
 Deploy: `bash scripts/deploy-gh-pages.sh` — force-rebuilds the orphan `gh-pages` branch
 from `landing/*` (+ `.nojekyll`, robots, sitemap) and pushes. Verify live with cache-busted
@@ -144,3 +145,23 @@ curl greps for the markers changed in the edit. Never edit `gh-pages` directly.
 4. After motion edits re-run all four §7 scripts; after copy edits re-grep banned words
    and the 90–155 char description band.
 5. `main.js` stays ≤ ~100 lines; if it grows, split into modules with the same no-framework IIFE style.
+
+## 8 · Design-critic loop (elite bar)
+
+`scripts/critic-brief.md` is the standing brief for a harsh senior-designer critic agent
+(8 weighted dims, hard AI-slop gates, JSON score schema); `scripts/critic-shots.js`
+captures its 10-shot review set (desktop hero/how/fan/persona/cta/footer + full page +
+390px mobile) into `landing/_critic/` (gitignored). Protocol after any visual change:
+
+1. `node scripts/critic-shots.js` → hand the shots + brief to the critic.
+2. Fix only what it ranks, within the brand system (no reskins).
+3. Mirror every module-scoped fix into `landing/animations/fx-0*/index.html` — the
+   module sources are the styling sources of truth; a fix that lives only in the
+   assembled `index.html` is treated as a regression in progress.
+4. Re-run until the critic scores ≥ 9/10.
+
+Loop history (run → overall): 1→7.5, 2→7.7, 3→8.0, 4→8.3, 5→8.5, 6→8.9, 7→9.0,
+8→9.0, 9→9.0 sealed (all eight dims 9.0, zero open issues). Hard-won lessons recorded
+in the score JSONs: bottom-left fan labels occlude WORSE than top-left (bottoms
+converge); white@.92 on the bolt gradient cannot reach 4.5:1 — scrims, not opacity;
+flex-item shrink-wrap defeats `grid-template-columns:1fr` without `align-self:stretch`.

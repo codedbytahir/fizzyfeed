@@ -103,19 +103,21 @@ body{min-height:100vh;min-height:100svh;display:grid;place-items:center}
 .fx-deck-fan__card--7{--fan-rot:24deg;z-index:7;background:var(--grad-coral);animation:fx-deck-fan--card-7 12s infinite}
 
 /* — static scrim so white text holds ≥4.5:1 even on the lime/sunset heads
-   (worst case: white .75 over lime #C8FF4D under the .7 scrim ≈ 5.7:1) — */
+   (worst case: white .75 over lime #C8FF4D under the .85 scrim ≈ 6:1) —
+   anchored top-left with the num/label: empirically the least-occluded
+   zone in the fan pose (bottoms converge and overlap; tops spread wide) — */
 .fx-deck-fan__scrim{position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   background:radial-gradient(170% 130% at 0% 0%,
-    rgb(5 7 14/.78) 0%, rgb(5 7 14/.5) 30%, rgb(5 7 14/.22) 48%, rgb(5 7 14/0) 66%)}
+    rgb(5 7 14/.85) 0%, rgb(5 7 14/.55) 34%, rgb(5 7 14/.24) 52%, rgb(5 7 14/0) 70%)}
 .fx-deck-fan__num{position:absolute;top:1.8333cqw;left:1.8333cqw;
   font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:500;
-  font-size:12px;font-size:1.0833cqw;line-height:1;letter-spacing:.14em;
+  font-size:max(1.0833cqw,6px);line-height:1;letter-spacing:.14em;
   font-variant-numeric:tabular-nums;
   color:rgb(255 255 255/.75);
   text-shadow:0 1px 6px rgb(5 7 14/.6);text-shadow:0 1px .5cqw rgb(5 7 14/.6)}
 .fx-deck-fan__label{position:absolute;top:3.6667cqw;left:1.8333cqw;
-  font-family:'Space Grotesk','Inter',ui-sans-serif,sans-serif;font-weight:500;
-  font-size:24px;font-size:2cqw;line-height:1.05;letter-spacing:-.01em;text-transform:lowercase;
+  font-family:'Space Grotesk','Inter',ui-sans-serif,sans-serif;font-weight:600;
+  font-size:max(2.4cqw,13px);line-height:1.05;letter-spacing:-.01em;text-transform:lowercase;
   color:var(--white);
   text-shadow:0 1px 8px rgb(5 7 14/.45);text-shadow:0 1px .6667cqw rgb(5 7 14/.45)}
 
@@ -133,6 +135,13 @@ body{min-height:100vh;min-height:100svh;display:grid;place-items:center}
    no lens/ripple/burst here (those live on the chapter cards' plates). */
 .fx-deck-fan__art{position:absolute;inset:0;overflow:hidden;pointer-events:none;
   border-radius:inherit;color:#FFFFFF}
+
+/* ≤480px: the 6px numerals render as specks and the 13px label floor rides too
+   low over the halftone gradients — the cards read as art with big titles */
+@media (max-width: 480px){
+  .fx-deck-fan__num{display:none}
+  .fx-deck-fan__label{font-size:max(2.4cqw,15px)}
+}
 
 /* ===================================================================
    keyframes
