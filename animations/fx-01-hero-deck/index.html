@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fx · hero-deck</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  /* == page scaffold (standalone preview only — landing strips this block) == */
+  html,body{margin:0;padding:0;background:#05070E;min-height:100vh;display:grid;place-items:center}
+  body{padding:28px;box-sizing:border-box}
+
+  /* == fx-01 hero-deck module styles — ALL selectors scoped under .fx-hero-deck == */
+  .fx-hero-deck{
+    /* design tokens — ANIMATIONS.md §1 (verbatim) */
+    --electric-500:#0A5CFF; --electric-600:#0047E0; --volt-500:#00D5FF; --violet-500:#6333FF;
+    --spark-500:#C8FF4D; --ink-950:#05070E; --ink-900:#0A0E1A; --ink-800:#131A2B;
+    --ink-300:#9AA8C4; --ink-200:#C6D0E4; --ink-50:#F5F8FE; --white:#FFFFFF;
+    --grad-brand: linear-gradient(135deg,#6333FF,#0A5CFF,#00D5FF);
+    --grad-bolt:  linear-gradient(135deg,#0A5CFF,#00D5FF);  /* card 1 */
+    --grad-nebula:linear-gradient(135deg,#6333FF,#0A5CFF);  /* card 6 */
+    --grad-aurora:linear-gradient(135deg,#00D5FF,#00FFA3);  /* card 2 */
+    --grad-fizz:  linear-gradient(135deg,#C8FF4D,#00E5A0);  /* card 3 */
+    --grad-sunset:linear-gradient(135deg,#FF8A00,#FF3D77);  /* card 5 */
+    --grad-coral: linear-gradient(135deg,#FF5C5C,#FF9E2C);  /* card 7 */
+    --grad-grape: linear-gradient(135deg,#A855F7,#6366FA);  /* card 4 */
+    --radius-card:28px; --radius-md:14px; --radius-pill:999px;
+    --glow-electric: 0 0 0 1px rgb(10 92 255 / .25), 0 12px 48px rgb(10 92 255 / .35);
+    --shadow-card: 0 8px 30px rgb(5 7 14 / .35);
+
+    display:block;
+    width:100%;
+    color:var(--white);
+    font-family:'Inter',system-ui,sans-serif;
+  }
+
+  /* 16:9 stage, scales 1200 → 720 */
+  .fx-hero-deck__stage{
+    position:relative;
+    width:100%;
+    max-width:1200px;
+    margin-inline:auto;
+    aspect-ratio:16/9;
+    background:var(--ink-950);
+    border-radius:clamp(10px,2vw,24px);
+    overflow:hidden;
+    isolation:isolate;
+    container-type:inline-size;
+  }
+  .fx-hero-deck__svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+  /* ambient radial light (pre-baked layers, opacity-only breathing, ≤ .25 effective) */
+  .fx-hero-deck__glow{
+    position:absolute;
+    aspect-ratio:1;
+    border-radius:50%;
+    pointer-events:none;
+  }
+  .fx-hero-deck__glow--a{
+    top:-20%;right:-12%;width:58%;
+    background:radial-gradient(closest-side, rgb(10 92 255 / .24), transparent 72%);
+    opacity:.7;
+    animation:fx-hero-deck__breath 14s ease-in-out infinite;
+  }
+  .fx-hero-deck__glow--b{
+    bottom:-24%;left:-14%;width:54%;
+    background:radial-gradient(closest-side, rgb(99 51 255 / .22), transparent 72%);
+    opacity:.6;
+    animation:fx-hero-deck__breath 14s ease-in-out -7s infinite;
+  }
+  @keyframes fx-hero-deck__breath{
+    0%,100%{opacity:.55;transform:scale(1)}
+    50%{opacity:1;transform:scale(1.07)}
+  }
+
+  /* subtle dark grid, edge-faded via mask, dims under the deck */
+  .fx-hero-deck__grid{
+    opacity:.5;
+    animation:fx-hero-deck__gridcycle 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__gridcycle{
+    0%,14.286%{opacity:1}
+    20%{opacity:.5}
+    68%{opacity:.5}
+    77%,100%{opacity:1}
+  }
+
+  /* faint post tiles in the deep background (opacity ≤ .12) */
+  .fx-hero-deck__tilefloat{
+    transform-box:fill-box;
+    transform-origin:50% 50%;
+    animation:fx-hero-deck__drift var(--td,14s) ease-in-out var(--tdel,0s) infinite;
+  }
+  @keyframes fx-hero-deck__drift{
+    0%,100%{transform:translate(0,0) rotate(0deg)}
+    50%{transform:translate(8px,-12px) rotate(1.6deg)}
+  }
+
+  /* ---- the yearline (draw → fold into deck → return) ---- */
+  .fx-hero-deck__line{
+    opacity:0; /* base = final composed frame (deck state) */
+    transform-box:view-box;
+    transform-origin:600px 375px;
+    animation:fx-hero-deck__linecycle 14s linear infinite;
+    will-change:transform,opacity;
+  }
+  @keyframes fx-hero-deck__linecycle{
+    0%{opacity:1;transform:scale(1)}
+    15.2%{opacity:1;transform:scale(1);animation-timing-function:cubic-bezier(.55,.06,.68,.19)}
+    16.8%{opacity:1;animation-timing-function:linear}
+    23.8%{opacity:0}
+    24.3%{transform:scale(.26)}
+    68.5%{opacity:0;transform:scale(.26);animation-timing-function:cubic-bezier(.33333,1,.66667,1)}
+    73.5%{opacity:1}
+    77.5%,100%{opacity:1;transform:scale(1)}
+  }
+  .fx-hero-deck__seg{
+    fill:none;
+    stroke:var(--white);
+    stroke-width:3;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    stroke-dasharray:1 1;
+    stroke-dashoffset:1.06;
+    animation:fx-hero-deck__draw 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__draw{
+    0%{stroke-dashoffset:1.06;animation-timing-function:cubic-bezier(.33333,1,.66667,1)}
+    14.286%{stroke-dashoffset:0}
+    95.714%{stroke-dashoffset:0;animation-timing-function:cubic-bezier(.55,.06,.68,.19)}
+    100%{stroke-dashoffset:1.06}
+  }
+  .fx-hero-deck__seggroup--l{
+    transform-box:view-box;transform-origin:451px 356.99px;
+    animation:fx-hero-deck__foldl 14s linear infinite;
+  }
+  .fx-hero-deck__seggroup--m{transform-box:view-box;transform-origin:451px 356.99px}
+  .fx-hero-deck__seggroup--r{
+    transform-box:view-box;transform-origin:749px 308.84px;
+    animation:fx-hero-deck__foldr 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__foldl{
+    0%{transform:rotate(0deg)}
+    15.2%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.6,.05,.35,.95)}
+    22.2%{transform:rotate(24deg)}
+    27%{transform:rotate(24deg);animation-timing-function:cubic-bezier(.4,0,.2,1)}
+    45%,100%{transform:rotate(0deg)}
+  }
+  @keyframes fx-hero-deck__foldr{
+    0%{transform:rotate(0deg)}
+    15.2%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.6,.05,.35,.95)}
+    22.2%{transform:rotate(-24deg)}
+    27%{transform:rotate(-24deg);animation-timing-function:cubic-bezier(.4,0,.2,1)}
+    45%,100%{transform:rotate(0deg)}
+  }
+
+  /* month ticks: pop (opacity) exactly when the drawing line passes each point */
+  .fx-hero-deck__mt{
+    opacity:0;
+    animation-duration:14s;
+    animation-timing-function:cubic-bezier(.33333,1,.66667,1);
+    animation-iteration-count:infinite;
+  }
+  .fx-hero-deck__mt--0{animation-name:fx-hero-deck__mt0}
+  .fx-hero-deck__mt--1{animation-name:fx-hero-deck__mt1}
+  .fx-hero-deck__mt--2{animation-name:fx-hero-deck__mt2}
+  .fx-hero-deck__mt--3{animation-name:fx-hero-deck__mt3}
+  .fx-hero-deck__mt--4{animation-name:fx-hero-deck__mt4}
+  .fx-hero-deck__mt--5{animation-name:fx-hero-deck__mt5}
+  .fx-hero-deck__mt--6{animation-name:fx-hero-deck__mt6}
+  .fx-hero-deck__mt--7{animation-name:fx-hero-deck__mt7}
+  .fx-hero-deck__mt--8{animation-name:fx-hero-deck__mt8}
+  .fx-hero-deck__mt--9{animation-name:fx-hero-deck__mt9}
+  .fx-hero-deck__mt--10{animation-name:fx-hero-deck__mt10}
+  .fx-hero-deck__mt--11{animation-name:fx-hero-deck__mt11}
+  @keyframes fx-hero-deck__mt0{0%{opacity:0}2.4%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt1{0%,0.43%{opacity:0}2.83%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt2{0%,0.875%{opacity:0}3.275%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt3{0%,1.406%{opacity:0}3.806%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt4{0%,1.926%{opacity:0}4.326%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt5{0%,2.56%{opacity:0}4.96%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt6{0%,3.203%{opacity:0}5.603%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt7{0%,3.999%{opacity:0}6.399%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt8{0%,5.033%{opacity:0}7.433%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt9{0%,6.196%{opacity:0}8.596%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt10{0%,7.78%{opacity:0}10.18%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt11{0%,14.286%{opacity:0}16.686%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  .fx-hero-deck__mtdot,.fx-hero-deck__mtring{
+    transform-box:fill-box;transform-origin:50% 50%;
+    animation-duration:14s;
+    animation-timing-function:cubic-bezier(.33333,1,.66667,1);
+    animation-iteration-count:infinite;
+    animation-fill-mode:backwards;
+  }
+  .fx-hero-deck__mtdot{animation-name:fx-hero-deck__dotpop}
+  .fx-hero-deck__mtring{animation-name:fx-hero-deck__ringpop}
+  @keyframes fx-hero-deck__dotpop{
+    0%{transform:scale(.2)}
+    1.5%{transform:scale(1.35)}
+    2.5%,95.7%{transform:scale(1)}
+    98%,100%{transform:scale(.2)}
+  }
+  @keyframes fx-hero-deck__ringpop{
+    0%{opacity:0;transform:scale(.3)}
+    0.3%{opacity:.6;transform:scale(.7)}
+    2.6%,100%{opacity:0;transform:scale(2.4)}
+  }
+  .fx-hero-deck__mtletter{
+    font:500 11px 'JetBrains Mono',ui-monospace,monospace;
+    fill:var(--white);
+    fill-opacity:.62;
+    text-anchor:middle;
+  }
+
+  /* the yearline's own end dot — overshoot pop on completion, again after dissolve */
+  .fx-hero-deck__linedot{
+    opacity:0;
+    transform-box:fill-box;transform-origin:50% 50%;
+    animation:fx-hero-deck__linedotcycle 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__linedotcycle{
+    0%{opacity:0;transform:scale(.2)}
+    14.286%{opacity:0;transform:scale(.2);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    14.93%{opacity:1;transform:scale(1.4)}
+    15.64%{opacity:1;transform:scale(1);animation-timing-function:linear}
+    16.9%{opacity:0}
+    81.9%{opacity:0;transform:scale(.2);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    82.93%{opacity:1;transform:scale(1.4)}
+    83.64%{opacity:1;transform:scale(1);animation-timing-function:linear}
+    95.714%{opacity:1;transform:scale(1)}
+    96.6%{opacity:0;transform:scale(1)}
+    100%{opacity:0;transform:scale(.2)}
+  }
+
+  /* light pool + shadow under the deck (pre-baked layers, opacity/scale only) */
+  .fx-hero-deck__pool{
+    opacity:.7;
+    transform-box:fill-box;transform-origin:50% 50%;
+    animation:fx-hero-deck__poolcycle 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__poolcycle{
+    0%{opacity:0;transform:scale(.7)}
+    15.4%{opacity:0;transform:scale(.7);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    21%{opacity:.8;transform:scale(1)}
+    32%{opacity:.6}
+    42%{opacity:.8}
+    52%{opacity:.6}
+    62%{opacity:.78}
+    70%{opacity:.65;animation-timing-function:linear}
+    76%{opacity:0;transform:scale(.9)}
+    100%{opacity:0;transform:scale(.7)}
+  }
+  .fx-hero-deck__shadow{
+    opacity:.85;
+    transform-box:fill-box;transform-origin:50% 50%;
+    animation:fx-hero-deck__shadowcycle 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__shadowcycle{
+    0%{opacity:0;transform:scale(.75)}
+    15.4%{opacity:0;transform:scale(.75);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    21%{opacity:.9;transform:scale(1)}
+    33%{opacity:.75}
+    43%{opacity:.9}
+    53%{opacity:.75}
+    63%{opacity:.88}
+    71%{opacity:.7;animation-timing-function:linear}
+    78%{opacity:0;transform:scale(.85)}
+    100%{opacity:0;transform:scale(.75)}
+  }
+
+  /* ---- the deck: fan + breathing sway ---- */
+  .fx-hero-deck__deck{
+    opacity:1; /* base = final composed frame */
+    transform-box:view-box;transform-origin:600px 400px;
+    animation:fx-hero-deck__deckcycle 14s linear infinite;
+    will-change:transform,opacity;
+  }
+  @keyframes fx-hero-deck__deckcycle{
+    0%{opacity:0;transform:rotate(0deg)}
+    14.43%{opacity:1;transform:rotate(.9deg)}
+    19%{transform:rotate(-1.4deg)}
+    25.5%{transform:rotate(1.5deg)}
+    32.5%{transform:rotate(-1.7deg)}
+    39.5%{transform:rotate(1.7deg)}
+    46.5%{transform:rotate(-1.5deg)}
+    53.5%{transform:rotate(1.4deg)}
+    60.5%{transform:rotate(-1.2deg)}
+    67.5%{transform:rotate(.9deg)}
+    75%{opacity:1;transform:rotate(.4deg)}
+    79.5%{opacity:0;transform:rotate(.2deg)}
+    100%{opacity:0;transform:rotate(0deg)}
+  }
+  .fx-hero-deck__card{
+    transform-box:view-box;transform-origin:600px 560px;
+    animation-duration:14s;
+    animation-timing-function:linear;
+    animation-iteration-count:infinite;
+    will-change:transform,opacity;
+  }
+  .fx-hero-deck__card--bl{
+    opacity:1;transform:rotate(-9deg); /* base = final composed frame */
+    animation-name:fx-hero-deck__cardbl;
+  }
+  .fx-hero-deck__card--br{
+    opacity:1;transform:rotate(9deg);
+    animation-name:fx-hero-deck__cardbr;
+  }
+  .fx-hero-deck__card--fr{
+    opacity:1;transform:rotate(0deg) scale(1);
+    animation-name:fx-hero-deck__cardfr;
+  }
+  /* card reveal grammar: stagger 80ms · scale .96→1 · rise 12px (§0.3) */
+  @keyframes fx-hero-deck__cardbl{
+    0%{opacity:0;transform:translateY(12px) rotate(-1.2deg) scale(.96)}
+    15.4%{opacity:0;transform:translateY(12px) rotate(-1.2deg) scale(.96);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    20.4%{opacity:1;transform:translateY(0) rotate(-9deg) scale(1)}
+    97%{opacity:1;transform:translateY(0) rotate(-9deg) scale(1)}
+    100%{opacity:0;transform:translateY(12px) rotate(-1.2deg) scale(.96)}
+  }
+  @keyframes fx-hero-deck__cardbr{
+    0%{opacity:0;transform:translateY(12px) rotate(1.2deg) scale(.96)}
+    15.97%{opacity:0;transform:translateY(12px) rotate(1.2deg) scale(.96);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    20.97%{opacity:1;transform:translateY(0) rotate(9deg) scale(1)}
+    97%{opacity:1;transform:translateY(0) rotate(9deg) scale(1)}
+    100%{opacity:0;transform:translateY(12px) rotate(1.2deg) scale(.96)}
+  }
+  @keyframes fx-hero-deck__cardfr{
+    0%{opacity:0;transform:translateY(12px) rotate(0deg) scale(.96)}
+    16.54%{opacity:0;transform:translateY(12px) rotate(0deg) scale(.96);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    21.54%{opacity:1;transform:translateY(0) rotate(0deg) scale(1)}
+    97%{opacity:1;transform:translateY(0) rotate(0deg) scale(1)}
+    100%{opacity:0;transform:translateY(12px) rotate(0deg) scale(.96)}
+  }
+
+  /* white spark on the front card: 500ms ease-out draw + 200ms overshoot pop */
+  .fx-hero-deck__spark{
+    fill:none;
+    stroke:var(--white);
+    stroke-width:2.5;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    stroke-dasharray:1 1;
+    stroke-dashoffset:0; /* base = final composed frame */
+    animation:fx-hero-deck__sparkdraw 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__sparkdraw{
+    0%{stroke-dashoffset:1.06;animation-timing-function:linear}
+    21.9%{stroke-dashoffset:1.06;animation-timing-function:cubic-bezier(.33333,1,.66667,1)}
+    25.5%{stroke-dashoffset:0}
+    96%{stroke-dashoffset:0}
+    100%{stroke-dashoffset:1.06}
+  }
+  .fx-hero-deck__sparkdot{
+    opacity:1; /* base = final composed frame */
+    transform-box:fill-box;transform-origin:50% 50%;
+    animation:fx-hero-deck__sparkpop 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__sparkpop{
+    0%{opacity:0;transform:scale(.2)}
+    25.5%{opacity:0;transform:scale(.2);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    26.36%{opacity:1;transform:scale(1.45)}
+    26.93%{opacity:1;transform:scale(1)}
+    75%{opacity:1;transform:scale(1);animation-timing-function:linear}
+    78.5%{opacity:0}
+    100%{opacity:0;transform:scale(.2)}
+  }
+  .fx-hero-deck__sparkhalo{
+    opacity:.5;
+    animation:fx-hero-deck__halo 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__halo{
+    0%{opacity:0}
+    25.2%{opacity:0;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    26.5%{opacity:.55}
+    32%{opacity:.42}
+    40%{opacity:.55}
+    50%{opacity:.42}
+    60%{opacity:.55}
+    70%{opacity:.48;animation-timing-function:linear}
+    78.5%,100%{opacity:0}
+  }
+
+  .fx-hero-deck__cardlabel{
+    font:500 17px 'Space Grotesk',sans-serif;
+    fill:var(--white);
+  }
+  .fx-hero-deck__cardstat{
+    font:500 12.5px 'JetBrains Mono',ui-monospace,monospace;
+    font-variant-numeric:tabular-nums;
+    fill:var(--white);
+    fill-opacity:.92; /* the hero's 'honest numbers' stat must clear 4.5:1 on the bolt gradient */
+  }
+
+  .fx-hero-deck__caption{
+    position:absolute;
+    left:0;right:0;bottom:4.2%;
+    margin:0;
+    text-align:center;
+    font-family:'Inter',system-ui,sans-serif;
+    font-weight:400;
+    font-size:clamp(12px,1.15cqi,13.5px);
+    letter-spacing:.02em;
+    color:rgb(255 255 255 / .62);
+    pointer-events:none;
+  }
+
+  /* orchestrator hook: freeze while off-canvas */
+  .fx-hero-deck[data-fx-state="idle"] .fx-hero-deck__stage *,
+  .fx-hero-deck[data-fx-state="idle"] .fx-hero-deck__stage{animation-play-state:paused!important}
+
+  /* reduced motion: final composed frame (deck + spark), no loop */
+  @media (prefers-reduced-motion: reduce){
+    .fx-hero-deck *,.fx-hero-deck *::before,.fx-hero-deck *::after{
+      animation:none!important;transition:none!important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- FX-MODULE-START -->
+<div class="fx fx-hero-deck" data-brand-name="fizzyfeed" role="img" aria-label="an animated loop: a bright line draws across a dark grid, twelve month ticks light up along it, then the line folds into a fan of three gradient cards whose white spark pops and the deck sways gently">
+  <div class="fx-hero-deck__stage">
+
+    <div class="fx-hero-deck__glow fx-hero-deck__glow--a"></div>
+    <div class="fx-hero-deck__glow fx-hero-deck__glow--b"></div>
+
+    <svg class="fx-hero-deck__svg" viewBox="0 0 1200 675" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="fx01-bolt" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#0A5CFF"/>
+          <stop offset="1" stop-color="#00D5FF"/>
+        </linearGradient>
+        <linearGradient id="fx01-shade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#05070E" stop-opacity="0"/>
+          <stop offset="1" stop-color="#05070E" stop-opacity=".38"/>
+        </linearGradient>
+        <linearGradient id="fx01-shade-top" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#05070E" stop-opacity=".35"/>
+          <stop offset=".35" stop-color="#05070E" stop-opacity="0"/>
+          <stop offset="1" stop-color="#05070E" stop-opacity="0"/>
+        </linearGradient>
+        <radialGradient id="fx01-halog">
+          <stop offset="0" stop-color="#FFFFFF" stop-opacity=".9"/>
+          <stop offset=".55" stop-color="#FFFFFF" stop-opacity=".26"/>
+          <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="fx01-poolg">
+          <stop offset="0" stop-color="#0A5CFF" stop-opacity=".3"/>
+          <stop offset="1" stop-color="#0A5CFF" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="fx01-shadowg">
+          <stop offset="0" stop-color="#05070E" stop-opacity=".5"/>
+          <stop offset="1" stop-color="#05070E" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="fx01-gridfade" cx=".5" cy=".46" r=".75">
+          <stop offset="0" stop-color="#FFFFFF"/>
+          <stop offset=".55" stop-color="#FFFFFF"/>
+          <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+        </radialGradient>
+        <mask id="fx01-gridmask" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="675">
+          <rect width="1200" height="675" fill="url(#fx01-gridfade)"/>
+        </mask>
+      </defs>
+
+      <!-- subtle dark grid -->
+      <g class="fx-hero-deck__grid" mask="url(#fx01-gridmask)">
+        <path fill="none" stroke="#131A2B" stroke-width="1" d="M0 0V675 M60 0V675 M120 0V675 M180 0V675 M240 0V675 M300 0V675 M360 0V675 M420 0V675 M480 0V675 M540 0V675 M600 0V675 M660 0V675 M720 0V675 M780 0V675 M840 0V675 M900 0V675 M960 0V675 M1020 0V675 M1080 0V675 M1140 0V675 M1200 0V675 M0 0H1200 M0 60H1200 M0 120H1200 M0 180H1200 M0 240H1200 M0 300H1200 M0 360H1200 M0 420H1200 M0 480H1200 M0 540H1200 M0 600H1200 M0 660H1200"/>
+      </g>
+
+      <!-- faint post tiles drifting in the deep background -->
+      <g class="fx-hero-deck__tiles">
+        <g transform="translate(150 108) rotate(-4)" opacity=".1">
+          <g class="fx-hero-deck__tilefloat" style="--td:16s;--tdel:-3s">
+            <rect x="-23" y="-29" width="46" height="58" rx="12" fill="#131A2B"/>
+            <circle cx="-11" cy="-15" r="3.5" fill="#0A5CFF"/>
+            <rect x="-13" y="0" width="26" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
+            <rect x="-13" y="10" width="17" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+          </g>
+        </g>
+        <g transform="translate(1002 132) rotate(3)" opacity=".09">
+          <g class="fx-hero-deck__tilefloat" style="--td:13s;--tdel:-8s">
+            <rect x="-36" y="-26" width="72" height="52" rx="12" fill="#131A2B"/>
+            <circle cx="-23" cy="-12" r="3.5" fill="#00D5FF"/>
+            <rect x="-25" y="2" width="34" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
+            <rect x="-25" y="12" width="22" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+          </g>
+        </g>
+        <g transform="translate(96 500) rotate(3)" opacity=".12">
+          <g class="fx-hero-deck__tilefloat" style="--td:18s;--tdel:-6s">
+            <rect x="-22" y="-28" width="44" height="56" rx="12" fill="#131A2B"/>
+            <circle cx="-10" cy="-14" r="3.5" fill="#6333FF"/>
+            <rect x="-12" y="0" width="24" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
+            <rect x="-12" y="10" width="15" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+          </g>
+        </g>
+        <g transform="translate(1092 470) rotate(-3)" opacity=".09">
+          <g class="fx-hero-deck__tilefloat" style="--td:12s;--tdel:-2s">
+            <rect x="-33" y="-24" width="66" height="48" rx="12" fill="#131A2B"/>
+            <circle cx="-21" cy="-10" r="3.5" fill="#C8FF4D"/>
+            <rect x="-23" y="2" width="30" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
+            <rect x="-23" y="12" width="19" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+          </g>
+        </g>
+        <g transform="translate(782 72) rotate(-2)" opacity=".1">
+          <g class="fx-hero-deck__tilefloat" style="--td:15s;--tdel:-11s">
+            <rect x="-20" y="-25" width="40" height="50" rx="12" fill="#131A2B"/>
+            <circle cx="-9" cy="-12" r="3.5" fill="#00D5FF"/>
+            <rect x="-11" y="0" width="22" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
+            <rect x="-11" y="10" width="14" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+          </g>
+        </g>
+        <g transform="translate(420 84) rotate(2)" opacity=".08">
+          <g class="fx-hero-deck__tilefloat" style="--td:17s;--tdel:-5s">
+            <rect x="-19" y="-24" width="38" height="48" rx="12" fill="#131A2B"/>
+            <circle cx="-8" cy="-11" r="3.5" fill="#0A5CFF"/>
+            <rect x="-10" y="0" width="20" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
+            <rect x="-10" y="10" width="13" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+          </g>
+        </g>
+      </g>
+
+      <!-- the yearline: three segments fold at two creases -->
+      <g class="fx-hero-deck__line">
+        <g class="fx-hero-deck__seggroup fx-hero-deck__seggroup--l">
+          <path class="fx-hero-deck__seg" pathLength="1" d="M 150.00 400.00 C 163.67 395.33 204.67 374.00 232.00 372.00 C 259.33 370.00 286.67 392.67 314.00 388.00 C 341.33 383.33 368.67 348.67 396.00 344.00 C 414.33 340.87 432.67 351.24 451.00 356.99"/>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--0">
+            <circle class="fx-hero-deck__mtring" style="--d:0s" cx="150" cy="400" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:0s" cx="150" cy="400" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="150" y="424">j</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--1">
+            <circle class="fx-hero-deck__mtring" style="--d:.06s" cx="232" cy="372" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.06s" cx="232" cy="372" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="232" y="396">f</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--2">
+            <circle class="fx-hero-deck__mtring" style="--d:.122s" cx="314" cy="388" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.122s" cx="314" cy="388" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="314" y="412">m</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--3">
+            <circle class="fx-hero-deck__mtring" style="--d:.197s" cx="396" cy="344" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.197s" cx="396" cy="344" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="396" y="368">a</text>
+          </g>
+        </g>
+        <g class="fx-hero-deck__seggroup fx-hero-deck__seggroup--m">
+          <path class="fx-hero-deck__seg" pathLength="1" d="M 451.00 356.99 C 460.00 359.82 469.00 361.54 478.00 360.00 C 505.33 355.33 532.67 320.00 560.00 316.00 C 587.33 312.00 614.67 339.33 642.00 336.00 C 669.33 332.67 696.67 293.33 724.00 296.00 C 732.33 296.81 740.67 301.96 749.00 308.84"/>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--4">
+            <circle class="fx-hero-deck__mtring" style="--d:.27s" cx="478" cy="360" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.27s" cx="478" cy="360" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="478" y="384">m</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--5">
+            <circle class="fx-hero-deck__mtring" style="--d:.358s" cx="560" cy="316" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.358s" cx="560" cy="316" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="560" y="340">j</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--6">
+            <circle class="fx-hero-deck__mtring" style="--d:.449s" cx="642" cy="336" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.449s" cx="642" cy="336" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="642" y="360">j</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--7">
+            <circle class="fx-hero-deck__mtring" style="--d:.56s" cx="724" cy="296" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.56s" cx="724" cy="296" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="724" y="320">a</text>
+          </g>
+        </g>
+        <g class="fx-hero-deck__seggroup fx-hero-deck__seggroup--r">
+          <path class="fx-hero-deck__seg" pathLength="1" d="M 749.00 308.84 C 768.00 324.53 787.00 349.22 806.00 352.00 C 833.33 356.00 860.67 321.33 888.00 320.00 C 915.33 318.67 942.67 347.33 970.00 344.00 C 997.33 340.67 1038.33 307.33 1052.00 300.00"/>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--8">
+            <circle class="fx-hero-deck__mtring" style="--d:.705s" cx="806" cy="352" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.705s" cx="806" cy="352" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="806" y="376">s</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--9">
+            <circle class="fx-hero-deck__mtring" style="--d:.867s" cx="888" cy="320" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.867s" cx="888" cy="320" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="888" y="344">o</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--10">
+            <circle class="fx-hero-deck__mtring" style="--d:1.089s" cx="970" cy="344" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:1.089s" cx="970" cy="344" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="970" y="368">n</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--11">
+            <circle class="fx-hero-deck__mtring" style="--d:2s" cx="1052" cy="300" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:2s" cx="1052" cy="300" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="1052" y="324">d</text>
+          </g>
+        </g>
+        <!-- yearline end dot: overshoot pop on completion + bookend pop after dissolve -->
+        <g class="fx-hero-deck__linedot">
+          <circle cx="1052" cy="300" r="13" fill="url(#fx01-halog)"/>
+          <circle cx="1052" cy="300" r="5.5" fill="#FFFFFF"/>
+        </g>
+      </g>
+
+      <!-- floor light + shadow (pre-baked layers) -->
+      <ellipse class="fx-hero-deck__pool" cx="600" cy="588" rx="235" ry="30" fill="url(#fx01-poolg)"/>
+      <ellipse class="fx-hero-deck__shadow" cx="600" cy="589" rx="200" ry="24" fill="url(#fx01-shadowg)"/>
+
+      <!-- the deck -->
+      <g class="fx-hero-deck__deck">
+        <g class="fx-hero-deck__card fx-hero-deck__card--bl">
+          <rect x="465" y="187" width="270" height="340" rx="28" fill="#6333FF"/>
+          <rect x="465" y="187" width="270" height="340" rx="28" fill="url(#fx01-shade)"/>
+        </g>
+        <g class="fx-hero-deck__card fx-hero-deck__card--br">
+          <rect x="465" y="187" width="270" height="340" rx="28" fill="#00D5FF"/>
+          <rect x="465" y="187" width="270" height="340" rx="28" fill="url(#fx01-shade)"/>
+        </g>
+        <g class="fx-hero-deck__card fx-hero-deck__card--fr">
+          <rect x="465" y="205" width="270" height="340" rx="28" fill="url(#fx01-bolt)"/>
+          <rect x="465" y="205" width="270" height="340" rx="28" fill="url(#fx01-shade-top)"/>
+          <text class="fx-hero-deck__cardstat" x="497" y="250">5,214 posts</text>
+          <text class="fx-hero-deck__cardlabel" x="497" y="278">your year in posts</text>
+          <circle class="fx-hero-deck__sparkhalo" cx="700" cy="390" r="11" fill="url(#fx01-halog)"/>
+          <path class="fx-hero-deck__spark" pathLength="1" d="M 500.00 445.00 C 503.03 442.43 512.12 430.70 518.18 429.60 C 524.24 428.50 530.30 440.97 536.36 438.40 C 542.42 435.83 548.48 416.77 554.55 414.20 C 560.61 411.63 566.67 425.57 572.73 423.00 C 578.79 420.43 584.85 401.00 590.91 398.80 C 596.97 396.60 603.03 411.63 609.09 409.80 C 615.15 407.97 621.21 386.33 627.27 387.80 C 633.33 389.27 639.39 416.40 645.45 418.60 C 651.52 420.80 657.58 401.73 663.64 401.00 C 669.70 400.27 675.76 416.03 681.82 414.20 C 687.88 412.37 696.97 394.03 700.00 390.00"/>
+          <g class="fx-hero-deck__sparkdot">
+            <circle cx="700" cy="390" r="4.5" fill="#FFFFFF"/>
+          </g>
+        </g>
+      </g>
+    </svg>
+
+    <p class="fx-hero-deck__caption">every post, dealt into one deck</p>
+  </div>
+</div>
+<!-- FX-MODULE-END -->
+
+</body>
+</html>

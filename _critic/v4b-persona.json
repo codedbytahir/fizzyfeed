@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "1) Yes. Approximately 40-45% of the stage height is empty space above and below the card.\n2) Yes. \"01 the midnight archivist\", \"02 the quiet storm\", \"03 the tuesday regular\", \"04 the long-game builder\". **01 the midnight archivist** is cyan/volt colored.\n3) It overflows past the card's right edge (it is clipped).\n4) Yes, it is visible above the stage.\n5) Yes, the text \"posted 214 nights after 11pm — consistency masquerading as insomnia\" is clipped on the right side of the card.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1792910140,
+  "id": "202610251435389fc0fb69d0a04860",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "202610251435389fc0fb69d0a04860",
+  "usage": {
+    "completion_tokens": 128,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1827,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 1955
+  }
+}

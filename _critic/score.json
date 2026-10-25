@@ -1,0 +1,24 @@
+{
+  "run": 9,
+  "overall": 9.0,
+  "gateCap": false,
+  "dims": {
+    "hero": 9.0,
+    "typography": 9.0,
+    "color": 9.0,
+    "layout": 9.0,
+    "craft": 9.0,
+    "motion": 9.0,
+    "copy": 9.0,
+    "distinct": 9.0
+  },
+  "strengths": [
+    "I33 verified shipped AND mirrored byte-identical: .fx-persona-morph__overline now color:rgb(255 255 255/.85) + text-shadow:0 1px 6px rgb(5 7 14/.6) in landing/index.html (L925–933) and animations/fx-05-persona-morph/index.html (L112–120); '≈4.8:1 on the nebula gradient' documented in-code.",
+    "I34 verified shipped: .hero-note is font:500 12px/1.6 (styles.css L84) — mobile two-line wrap now carries the same leading rhythm as the persona roster.",
+    "Craft greps clean at seal: transition:all = 0 across index.html/styles.css/main.js/animations; raw hex confined to :root token scope, self-contained fx module scopes and SVG defs; exactly three font stacks (Inter body / Space Grotesk display / JetBrains Mono data); :focus-visible volt ring with offset on every interactive element; 0 imgs missing alt; all 7 fx modules carry role=img + full aria-label.",
+    "Numeric contrast audit this run: ink-300 8.41:1, ink-400 5.26:1, electric-300 6.30:1 on ink-950; draft tag #33405C on white card 9.73:1; queue CTA white/.92 on electric-600 7.02:1 — every raster-pass charge of low contrast re-measured and refuted.",
+    "Hi-res 2× close-up re-inspection of the deck fan (chapters) and hero deck: zero own-edge text clipping, zero jagged corners/seams/banding; label occlusion is designed fan geometry riding the documented least-occluded top-left scrim zone. This run's raster-pass complaints (ragged hero left edge, clipped fan labels, invisible draft tag, dark-on-dark queue button) were each re-measured — hero copy is one flex column at align-items:flex-start, machine-clean geometry from run 8 stands."
+  ],
+  "gatesHit": [],
+  "issues": []
+}

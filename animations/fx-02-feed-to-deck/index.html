@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fx · feed-to-deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* == page scaffold (standalone preview only — the landing assembler strips this block) == */
+  html,body{margin:0;background:#05070E}
+  body{min-height:100vh;display:grid;place-items:center;padding:24px;box-sizing:border-box}
+
+  /* == fx-02 feed-to-deck module styles — every selector scoped under the module root == */
+  .fx.fx-feed-to-deck{position:relative;width:100%;max-width:1400px;margin-inline:auto}
+  .fx-feed-to-deck__svg{display:block;width:100%;height:auto}
+  .fx-feed-to-deck__glyph{font-family:'Space Grotesk',sans-serif;font-weight:700;fill:#FFFFFF;text-anchor:middle;dominant-baseline:central}
+
+  /* animated nodes: transform / opacity / stroke-dashoffset only */
+  .fx-feed-to-deck__tile{opacity:0;transform-box:view-box;transform-origin:0 0;animation:fx2Tile 22s linear infinite;animation-delay:var(--d,0s)}
+  .fx-feed-to-deck__card{opacity:0;transform-box:view-box;transform-origin:0 0;animation:fx2Card 22s linear infinite;animation-delay:var(--d,0s)}
+  .fx-feed-to-deck__ringA{animation:fx2RingCw 22s linear infinite}
+  .fx-feed-to-deck__ringB{animation:fx2RingCcw 22s linear infinite}
+  .fx-feed-to-deck__markBob{transform-box:fill-box;transform-origin:50% 60%;animation:fx2Mark 22s ease-in-out infinite}
+  .fx-feed-to-deck__spark{animation:fx2Spark 22s linear infinite}
+  .fx-feed-to-deck__sparkDot{opacity:0;transform-box:fill-box;transform-origin:center;animation:fx2SparkDot 22s linear infinite}
+
+  /* keyframes — one shared 22s period for every node; per-element phase via negative delays ⇒ seamless loop */
+  @keyframes fx2Tile{
+    0%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(var(--sc)) rotate(var(--r0));animation-timing-function:cubic-bezier(.3,.42,.5,.98)}
+    8%{opacity:var(--o)}
+    56%{opacity:var(--o)}
+    65%{opacity:0;transform:translate(var(--ex),var(--ey)) scale(calc(var(--sc)*.94)) rotate(var(--r1));animation-timing-function:linear}
+    73%,100%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(var(--sc)) rotate(var(--r0))}
+  }
+  @keyframes fx2Card{
+    0%{opacity:0;transform:translate(0,0) scale(.35) rotate(var(--tilt));animation-timing-function:cubic-bezier(.2,.75,.3,1)}
+    5%{opacity:0;transform:translate(14px,-34px) scale(.55) rotate(var(--tilt))}
+    11%{opacity:1;transform:translate(88px,-132px) scale(1) rotate(var(--tilt));animation-timing-function:cubic-bezier(.34,.2,.4,.96)}
+    30%{opacity:1;transform:translate(var(--tx),var(--ty)) scale(1) rotate(var(--tilt));animation-timing-function:linear}
+    37%{opacity:0;transform:translate(calc(var(--tx)*1.16),calc(var(--ty)*1.2)) scale(1.03) rotate(var(--tilt))}
+    45%,100%{opacity:0;transform:translate(0,0) scale(.35) rotate(var(--tilt))}
+  }
+  @keyframes fx2RingCw{from{stroke-dashoffset:0}to{stroke-dashoffset:-360}}
+  @keyframes fx2RingCcw{from{stroke-dashoffset:0}to{stroke-dashoffset:360}}
+  @keyframes fx2Mark{
+    0%,100%{transform:translateY(0) scale(1)}
+    50%{transform:translateY(-2px) scale(1.02)}
+  }
+  /* spark: drains toward its end, then redraws left→right (offset -100→-200 ≡ dasharray-period wrap ≡ 0) */
+  @keyframes fx2Spark{
+    0%,22%{stroke-dashoffset:0;animation-timing-function:cubic-bezier(.55,0,.7,.4)}
+    34%{stroke-dashoffset:-100;animation-timing-function:cubic-bezier(.16,.6,.3,1)}
+    52%,100%{stroke-dashoffset:-200}
+  }
+  @keyframes fx2SparkDot{
+    0%,50%{opacity:0;transform:scale(.4)}
+    53%{opacity:1;transform:scale(1.45)}
+    61%,100%{opacity:0;transform:scale(.4)}
+  }
+
+  /* reduced motion: static composed frame — hub + six tiles + two cards mid-flow + drawn spark */
+  @media (prefers-reduced-motion: reduce){
+    .fx-feed-to-deck__tile,.fx-feed-to-deck__card,.fx-feed-to-deck__ringA,
+    .fx-feed-to-deck__ringB,.fx-feed-to-deck__markBob,.fx-feed-to-deck__spark,
+    .fx-feed-to-deck__sparkDot{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- FX-MODULE-START -->
+<div class="fx fx-feed-to-deck" data-brand-name="fizzyfeed" role="img" aria-label="Eleven monogram channel tiles drift in from the left and right edges and stream toward a central deck hub with slowly turning rings, while seven gradient story cards emerge one by one and float away to the upper right.">
+  <svg class="fx-feed-to-deck__svg" viewBox="0 0 1400 700" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    <defs>
+      <!-- static edge-fade masks: outer 6% horizontal, bottom 15% vertical -->
+      <linearGradient id="fx2FadeX" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/>
+        <stop offset=".06" stop-color="#FFFFFF" stop-opacity="1"/>
+        <stop offset=".94" stop-color="#FFFFFF" stop-opacity="1"/>
+        <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="fx2FadeY" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FFFFFF" stop-opacity="1"/>
+        <stop offset=".85" stop-color="#FFFFFF" stop-opacity="1"/>
+        <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+      </linearGradient>
+      <mask id="fx2MaskX" maskUnits="userSpaceOnUse" x="0" y="0" width="1400" height="700">
+        <rect width="1400" height="700" fill="url(#fx2FadeX)"/>
+      </mask>
+      <mask id="fx2MaskY" maskUnits="userSpaceOnUse" x="0" y="0" width="1400" height="700">
+        <rect width="1400" height="700" fill="url(#fx2FadeY)"/>
+      </mask>
+
+      <radialGradient id="fx2Glow">
+        <stop offset="0" stop-color="#0A5CFF" stop-opacity=".22"/>
+        <stop offset=".5" stop-color="#0A5CFF" stop-opacity=".1"/>
+        <stop offset="1" stop-color="#0A5CFF" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="fx2Slab" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#070d22"/>
+        <stop offset="1" stop-color="#0c1634"/>
+      </linearGradient>
+      <linearGradient id="fx2Intake" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#0A0E1A"/>
+        <stop offset="1" stop-color="#05070E"/>
+      </linearGradient>
+      <linearGradient id="fx2Bevel" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FFFFFF" stop-opacity=".5"/>
+        <stop offset=".16" stop-color="#FFFFFF" stop-opacity=".12"/>
+        <stop offset=".45" stop-color="#FFFFFF" stop-opacity="0"/>
+      </linearGradient>
+
+      <!-- story card gradients (§1, exact) -->
+      <linearGradient id="fx2GradBolt"   x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0A5CFF"/><stop offset="1" stop-color="#00D5FF"/></linearGradient>
+      <linearGradient id="fx2GradAurora" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00D5FF"/><stop offset="1" stop-color="#00FFA3"/></linearGradient>
+      <linearGradient id="fx2GradFizz"   x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C8FF4D"/><stop offset="1" stop-color="#00E5A0"/></linearGradient>
+      <linearGradient id="fx2GradGrape"  x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A855F7"/><stop offset="1" stop-color="#6366FA"/></linearGradient>
+      <linearGradient id="fx2GradSunset" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8A00"/><stop offset="1" stop-color="#FF3D77"/></linearGradient>
+      <linearGradient id="fx2GradNebula" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6333FF"/><stop offset="1" stop-color="#0A5CFF"/></linearGradient>
+      <linearGradient id="fx2GradCoral"  x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF5C5C"/><stop offset="1" stop-color="#FF9E2C"/></linearGradient>
+
+      <!-- the Deck mark's own gradient (official mark-gradient.svg geometry, scaled) -->
+      <linearGradient id="fx2GradMark" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#6333FF"/>
+        <stop offset=".45" stop-color="#0A5CFF"/>
+        <stop offset="1" stop-color="#00D5FF"/>
+      </linearGradient>
+
+      <!-- static filters (defined once, never animated) -->
+      <filter id="fx2Shadow" x="-60%" y="-140%" width="220%" height="380%"><feGaussianBlur stdDeviation="10"/></filter>
+      <filter id="fx2Soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.3"/></filter>
+
+      <!-- reusable shapes: tile base (accent dot takes currentColor) + story card -->
+      <g id="fx2TileBase">
+        <rect x="-28" y="-28" width="56" height="56" rx="14" fill="#131A2B" stroke="#FFFFFF" stroke-opacity=".07"/>
+        <circle cx="17" cy="-17" r="3" fill="currentColor"/>
+      </g>
+      <g id="fx2CardShape">
+        <rect x="-45" y="-60" width="90" height="120" rx="28" stroke="#FFFFFF" stroke-opacity=".1"/>
+      </g>
+    </defs>
+
+    <!-- ambient hub glow (static) -->
+    <circle cx="700" cy="398" r="272" fill="url(#fx2Glow)"/>
+
+    <!-- flowing layer: edge-fade masks (horizontal × vertical, nested) -->
+    <g mask="url(#fx2MaskX)"><g mask="url(#fx2MaskY)">
+      <!-- floor shadow under the hub (static, pre-blurred) -->
+      <ellipse cx="700" cy="552" rx="300" ry="34" fill="#05070E" opacity=".45" filter="url(#fx2Shadow)"/>
+      <ellipse cx="700" cy="552" rx="208" ry="20" fill="#05070E" opacity=".9" filter="url(#fx2Shadow)"/>
+
+      <!-- channel tiles: drift in from left / right edges, dissolve at the hub's outer ring -->
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:150px;--ex:452px;--ey:318px;--sc:.95;--o:.95;--r0:-6deg;--r1:5deg;--d:-1s;color:#0A5CFF;opacity:.95;transform:translate(170px,225px) scale(.95) rotate(-1deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">X</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:300px;--ex:428px;--ey:402px;--sc:1;--o:.92;--r0:4deg;--r1:-4deg;--d:-9.2s;color:#C8FF4D;opacity:.92;transform:translate(160px,345px) scale(1) rotate(0deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="15">IG</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:585px;--ex:452px;--ey:478px;--sc:.9;--o:.82;--r0:-5deg;--r1:4deg;--d:-4.6s;color:#00D5FF;opacity:.82;transform:translate(170px,535px) scale(.9) rotate(-1deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="15">in</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" filter="url(#fx2Soft)" style="--sx:-90px;--sy:96px;--ex:470px;--ey:258px;--sc:.7;--o:.5;--r0:6deg;--r1:-6deg;--d:-14.4s;color:#FF8A00;opacity:0;transform:translate(-90px,96px) scale(.7) rotate(6deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">f</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:434px;--ex:462px;--ey:432px;--sc:.8;--o:.68;--r0:-4deg;--r1:3deg;--d:-18.6s;color:#A855F7;opacity:0;transform:translate(-90px,434px) scale(.8) rotate(-4deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">♪</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:660px;--ex:476px;--ey:528px;--sc:.95;--o:.9;--r0:3deg;--r1:-5deg;--d:-6.9s;color:#00FFA3;opacity:0;transform:translate(-90px,660px) scale(.95) rotate(3deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">b</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" style="--sx:1490px;--sy:210px;--ex:948px;--ey:322px;--sc:.92;--o:.9;--r0:5deg;--r1:-4deg;--d:-2.8s;color:#FF3D77;opacity:.9;transform:translate(1220px,266px) scale(.92) rotate(1deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="17">▶</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" filter="url(#fx2Soft)" style="--sx:1490px;--sy:372px;--ex:968px;--ey:402px;--sc:.76;--o:.58;--r0:-5deg;--r1:5deg;--d:-11.6s;color:#6333FF;opacity:0;transform:translate(1490px,372px) scale(.76) rotate(-5deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="15">th</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" style="--sx:1490px;--sy:620px;--ex:942px;--ey:486px;--sc:.9;--o:.85;--r0:4deg;--r1:-3deg;--d:-7.7s;color:#FF9E2C;opacity:.85;transform:translate(1215px,552px) scale(.9) rotate(1deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">P</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" filter="url(#fx2Soft)" style="--sx:1490px;--sy:120px;--ex:952px;--ey:262px;--sc:.68;--o:.5;--r0:-6deg;--r1:6deg;--d:-16.3s;color:#00E5A0;opacity:0;transform:translate(1490px,120px) scale(.68) rotate(-6deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">M</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" style="--sx:1490px;--sy:520px;--ex:958px;--ey:540px;--sc:.98;--o:.95;--r0:2deg;--r1:-4deg;--d:-20.1s;color:#6366FA;opacity:.95;transform:translate(1225px,530px) scale(.98) rotate(-1deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">G</text>
+      </g>
+
+      <!-- story cards: born behind the hub, rise up-right, fade before the edges -->
+      <g transform="translate(700 392)">
+        <g class="fx-feed-to-deck__card" style="--tilt:-8deg;--tx:430px;--ty:-290px;--d:-.6s;opacity:1;transform:translate(215px,-170px) scale(1) rotate(-8deg)">
+          <use href="#fx2CardShape" fill="url(#fx2GradBolt)"/>
+        </g>
+        <g class="fx-feed-to-deck__card" style="--tilt:-4deg;--tx:392px;--ty:-248px;--d:-3.7s;opacity:0;transform:translate(0,0) scale(.35) rotate(-4deg)">
+          <use href="#fx2CardShape" fill="url(#fx2GradAurora)"/>
+        </g>
+        <g class="fx-feed-to-deck__card" style="--tilt:3deg;--tx:468px;--ty:-318px;--d:-6.8s;opacity:0;transform:translate(0,0) scale(.35) rotate(3deg)">
+          <use href="#fx2CardShape" fill="url(#fx2GradFizz)"/>
+        </g>
+        <g class="fx-feed-to-deck__card" style="--tilt:7deg;--tx:362px;--ty:-214px;--d:-9.9s;opacity:0;transform:translate(0,0) scale(.35) rotate(7deg)">
+          <use href="#fx2CardShape" fill="url(#fx2GradGrape)"/>
+        </g>
+        <g class="fx-feed-to-deck__card" style="--tilt:-6deg;--tx:452px;--ty:-262px;--d:-13s;opacity:1;transform:translate(390px,-275px) scale(1) rotate(-6deg)">
+          <use href="#fx2CardShape" fill="url(#fx2GradSunset)"/>
+        </g>
+        <g class="fx-feed-to-deck__card" style="--tilt:2deg;--tx:410px;--ty:-332px;--d:-16.1s;opacity:0;transform:translate(0,0) scale(.35) rotate(2deg)">
+          <use href="#fx2CardShape" fill="url(#fx2GradNebula)"/>
+        </g>
+        <g class="fx-feed-to-deck__card" style="--tilt:5deg;--tx:478px;--ty:-286px;--d:-19.2s;opacity:0;transform:translate(0,0) scale(.35) rotate(5deg)">
+          <use href="#fx2CardShape" fill="url(#fx2GradCoral)"/>
+        </g>
+      </g>
+    </g></g>
+
+    <!-- deck hub (painted above the flow so cards are born behind it) -->
+    <g class="fx-feed-to-deck__hub">
+      <rect class="fx-feed-to-deck__slab" x="505" y="438" width="390" height="108" rx="54" fill="url(#fx2Slab)"/>
+      <ellipse class="fx-feed-to-deck__intake" cx="700" cy="492" rx="148" ry="30" fill="url(#fx2Intake)" stroke="#0A5CFF" stroke-opacity=".28"/>
+      <rect class="fx-feed-to-deck__bevel" x="505" y="438" width="390" height="108" rx="54" fill="none" stroke="url(#fx2Bevel)" stroke-width="1.4"/>
+      <circle class="fx-feed-to-deck__ringA" cx="700" cy="390" r="104" fill="none" stroke="#FFFFFF" stroke-opacity=".5" stroke-width="1.5" pathLength="360" stroke-dasharray="262 98"/>
+      <circle class="fx-feed-to-deck__ringB" cx="700" cy="390" r="146" fill="none" stroke="#0A5CFF" stroke-opacity=".85" stroke-width="2" pathLength="360" stroke-dasharray="198 162"/>
+      <!-- the Deck mark: three fanned gradient cards + white yearline spark (official geometry, scaled) -->
+      <g transform="translate(700 392)">
+        <g class="fx-feed-to-deck__markBob">
+          <rect x="-23" y="-31" width="46" height="62" rx="13" fill="url(#fx2GradAurora)" transform="translate(-17 4) rotate(-11)" opacity=".92"/>
+          <rect x="-23" y="-31" width="46" height="62" rx="13" fill="url(#fx2GradNebula)" transform="translate(17 4) rotate(11)" opacity=".92"/>
+          <rect x="-23" y="-31" width="46" height="62" rx="13" fill="url(#fx2GradMark)"/>
+          <path class="fx-feed-to-deck__spark" d="M-11 9 L-3 1 L1.5 6 L9 -3" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" pathLength="100" stroke-dasharray="100 100"/>
+          <g transform="translate(9 -3)"><g class="fx-feed-to-deck__sparkDot"><circle r="2.7" fill="#FFFFFF" style="opacity:.9"/></g></g>
+        </g>
+      </g>
+    </g>
+  </svg>
+</div>
+<!-- FX-MODULE-END -->
+
+</body>
+</html>

@@ -1,0 +1,3081 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fizzyfeed — your year in posts</title>
+<meta name="description" content="connect buffer, and twelve months of publishing become a deck of seven story cards, an ai-named alter ego, and a recap post queued to every channel — in one click.">
+<link rel="canonical" href="https://codedbytahir.github.io/fizzyfeed/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://codedbytahir.github.io/fizzyfeed/">
+<meta property="og:title" content="fizzyfeed — your year in posts">
+<meta property="og:description" content="twelve months of publishing, carded. seven story cards, an alter ego, one queued recap.">
+<meta property="og:image" content="https://codedbytahir.github.io/fizzyfeed/social/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="fizzyfeed — your year in posts">
+<meta name="twitter:description" content="twelve months of publishing, carded. seven story cards, an alter ego, one queued recap.">
+<meta name="twitter:image" content="https://codedbytahir.github.io/fizzyfeed/social/og-image.png">
+<meta name="theme-color" content="#05070E">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "fizzyfeed",
+  "url": "https://codedbytahir.github.io/fizzyfeed/",
+  "description": "connect buffer, and twelve months of publishing become a deck of seven story cards, an ai-named alter ego, and a recap post queued to every channel — in one click.",
+  "inLanguage": "en",
+  "about": "your year in posts — a buffer commit 2026 hackathon project",
+  "publisher": { "@type": "Organization", "name": "fizzyfeed", "url": "https://github.com/codedbytahir/fizzyfeed" }
+}
+</script>
+<link rel="icon" type="image/png" href="logo/favicon-48.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style id="fx-css">
+/* ===== inlined fx modules (contract: docs/ANIMATIONS.md §2) ===== */
+/* ---- fx-01-hero-deck ---- */
+/* == fx-01 hero-deck module styles — ALL selectors scoped under .fx-hero-deck == */
+  .fx-hero-deck{
+    /* design tokens — ANIMATIONS.md §1 (verbatim) */
+    --electric-500:#0A5CFF; --electric-600:#0047E0; --volt-500:#00D5FF; --violet-500:#6333FF;
+    --spark-500:#C8FF4D; --ink-950:#05070E; --ink-900:#0A0E1A; --ink-800:#131A2B;
+    --ink-300:#9AA8C4; --ink-200:#C6D0E4; --ink-50:#F5F8FE; --white:#FFFFFF;
+    --grad-brand: linear-gradient(135deg,#6333FF,#0A5CFF,#00D5FF);
+    --grad-bolt:  linear-gradient(135deg,#0A5CFF,#00D5FF);  /* card 1 */
+    --grad-nebula:linear-gradient(135deg,#6333FF,#0A5CFF);  /* card 6 */
+    --grad-aurora:linear-gradient(135deg,#00D5FF,#00FFA3);  /* card 2 */
+    --grad-fizz:  linear-gradient(135deg,#C8FF4D,#00E5A0);  /* card 3 */
+    --grad-sunset:linear-gradient(135deg,#FF8A00,#FF3D77);  /* card 5 */
+    --grad-coral: linear-gradient(135deg,#FF5C5C,#FF9E2C);  /* card 7 */
+    --grad-grape: linear-gradient(135deg,#A855F7,#6366FA);  /* card 4 */
+    --radius-card:28px; --radius-md:14px; --radius-pill:999px;
+    --glow-electric: 0 0 0 1px rgb(10 92 255 / .25), 0 12px 48px rgb(10 92 255 / .35);
+    --shadow-card: 0 8px 30px rgb(5 7 14 / .35);
+
+    display:block;
+    width:100%;
+    color:var(--white);
+    font-family:'Inter',system-ui,sans-serif;
+  }
+
+  /* 16:9 stage, scales 1200 → 720 */
+  .fx-hero-deck__stage{
+    position:relative;
+    width:100%;
+    max-width:1200px;
+    margin-inline:auto;
+    aspect-ratio:16/9;
+    background:var(--ink-950);
+    border-radius:clamp(10px,2vw,24px);
+    overflow:hidden;
+    isolation:isolate;
+    container-type:inline-size;
+  }
+  .fx-hero-deck__svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+  /* ambient radial light (pre-baked layers, opacity-only breathing, ≤ .25 effective) */
+  .fx-hero-deck__glow{
+    position:absolute;
+    aspect-ratio:1;
+    border-radius:50%;
+    pointer-events:none;
+  }
+  .fx-hero-deck__glow--a{
+    top:-20%;right:-12%;width:58%;
+    background:radial-gradient(closest-side, rgb(10 92 255 / .24), transparent 72%);
+    opacity:.7;
+    animation:fx-hero-deck__breath 14s ease-in-out infinite;
+  }
+  .fx-hero-deck__glow--b{
+    bottom:-24%;left:-14%;width:54%;
+    background:radial-gradient(closest-side, rgb(99 51 255 / .22), transparent 72%);
+    opacity:.6;
+    animation:fx-hero-deck__breath 14s ease-in-out -7s infinite;
+  }
+  @keyframes fx-hero-deck__breath{
+    0%,100%{opacity:.55;transform:scale(1)}
+    50%{opacity:1;transform:scale(1.07)}
+  }
+
+  /* subtle dark grid, edge-faded via mask, dims under the deck */
+  .fx-hero-deck__grid{
+    opacity:.5;
+    animation:fx-hero-deck__gridcycle 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__gridcycle{
+    0%,14.286%{opacity:1}
+    20%{opacity:.5}
+    68%{opacity:.5}
+    77%,100%{opacity:1}
+  }
+
+  /* faint post tiles in the deep background (opacity ≤ .12) */
+  .fx-hero-deck__tilefloat{
+    transform-box:fill-box;
+    transform-origin:50% 50%;
+    animation:fx-hero-deck__drift var(--td,14s) ease-in-out var(--tdel,0s) infinite;
+  }
+  @keyframes fx-hero-deck__drift{
+    0%,100%{transform:translate(0,0) rotate(0deg)}
+    50%{transform:translate(8px,-12px) rotate(1.6deg)}
+  }
+
+  /* ---- the yearline (draw → fold into deck → return) ---- */
+  .fx-hero-deck__line{
+    opacity:0; /* base = final composed frame (deck state) */
+    transform-box:view-box;
+    transform-origin:600px 375px;
+    animation:fx-hero-deck__linecycle 14s linear infinite;
+    will-change:transform,opacity;
+  }
+  @keyframes fx-hero-deck__linecycle{
+    0%{opacity:1;transform:scale(1)}
+    15.2%{opacity:1;transform:scale(1);animation-timing-function:cubic-bezier(.55,.06,.68,.19)}
+    16.8%{opacity:1;animation-timing-function:linear}
+    23.8%{opacity:0}
+    24.3%{transform:scale(.26)}
+    68.5%{opacity:0;transform:scale(.26);animation-timing-function:cubic-bezier(.33333,1,.66667,1)}
+    73.5%{opacity:1}
+    77.5%,100%{opacity:1;transform:scale(1)}
+  }
+  .fx-hero-deck__seg{
+    fill:none;
+    stroke:var(--white);
+    stroke-width:3;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    stroke-dasharray:1 1;
+    stroke-dashoffset:1.06;
+    animation:fx-hero-deck__draw 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__draw{
+    0%{stroke-dashoffset:1.06;animation-timing-function:cubic-bezier(.33333,1,.66667,1)}
+    14.286%{stroke-dashoffset:0}
+    95.714%{stroke-dashoffset:0;animation-timing-function:cubic-bezier(.55,.06,.68,.19)}
+    100%{stroke-dashoffset:1.06}
+  }
+  .fx-hero-deck__seggroup--l{
+    transform-box:view-box;transform-origin:451px 356.99px;
+    animation:fx-hero-deck__foldl 14s linear infinite;
+  }
+  .fx-hero-deck__seggroup--m{transform-box:view-box;transform-origin:451px 356.99px}
+  .fx-hero-deck__seggroup--r{
+    transform-box:view-box;transform-origin:749px 308.84px;
+    animation:fx-hero-deck__foldr 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__foldl{
+    0%{transform:rotate(0deg)}
+    15.2%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.6,.05,.35,.95)}
+    22.2%{transform:rotate(24deg)}
+    27%{transform:rotate(24deg);animation-timing-function:cubic-bezier(.4,0,.2,1)}
+    45%,100%{transform:rotate(0deg)}
+  }
+  @keyframes fx-hero-deck__foldr{
+    0%{transform:rotate(0deg)}
+    15.2%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.6,.05,.35,.95)}
+    22.2%{transform:rotate(-24deg)}
+    27%{transform:rotate(-24deg);animation-timing-function:cubic-bezier(.4,0,.2,1)}
+    45%,100%{transform:rotate(0deg)}
+  }
+
+  /* month ticks: pop (opacity) exactly when the drawing line passes each point */
+  .fx-hero-deck__mt{
+    opacity:0;
+    animation-duration:14s;
+    animation-timing-function:cubic-bezier(.33333,1,.66667,1);
+    animation-iteration-count:infinite;
+  }
+  .fx-hero-deck__mt--0{animation-name:fx-hero-deck__mt0}
+  .fx-hero-deck__mt--1{animation-name:fx-hero-deck__mt1}
+  .fx-hero-deck__mt--2{animation-name:fx-hero-deck__mt2}
+  .fx-hero-deck__mt--3{animation-name:fx-hero-deck__mt3}
+  .fx-hero-deck__mt--4{animation-name:fx-hero-deck__mt4}
+  .fx-hero-deck__mt--5{animation-name:fx-hero-deck__mt5}
+  .fx-hero-deck__mt--6{animation-name:fx-hero-deck__mt6}
+  .fx-hero-deck__mt--7{animation-name:fx-hero-deck__mt7}
+  .fx-hero-deck__mt--8{animation-name:fx-hero-deck__mt8}
+  .fx-hero-deck__mt--9{animation-name:fx-hero-deck__mt9}
+  .fx-hero-deck__mt--10{animation-name:fx-hero-deck__mt10}
+  .fx-hero-deck__mt--11{animation-name:fx-hero-deck__mt11}
+  @keyframes fx-hero-deck__mt0{0%{opacity:0}2.4%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt1{0%,0.43%{opacity:0}2.83%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt2{0%,0.875%{opacity:0}3.275%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt3{0%,1.406%{opacity:0}3.806%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt4{0%,1.926%{opacity:0}4.326%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt5{0%,2.56%{opacity:0}4.96%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt6{0%,3.203%{opacity:0}5.603%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt7{0%,3.999%{opacity:0}6.399%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt8{0%,5.033%{opacity:0}7.433%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt9{0%,6.196%{opacity:0}8.596%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt10{0%,7.78%{opacity:0}10.18%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  @keyframes fx-hero-deck__mt11{0%,14.286%{opacity:0}16.686%{opacity:1}95.714%{opacity:1}97.7%{opacity:0}100%{opacity:0}}
+  .fx-hero-deck__mtdot,.fx-hero-deck__mtring{
+    transform-box:fill-box;transform-origin:50% 50%;
+    animation-duration:14s;
+    animation-timing-function:cubic-bezier(.33333,1,.66667,1);
+    animation-iteration-count:infinite;
+    animation-fill-mode:backwards;
+  }
+  .fx-hero-deck__mtdot{animation-name:fx-hero-deck__dotpop}
+  .fx-hero-deck__mtring{animation-name:fx-hero-deck__ringpop}
+  @keyframes fx-hero-deck__dotpop{
+    0%{transform:scale(.2)}
+    1.5%{transform:scale(1.35)}
+    2.5%,95.7%{transform:scale(1)}
+    98%,100%{transform:scale(.2)}
+  }
+  @keyframes fx-hero-deck__ringpop{
+    0%{opacity:0;transform:scale(.3)}
+    0.3%{opacity:.6;transform:scale(.7)}
+    2.6%,100%{opacity:0;transform:scale(2.4)}
+  }
+  .fx-hero-deck__mtletter{
+    font:500 11px 'JetBrains Mono',ui-monospace,monospace;
+    fill:var(--white);
+    fill-opacity:.62;
+    text-anchor:middle;
+  }
+
+  /* the yearline's own end dot — overshoot pop on completion, again after dissolve */
+  .fx-hero-deck__linedot{
+    opacity:0;
+    transform-box:fill-box;transform-origin:50% 50%;
+    animation:fx-hero-deck__linedotcycle 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__linedotcycle{
+    0%{opacity:0;transform:scale(.2)}
+    14.286%{opacity:0;transform:scale(.2);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    14.93%{opacity:1;transform:scale(1.4)}
+    15.64%{opacity:1;transform:scale(1);animation-timing-function:linear}
+    16.9%{opacity:0}
+    81.9%{opacity:0;transform:scale(.2);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    82.93%{opacity:1;transform:scale(1.4)}
+    83.64%{opacity:1;transform:scale(1);animation-timing-function:linear}
+    95.714%{opacity:1;transform:scale(1)}
+    96.6%{opacity:0;transform:scale(1)}
+    100%{opacity:0;transform:scale(.2)}
+  }
+
+  /* light pool + shadow under the deck (pre-baked layers, opacity/scale only) */
+  .fx-hero-deck__pool{
+    opacity:.7;
+    transform-box:fill-box;transform-origin:50% 50%;
+    animation:fx-hero-deck__poolcycle 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__poolcycle{
+    0%{opacity:0;transform:scale(.7)}
+    15.4%{opacity:0;transform:scale(.7);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    21%{opacity:.8;transform:scale(1)}
+    32%{opacity:.6}
+    42%{opacity:.8}
+    52%{opacity:.6}
+    62%{opacity:.78}
+    70%{opacity:.65;animation-timing-function:linear}
+    76%{opacity:0;transform:scale(.9)}
+    100%{opacity:0;transform:scale(.7)}
+  }
+  .fx-hero-deck__shadow{
+    opacity:.85;
+    transform-box:fill-box;transform-origin:50% 50%;
+    animation:fx-hero-deck__shadowcycle 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__shadowcycle{
+    0%{opacity:0;transform:scale(.75)}
+    15.4%{opacity:0;transform:scale(.75);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    21%{opacity:.9;transform:scale(1)}
+    33%{opacity:.75}
+    43%{opacity:.9}
+    53%{opacity:.75}
+    63%{opacity:.88}
+    71%{opacity:.7;animation-timing-function:linear}
+    78%{opacity:0;transform:scale(.85)}
+    100%{opacity:0;transform:scale(.75)}
+  }
+
+  /* ---- the deck: fan + breathing sway ---- */
+  .fx-hero-deck__deck{
+    opacity:1; /* base = final composed frame */
+    transform-box:view-box;transform-origin:600px 400px;
+    animation:fx-hero-deck__deckcycle 14s linear infinite;
+    will-change:transform,opacity;
+  }
+  @keyframes fx-hero-deck__deckcycle{
+    0%{opacity:0;transform:rotate(0deg)}
+    14.43%{opacity:1;transform:rotate(.9deg)}
+    19%{transform:rotate(-1.4deg)}
+    25.5%{transform:rotate(1.5deg)}
+    32.5%{transform:rotate(-1.7deg)}
+    39.5%{transform:rotate(1.7deg)}
+    46.5%{transform:rotate(-1.5deg)}
+    53.5%{transform:rotate(1.4deg)}
+    60.5%{transform:rotate(-1.2deg)}
+    67.5%{transform:rotate(.9deg)}
+    75%{opacity:1;transform:rotate(.4deg)}
+    79.5%{opacity:0;transform:rotate(.2deg)}
+    100%{opacity:0;transform:rotate(0deg)}
+  }
+  .fx-hero-deck__card{
+    transform-box:view-box;transform-origin:600px 560px;
+    animation-duration:14s;
+    animation-timing-function:linear;
+    animation-iteration-count:infinite;
+    will-change:transform,opacity;
+  }
+  .fx-hero-deck__card--bl{
+    opacity:1;transform:rotate(-9deg); /* base = final composed frame */
+    animation-name:fx-hero-deck__cardbl;
+  }
+  .fx-hero-deck__card--br{
+    opacity:1;transform:rotate(9deg);
+    animation-name:fx-hero-deck__cardbr;
+  }
+  .fx-hero-deck__card--fr{
+    opacity:1;transform:rotate(0deg) scale(1);
+    animation-name:fx-hero-deck__cardfr;
+  }
+  /* card reveal grammar: stagger 80ms · scale .96→1 · rise 12px (§0.3) */
+  @keyframes fx-hero-deck__cardbl{
+    0%{opacity:0;transform:translateY(12px) rotate(-1.2deg) scale(.96)}
+    15.4%{opacity:0;transform:translateY(12px) rotate(-1.2deg) scale(.96);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    20.4%{opacity:1;transform:translateY(0) rotate(-9deg) scale(1)}
+    97%{opacity:1;transform:translateY(0) rotate(-9deg) scale(1)}
+    100%{opacity:0;transform:translateY(12px) rotate(-1.2deg) scale(.96)}
+  }
+  @keyframes fx-hero-deck__cardbr{
+    0%{opacity:0;transform:translateY(12px) rotate(1.2deg) scale(.96)}
+    15.97%{opacity:0;transform:translateY(12px) rotate(1.2deg) scale(.96);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    20.97%{opacity:1;transform:translateY(0) rotate(9deg) scale(1)}
+    97%{opacity:1;transform:translateY(0) rotate(9deg) scale(1)}
+    100%{opacity:0;transform:translateY(12px) rotate(1.2deg) scale(.96)}
+  }
+  @keyframes fx-hero-deck__cardfr{
+    0%{opacity:0;transform:translateY(12px) rotate(0deg) scale(.96)}
+    16.54%{opacity:0;transform:translateY(12px) rotate(0deg) scale(.96);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    21.54%{opacity:1;transform:translateY(0) rotate(0deg) scale(1)}
+    97%{opacity:1;transform:translateY(0) rotate(0deg) scale(1)}
+    100%{opacity:0;transform:translateY(12px) rotate(0deg) scale(.96)}
+  }
+
+  /* white spark on the front card: 500ms ease-out draw + 200ms overshoot pop */
+  .fx-hero-deck__spark{
+    fill:none;
+    stroke:var(--white);
+    stroke-width:2.5;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    stroke-dasharray:1 1;
+    stroke-dashoffset:0; /* base = final composed frame */
+    animation:fx-hero-deck__sparkdraw 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__sparkdraw{
+    0%{stroke-dashoffset:1.06;animation-timing-function:linear}
+    21.9%{stroke-dashoffset:1.06;animation-timing-function:cubic-bezier(.33333,1,.66667,1)}
+    25.5%{stroke-dashoffset:0}
+    96%{stroke-dashoffset:0}
+    100%{stroke-dashoffset:1.06}
+  }
+  .fx-hero-deck__sparkdot{
+    opacity:1; /* base = final composed frame */
+    transform-box:fill-box;transform-origin:50% 50%;
+    animation:fx-hero-deck__sparkpop 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__sparkpop{
+    0%{opacity:0;transform:scale(.2)}
+    25.5%{opacity:0;transform:scale(.2);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    26.36%{opacity:1;transform:scale(1.45)}
+    26.93%{opacity:1;transform:scale(1)}
+    75%{opacity:1;transform:scale(1);animation-timing-function:linear}
+    78.5%{opacity:0}
+    100%{opacity:0;transform:scale(.2)}
+  }
+  .fx-hero-deck__sparkhalo{
+    opacity:.5;
+    animation:fx-hero-deck__halo 14s linear infinite;
+  }
+  @keyframes fx-hero-deck__halo{
+    0%{opacity:0}
+    25.2%{opacity:0;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+    26.5%{opacity:.55}
+    32%{opacity:.42}
+    40%{opacity:.55}
+    50%{opacity:.42}
+    60%{opacity:.55}
+    70%{opacity:.48;animation-timing-function:linear}
+    78.5%,100%{opacity:0}
+  }
+
+  .fx-hero-deck__cardlabel{
+    font:500 17px 'Space Grotesk',sans-serif;
+    fill:var(--white);
+  }
+  .fx-hero-deck__cardstat{
+    font:500 12.5px 'JetBrains Mono',ui-monospace,monospace;
+    font-variant-numeric:tabular-nums;
+    fill:var(--white);
+    fill-opacity:.92; /* the hero's 'honest numbers' stat must clear 4.5:1 on the bolt gradient */
+  }
+
+  .fx-hero-deck__caption{
+    position:absolute;
+    left:0;right:0;bottom:4.2%;
+    margin:0;
+    text-align:center;
+    font-family:'Inter',system-ui,sans-serif;
+    font-weight:400;
+    font-size:clamp(12px,1.15cqi,13.5px);
+    letter-spacing:.02em;
+    color:rgb(255 255 255 / .62);
+    pointer-events:none;
+  }
+
+  /* orchestrator hook: freeze while off-canvas */
+  .fx-hero-deck[data-fx-state="idle"] .fx-hero-deck__stage *,
+  .fx-hero-deck[data-fx-state="idle"] .fx-hero-deck__stage{animation-play-state:paused!important}
+
+  /* reduced motion: final composed frame (deck + spark), no loop */
+  @media (prefers-reduced-motion: reduce){
+    .fx-hero-deck *,.fx-hero-deck *::before,.fx-hero-deck *::after{
+      animation:none!important;transition:none!important;
+    }
+  }
+
+/* ---- fx-04-yearline-draw ---- */
+/* == fx-yearline-draw module styles — all selectors scoped under .fx-yearline-draw == */
+  .fx-yearline-draw{
+    /* design tokens §1 */
+    --electric-500:#0A5CFF; --electric-600:#0047E0; --volt-500:#00D5FF;
+    --spark-500:#C8FF4D; --ink-950:#05070E; --ink-900:#0A0E1A; --ink-800:#131A2B;
+    --ink-300:#9AA8C4; --ink-200:#C6D0E4; --ink-50:#F5F8FE; --white:#FFFFFF;
+
+    position:relative; overflow:hidden; box-sizing:border-box;
+    width:100%; max-width:1200px;
+    padding:30px 56px 24px;
+    background:
+      radial-gradient(720px 320px at 88% -20%, rgb(10 92 255 / .12), transparent 62%),
+      var(--ink-950);
+    color:var(--ink-200);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+  }
+  .fx-yearline-draw,.fx-yearline-draw *{box-sizing:border-box}
+
+  .fx-yearline-draw__frame{position:relative;z-index:1}
+  .fx-yearline-draw__head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .fx-yearline-draw__sparkdot{width:7px;height:7px;border-radius:50%;background:var(--spark-500);box-shadow:0 0 10px rgb(200 255 77 / .4)}
+  .fx-yearline-draw__tagline{
+    font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;
+    letter-spacing:.01em;color:var(--ink-200);
+  }
+
+  .fx-yearline-draw__anim{transition:opacity .45s ease}
+  .fx-yearline-draw.is-out .fx-yearline-draw__anim{opacity:0;transition-duration:1.15s}
+
+  .fx-yearline-draw__stats{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-bottom:22px}
+  .fx-yearline-draw__stat{min-width:0}
+  .fx-yearline-draw__value{
+    font-family:'JetBrains Mono',monospace;font-weight:500;
+    font-size:40px;line-height:1;color:var(--ink-50);
+    font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1;
+  }
+  .fx-yearline-draw__label{
+    margin-top:9px;font-size:13px;line-height:1;font-weight:400;
+    letter-spacing:.02em;color:var(--ink-300);
+  }
+
+  .fx-yearline-draw__chart{display:block;width:100%;height:auto}
+  .fx-yearline-draw__gridline{stroke:var(--ink-800);stroke-width:1;opacity:.55}
+  .fx-yearline-draw__gridline--v{opacity:.32}
+  .fx-yearline-draw__gridline--axis{opacity:.9}
+
+  .fx-yearline-draw__line{fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .fx-yearline-draw__line--halo{stroke:var(--electric-500);stroke-width:12;opacity:.13}
+  .fx-yearline-draw__line--glow{stroke:var(--electric-500);stroke-width:6;opacity:.34}
+  .fx-yearline-draw__line--core{stroke:var(--white);stroke-width:2.5}
+
+  .fx-yearline-draw__mdot{
+    fill:var(--white);stroke:var(--electric-500);stroke-width:2;
+    transform-box:fill-box;transform-origin:center;
+  }
+  .fx-yearline-draw__mlabel{
+    font-family:'JetBrains Mono',monospace;font-weight:500;font-size:11.5px;
+    fill:var(--ink-300);text-anchor:middle;
+    transform-box:fill-box;transform-origin:50% 100%;
+  }
+
+  /* live mode: markers stay hidden until the line passes them */
+  .fx-yearline-draw.is-live .fx-yearline-draw__mdot{opacity:0;transform:scale(0)}
+  .fx-yearline-draw.is-live .fx-yearline-draw__mdot.is-on{animation:fx4-pop .48s cubic-bezier(.3,1.6,.45,1) both}
+  .fx-yearline-draw.is-live .fx-yearline-draw__mlabel{opacity:0;transform:scale(.4)}
+  .fx-yearline-draw.is-live .fx-yearline-draw__mlabel.is-on{animation:fx4-poplabel .5s cubic-bezier(.3,1.6,.45,1) both}
+
+  @keyframes fx4-pop{
+    0%{opacity:0;transform:scale(0)}
+    60%{opacity:1;transform:scale(1.45)}
+    100%{opacity:1;transform:scale(1)}
+  }
+  @keyframes fx4-poplabel{
+    0%{opacity:0;transform:scale(.4)}
+    60%{opacity:1;transform:scale(1.18)}
+    100%{opacity:1;transform:scale(1)}
+  }
+
+  .fx-yearline-draw__spark-halo{fill:var(--electric-500);opacity:.55;transform-box:fill-box;transform-origin:center}
+  .fx-yearline-draw__spark-core{fill:var(--white);transform-box:fill-box;transform-origin:center}
+  .fx-yearline-draw__spark.is-landed .fx-yearline-draw__spark-core{animation:fx4-land .2s ease-out both}
+  .fx-yearline-draw__spark.is-landed .fx-yearline-draw__spark-halo{animation:fx4-landhalo .2s ease-out both}
+  @keyframes fx4-land{0%{transform:scale(1)}45%{transform:scale(1.7)}100%{transform:scale(1)}}
+  @keyframes fx4-landhalo{
+    0%{transform:scale(1);opacity:.55}
+    45%{transform:scale(2.5);opacity:.9}
+    100%{transform:scale(1);opacity:.55}
+  }
+
+  .fx-yearline-draw__tint{opacity:0;transform-box:fill-box;transform-origin:center}
+  .fx-yearline-draw__tint.is-pulse{animation:fx4-tint 1.05s ease-out both}
+  @keyframes fx4-tint{
+    0%{opacity:0;transform:scale(.6)}
+    30%{opacity:.2}
+    100%{opacity:0;transform:scale(1.3)}
+  }
+
+  @media (max-width:720px){
+    .fx-yearline-draw{padding:22px 20px 16px}
+    .fx-yearline-draw__stats{grid-template-columns:repeat(2,1fr);gap:18px 16px;margin-bottom:14px}
+    .fx-yearline-draw__value{font-size:32px}
+    .fx-yearline-draw__head{margin-bottom:12px}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .fx-yearline-draw,.fx-yearline-draw *{animation:none!important;transition:none!important}
+  }
+
+/* ---- fx-02-feed-to-deck ---- */
+/* == fx-02 feed-to-deck module styles — every selector scoped under the module root == */
+  .fx.fx-feed-to-deck{position:relative;width:100%;max-width:1400px;margin-inline:auto}
+  .fx-feed-to-deck__svg{display:block;width:100%;height:auto}
+  .fx-feed-to-deck__glyph{font-family:'Space Grotesk',sans-serif;font-weight:700;fill:#FFFFFF;text-anchor:middle;dominant-baseline:central}
+
+  /* animated nodes: transform / opacity / stroke-dashoffset only */
+  .fx-feed-to-deck__tile{opacity:0;transform-box:view-box;transform-origin:0 0;animation:fx2Tile 22s linear infinite;animation-delay:var(--d,0s)}
+  .fx-feed-to-deck__card{opacity:0;transform-box:view-box;transform-origin:0 0;animation:fx2Card 22s linear infinite;animation-delay:var(--d,0s)}
+  .fx-feed-to-deck__ringA{animation:fx2RingCw 22s linear infinite}
+  .fx-feed-to-deck__ringB{animation:fx2RingCcw 22s linear infinite}
+  .fx-feed-to-deck__markBob{transform-box:fill-box;transform-origin:50% 60%;animation:fx2Mark 22s ease-in-out infinite}
+  .fx-feed-to-deck__spark{animation:fx2Spark 22s linear infinite}
+  .fx-feed-to-deck__sparkDot{opacity:0;transform-box:fill-box;transform-origin:center;animation:fx2SparkDot 22s linear infinite}
+
+  /* keyframes — one shared 22s period for every node; per-element phase via negative delays ⇒ seamless loop */
+  @keyframes fx2Tile{
+    0%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(var(--sc)) rotate(var(--r0));animation-timing-function:cubic-bezier(.3,.42,.5,.98)}
+    8%{opacity:var(--o)}
+    56%{opacity:var(--o)}
+    65%{opacity:0;transform:translate(var(--ex),var(--ey)) scale(calc(var(--sc)*.94)) rotate(var(--r1));animation-timing-function:linear}
+    73%,100%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(var(--sc)) rotate(var(--r0))}
+  }
+  @keyframes fx2Card{
+    0%{opacity:0;transform:translate(0,0) scale(.35) rotate(var(--tilt));animation-timing-function:cubic-bezier(.2,.75,.3,1)}
+    5%{opacity:0;transform:translate(14px,-34px) scale(.55) rotate(var(--tilt))}
+    11%{opacity:1;transform:translate(88px,-132px) scale(1) rotate(var(--tilt));animation-timing-function:cubic-bezier(.34,.2,.4,.96)}
+    30%{opacity:1;transform:translate(var(--tx),var(--ty)) scale(1) rotate(var(--tilt));animation-timing-function:linear}
+    37%{opacity:0;transform:translate(calc(var(--tx)*1.16),calc(var(--ty)*1.2)) scale(1.03) rotate(var(--tilt))}
+    45%,100%{opacity:0;transform:translate(0,0) scale(.35) rotate(var(--tilt))}
+  }
+  @keyframes fx2RingCw{from{stroke-dashoffset:0}to{stroke-dashoffset:-360}}
+  @keyframes fx2RingCcw{from{stroke-dashoffset:0}to{stroke-dashoffset:360}}
+  @keyframes fx2Mark{
+    0%,100%{transform:translateY(0) scale(1)}
+    50%{transform:translateY(-2px) scale(1.02)}
+  }
+  /* spark: drains toward its end, then redraws left→right (offset -100→-200 ≡ dasharray-period wrap ≡ 0) */
+  @keyframes fx2Spark{
+    0%,22%{stroke-dashoffset:0;animation-timing-function:cubic-bezier(.55,0,.7,.4)}
+    34%{stroke-dashoffset:-100;animation-timing-function:cubic-bezier(.16,.6,.3,1)}
+    52%,100%{stroke-dashoffset:-200}
+  }
+  @keyframes fx2SparkDot{
+    0%,50%{opacity:0;transform:scale(.4)}
+    53%{opacity:1;transform:scale(1.45)}
+    61%,100%{opacity:0;transform:scale(.4)}
+  }
+
+  /* reduced motion: static composed frame — hub + six tiles + two cards mid-flow + drawn spark */
+  @media (prefers-reduced-motion: reduce){
+    .fx-feed-to-deck__tile,.fx-feed-to-deck__card,.fx-feed-to-deck__ringA,
+    .fx-feed-to-deck__ringB,.fx-feed-to-deck__markBob,.fx-feed-to-deck__spark,
+    .fx-feed-to-deck__sparkDot{animation:none}
+  }
+
+/* ---- fx-03-deck-fan ---- */
+/* == FX-SCAFFOLD-END == */
+
+/* ===================================================================
+   fx-03 · deck-fan — "seven chapters"
+   12s seamless loop · CSS keyframes only · no JS
+   Only transform and opacity animate; card shadows are static (baked).
+
+   timeline (12s = 100% · 1% = 120ms):
+     0 – 16.667%     stacked deck at rest (±0.65° collective sway, 6s cycle)
+     14.4%           anticipation dip on the whole deck (beat layer)
+     16.667–37.333%  fan out — 80ms stagger, card-reveal grammar
+                     (rise 12px, scale .96→1) into a −24°…+24° spread
+     37.333–47.5%    fanned hold ≈1.2s
+     47.5–66.5%      restack — reverse 80ms stagger (card 7 lands first)
+     67.5–75.833%    small white spark overshoot-pulse on the top card
+     seam: every keyframe set satisfies 0% == 100% (last frame == first)
+
+   geometry: 1200×675 design grid; 1cqw = module width / 100 (= 12px at
+   full size). Cards pivot around a shared point 1004px below their
+   center (transform-origin 436.154%), so the fan reads as a held hand
+   of cards; positions inside the stage use %, type/shadows use cqw.
+   =================================================================== */
+
+.fx-deck-fan,.fx-deck-fan *,.fx-deck-fan *::before,.fx-deck-fan *::after{box-sizing:border-box}
+
+.fx-deck-fan{
+  /* ANIMATIONS.md §1 tokens (inlined) */
+  --electric-500:#0A5CFF; --electric-600:#0047E0; --volt-500:#00D5FF; --violet-500:#6333FF;
+  --spark-500:#C8FF4D; --ink-950:#05070E; --ink-900:#0A0E1A; --ink-800:#131A2B;
+  --ink-300:#9AA8C4; --ink-200:#C6D0E4; --ink-50:#F5F8FE; --white:#FFFFFF;
+  --grad-brand:linear-gradient(135deg,#6333FF,#0A5CFF,#00D5FF);
+  --grad-bolt:linear-gradient(135deg,#0A5CFF,#00D5FF);
+  --grad-nebula:linear-gradient(135deg,#6333FF,#0A5CFF);
+  --grad-aurora:linear-gradient(135deg,#00D5FF,#00FFA3);
+  --grad-fizz:linear-gradient(135deg,#C8FF4D,#00E5A0);
+  --grad-sunset:linear-gradient(135deg,#FF8A00,#FF3D77);
+  --grad-coral:linear-gradient(135deg,#FF5C5C,#FF9E2C);
+  --grad-grape:linear-gradient(135deg,#A855F7,#6366FA);
+  --radius-card:28px; --radius-md:14px; --radius-pill:999px;
+  --glow-electric:0 0 0 1px rgb(10 92 255/.25), 0 12px 48px rgb(10 92 255/.35);
+  --shadow-card:0 8px 30px rgb(5 7 14/.35);
+
+  position:relative;
+  isolation:isolate;
+  width:100%; max-width:1200px; margin-inline:auto;
+  background:var(--ink-950);
+  overflow:hidden;
+  container-type:inline-size;
+  font-family:'Inter',ui-sans-serif,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  user-select:none;
+}
+
+/* — frame, ambient glow, floor shadow — */
+.fx-deck-fan__viewport{position:relative;height:56.25vw;height:56.25cqw}
+.fx-deck-fan__glow{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(46% 54% at 50% 44%,
+    rgb(10 92 255/.20) 0%, rgb(10 92 255/.09) 42%, rgb(10 92 255/0) 72%)}
+.fx-deck-fan__stage{position:absolute;inset:0}
+.fx-deck-fan__floor{position:absolute;left:35.8333%;top:68.15%;width:28.3333%;height:6.5185%;
+  border-radius:50%;pointer-events:none;
+  background:radial-gradient(50% 50% at 50% 50%, rgb(0 0 0/.6) 0%, rgb(0 0 0/0) 72%);
+  animation:fx-deck-fan--floor 12s infinite;will-change:transform,opacity}
+
+/* — deck layers: beat (12s pacing) → sway (6s life) → cards —
+   beat carries the 200×260 deck box; sway fills it exactly — */
+.fx-deck-fan__beat{position:absolute;left:41.6667%;top:25.185%;
+  width:16.6667%;height:38.5185%;transform-origin:50% 436.154%;will-change:transform}
+.fx-deck-fan__sway{position:absolute;inset:0;transform-origin:50% 436.154%;will-change:transform}
+.fx-deck-fan__beat{animation:fx-deck-fan--beat 12s infinite}
+.fx-deck-fan__sway{animation:fx-deck-fan--sway 6s ease-in-out infinite}
+
+/* — story cards (200×260 @1200 grid, radius 28) —
+   static pose = the fanned frame (doubles as the reduced-motion state) — */
+.fx-deck-fan__card{position:absolute;inset:0;
+  border-radius:var(--radius-card);border-radius:min(var(--radius-card),2.3333cqw);
+  transform:translateY(0) scale(1) rotate(var(--fan-rot));
+  transform-origin:50% 436.154%;
+  box-shadow:0 30px 60px -12px rgb(0 0 0/.6), 0 14px 30px -10px rgb(0 0 0/.5),
+             var(--shadow-card), inset 0 1px 0 rgb(255 255 255/.16);
+  box-shadow:0 2.5cqw 5cqw -1cqw rgb(0 0 0/.6), 0 1.1667cqw 2.5cqw -.8333cqw rgb(0 0 0/.5),
+             var(--shadow-card), inset 0 1px 0 rgb(255 255 255/.16);
+  will-change:transform}
+.fx-deck-fan__card--1{--fan-rot:-24deg;z-index:1;background:var(--grad-bolt);animation:fx-deck-fan--card-1 12s infinite}
+.fx-deck-fan__card--2{--fan-rot:-16deg;z-index:2;background:var(--grad-aurora);animation:fx-deck-fan--card-2 12s infinite}
+.fx-deck-fan__card--3{--fan-rot:-8deg;z-index:3;background:var(--grad-fizz);animation:fx-deck-fan--card-3 12s infinite}
+.fx-deck-fan__card--4{--fan-rot:0deg;z-index:4;background:var(--grad-grape);animation:fx-deck-fan--card-4 12s infinite}
+.fx-deck-fan__card--5{--fan-rot:8deg;z-index:5;background:var(--grad-sunset);animation:fx-deck-fan--card-5 12s infinite}
+.fx-deck-fan__card--6{--fan-rot:16deg;z-index:6;background:var(--grad-nebula);animation:fx-deck-fan--card-6 12s infinite}
+.fx-deck-fan__card--7{--fan-rot:24deg;z-index:7;background:var(--grad-coral);animation:fx-deck-fan--card-7 12s infinite}
+
+/* — static scrim so white text holds ≥4.5:1 even on the lime/sunset heads
+   (worst case: white .75 over lime #C8FF4D under the .85 scrim ≈ 6:1) —
+   anchored top-left with the num/label: empirically the least-occluded
+   zone in the fan pose (bottoms converge and overlap; tops spread wide) — */
+.fx-deck-fan__scrim{position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(170% 130% at 0% 0%,
+    rgb(5 7 14/.85) 0%, rgb(5 7 14/.55) 34%, rgb(5 7 14/.24) 52%, rgb(5 7 14/0) 70%)}
+.fx-deck-fan__num{position:absolute;top:1.8333cqw;left:1.8333cqw;
+  font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:500;
+  font-size:max(1.0833cqw,6px);line-height:1;letter-spacing:.14em;
+  font-variant-numeric:tabular-nums;
+  color:rgb(255 255 255/.75);
+  text-shadow:0 1px 6px rgb(5 7 14/.6);text-shadow:0 1px .5cqw rgb(5 7 14/.6)}
+.fx-deck-fan__label{position:absolute;top:3.6667cqw;left:1.8333cqw;
+  font-family:'Space Grotesk','Inter',ui-sans-serif,sans-serif;font-weight:600;
+  font-size:max(2.4cqw,13px);line-height:1.05;letter-spacing:-.01em;text-transform:lowercase;
+  color:var(--white);
+  text-shadow:0 1px 8px rgb(5 7 14/.45);text-shadow:0 1px .6667cqw rgb(5 7 14/.45)}
+
+/* — loop-closing spark on the top card (card 7) — */
+.fx-deck-fan__spark{position:absolute;top:1.8333cqw;right:1.8333cqw;width:1.8333cqw;height:1.8333cqw;
+  opacity:0;pointer-events:none;will-change:transform,opacity;
+  animation:fx-deck-fan--spark 12s infinite}
+.fx-deck-fan__spark::before{content:"";position:absolute;inset:-.9cqw;border-radius:50%;
+  background:radial-gradient(50% 50% at 50% 50%, rgb(255 255 255/.45) 0%, rgb(255 255 255/0) 70%)}
+.fx-deck-fan__spark svg{display:block;width:100%;height:100%}
+
+/* — halftone chapter art (landing integration; canvas injected by halftone.js) —
+   ink dot print over the brand gradient, white registration marks.
+   pointer-events none: the fan is role="img" — dots are decorative,
+   no lens/ripple/burst here (those live on the chapter cards' plates). */
+.fx-deck-fan__art{position:absolute;inset:0;overflow:hidden;pointer-events:none;
+  border-radius:inherit;color:#FFFFFF}
+
+/* ≤480px: the 6px numerals render as specks and the 13px label floor rides too
+   low over the halftone gradients — the cards read as art with big titles */
+@media (max-width: 480px){
+  .fx-deck-fan__num{display:none}
+  .fx-deck-fan__label{font-size:max(2.4cqw,15px)}
+}
+
+/* ===================================================================
+   keyframes
+   =================================================================== */
+
+/* beat: anticipation dip before the deal, tiny lift when the stack closes */
+@keyframes fx-deck-fan--beat{
+  0%,11.5%{transform:translateY(0) scale(1);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  14.4%{transform:translateY(.25cqw) scale(.993);animation-timing-function:cubic-bezier(.3,1.45,.45,1)}
+  17.5%,66.5%{transform:translateY(0) scale(1);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  68.1%{transform:translateY(-.15cqw) scale(1.007);animation-timing-function:cubic-bezier(.3,1,.5,1)}
+  70.8%,100%{transform:translateY(0) scale(1)}
+}
+
+/* collective breathing sway; 6s divides the 12s loop exactly */
+@keyframes fx-deck-fan--sway{
+  0%{transform:rotate(0deg)}
+  25%{transform:rotate(.65deg)}
+  50%{transform:rotate(0deg)}
+  75%{transform:rotate(-.65deg)}
+  100%{transform:rotate(0deg)}
+}
+
+/* floor pool widens + fades while the fan is open */
+@keyframes fx-deck-fan--floor{
+  0%,16.667%{opacity:.55;transform:scaleX(1);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  37.333%{opacity:.26;transform:scaleX(1.5);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  47.5%{opacity:.26;transform:scaleX(1.5);animation-timing-function:cubic-bezier(.45,0,.55,1)}
+  66.5%,100%{opacity:.55;transform:scaleX(1)}
+}
+
+/* cards — open: 2.0s + 80ms×(i−1), easeOutQuint; close: 5.7s + 80ms×(7−i), easeInOutQuart.
+   stacked pose = translateY(12px) scale(.96); fan pose = translateY(0) scale(1) rotate(var(--fan-rot)) */
+@keyframes fx-deck-fan--card-1{
+  0%,16.667%{transform:translateY(1cqw) scale(.96) rotate(0deg);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+  33.333%,51.5%{transform:translateY(0) scale(1) rotate(var(--fan-rot));animation-timing-function:cubic-bezier(.65,0,.35,1)}
+  66.5%,100%{transform:translateY(1cqw) scale(.96) rotate(0deg)}
+}
+@keyframes fx-deck-fan--card-2{
+  0%,17.333%{transform:translateY(1cqw) scale(.96) rotate(0deg);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+  34%,50.833%{transform:translateY(0) scale(1) rotate(var(--fan-rot));animation-timing-function:cubic-bezier(.65,0,.35,1)}
+  65.833%,100%{transform:translateY(1cqw) scale(.96) rotate(0deg)}
+}
+@keyframes fx-deck-fan--card-3{
+  0%,18%{transform:translateY(1cqw) scale(.96) rotate(0deg);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+  34.667%,50.167%{transform:translateY(0) scale(1) rotate(var(--fan-rot));animation-timing-function:cubic-bezier(.65,0,.35,1)}
+  65.167%,100%{transform:translateY(1cqw) scale(.96) rotate(0deg)}
+}
+@keyframes fx-deck-fan--card-4{
+  0%,18.667%{transform:translateY(1cqw) scale(.96) rotate(0deg);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+  35.333%,49.5%{transform:translateY(0) scale(1) rotate(var(--fan-rot));animation-timing-function:cubic-bezier(.65,0,.35,1)}
+  64.5%,100%{transform:translateY(1cqw) scale(.96) rotate(0deg)}
+}
+@keyframes fx-deck-fan--card-5{
+  0%,19.333%{transform:translateY(1cqw) scale(.96) rotate(0deg);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+  36%,48.833%{transform:translateY(0) scale(1) rotate(var(--fan-rot));animation-timing-function:cubic-bezier(.65,0,.35,1)}
+  63.833%,100%{transform:translateY(1cqw) scale(.96) rotate(0deg)}
+}
+@keyframes fx-deck-fan--card-6{
+  0%,20%{transform:translateY(1cqw) scale(.96) rotate(0deg);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+  36.667%,48.167%{transform:translateY(0) scale(1) rotate(var(--fan-rot));animation-timing-function:cubic-bezier(.65,0,.35,1)}
+  63.167%,100%{transform:translateY(1cqw) scale(.96) rotate(0deg)}
+}
+@keyframes fx-deck-fan--card-7{
+  0%,20.667%{transform:translateY(1cqw) scale(.96) rotate(0deg);animation-timing-function:cubic-bezier(.22,1,.36,1)}
+  37.333%,47.5%{transform:translateY(0) scale(1) rotate(var(--fan-rot));animation-timing-function:cubic-bezier(.65,0,.35,1)}
+  62.5%,100%{transform:translateY(1cqw) scale(.96) rotate(0deg)}
+}
+
+/* spark pulse: 250ms back-out pop (sacred overshoot), then fade — invisible at both 0% and 100% */
+@keyframes fx-deck-fan--spark{
+  0%,67.5%{opacity:0;transform:scale(.3) rotate(0deg);animation-timing-function:cubic-bezier(.3,1.5,.55,1)}
+  69.583%{opacity:1;transform:scale(1.14) rotate(16deg);animation-timing-function:cubic-bezier(.3,0,.4,1)}
+  71.25%{opacity:1;transform:scale(1) rotate(20deg);animation-timing-function:cubic-bezier(.55,0,.7,.4)}
+  75.833%,100%{opacity:0;transform:scale(.3) rotate(0deg)}
+}
+
+/* — reduced motion: hold the fanned state statically (cards keep their
+   static fan pose; loops off; spark hidden; floor mid-spread) — */
+@media (prefers-reduced-motion: reduce){
+  .fx-deck-fan__beat,.fx-deck-fan__sway,.fx-deck-fan__floor,.fx-deck-fan__card,.fx-deck-fan__spark{animation:none}
+  .fx-deck-fan__beat,.fx-deck-fan__sway{transform:none}
+  .fx-deck-fan__floor{opacity:.34;transform:scaleX(1.3)}
+  .fx-deck-fan__spark{opacity:0}
+}
+
+/* ---- fx-05-persona-morph ---- */
+/* == fx-05 persona-morph module styles — ALL selectors scoped under .fx-persona-morph == */
+  .fx-persona-morph {
+    /* design tokens · ANIMATIONS.md §1 (inlined, no external CSS imports) */
+    --electric-500: #0A5CFF; --electric-600: #0047E0; --volt-500: #00D5FF; --violet-500: #6333FF;
+    --spark-500: #C8FF4D; --ink-950: #05070E; --ink-900: #0A0E1A; --ink-800: #131A2B;
+    --ink-300: #9AA8C4; --ink-200: #C6D0E4; --ink-50: #F5F8FE; --white: #FFFFFF;
+    --grad-nebula: linear-gradient(135deg, #6333FF, #0A5CFF);
+    --radius-card: 28px;
+    --shadow-card: 0 8px 30px rgb(5 7 14 / .35);
+    --glow-electric: 0 0 0 1px rgb(10 92 255 / .25), 0 12px 48px rgb(10 92 255 / .35);
+    /* module vars */
+    --fx-card-scale: 1;
+    --fx-spark-len: 520px;
+
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    aspect-ratio: 16 / 9;
+    max-height: 520px; /* cap the desktop stage: the card + roster anchor it, no void */
+    margin-inline: auto;
+    overflow: hidden;
+    background: var(--ink-950);
+    color: var(--white);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    contain: layout style;
+  }
+
+  /* soft violet radial glow behind the card — static, ≤ .22 opacity, never tweened */
+  .fx-persona-morph__glow {
+    position: absolute;
+    inset: -12%;
+    background: radial-gradient(ellipse 52% 46% at 50% 50%, rgb(99 51 255 / .22) 0%, rgb(99 51 255 / 0) 70%);
+    pointer-events: none;
+  }
+
+  /* mono roster of the four personas — the active one lights up in volt as the
+     name morphs; gives the 'ai-named' claim visible, anchored evidence.
+     Absolute like the card (the card leaves flow for the overflow-proof centering). */
+  .fx-persona-morph__roster {
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: calc(100% - 48px);
+    font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 1.6;
+    letter-spacing: .08em;
+    color: rgb(255 255 255 / .58); /* ≈5.6:1 flat, ≈5.3:1 under the violet glow */
+  }
+  .fx-persona-morph__roster span {
+    white-space: nowrap;
+    transition: color .4s ease;
+  }
+  .fx-persona-morph__roster span.is-active {
+    color: var(--volt-500, #00D5FF);
+  }
+
+  .fx-persona-morph__stage {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  /* nebula card · breathes ±2° over 9s alternate (9s × 2 = 18s → loop-aligned) */
+  .fx-persona-morph__card {
+    position: relative;
+    width: 600px;
+    height: 345px;
+    border-radius: var(--radius-card);
+    background: var(--grad-nebula);
+    box-shadow:
+      var(--shadow-card),
+      inset 0 1px 0 rgb(255 255 255 / .08),
+      inset 0 0 0 1px rgb(255 255 255 / .08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 32px 64px;
+    text-align: center;
+    transform: scale(var(--fx-card-scale, 1));
+  }
+  .fx-persona-morph--live .fx-persona-morph__card {
+    animation: fx05-breathe 9s ease-in-out infinite alternate;
+  }
+  @keyframes fx05-breathe {
+    from { transform: scale(var(--fx-card-scale, 1)) rotate(-2deg); }
+    to   { transform: scale(var(--fx-card-scale, 1)) rotate(2deg); }
+  }
+
+  .fx-persona-morph__overline {
+    font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: .18em;
+    color: rgb(255 255 255 / .85); /* ≈4.8:1 on the nebula gradient at label height */
+    text-shadow: 0 1px 6px rgb(5 7 14 / .6);
+  }
+
+  /* persona name — fixed box so the morph engine never sees the container resize */
+  .fx-persona-morph__name {
+    position: relative;
+    margin-top: 22px;
+    width: 100%;
+    height: 56px;
+    font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 42px;
+    line-height: 56px;
+    letter-spacing: -0.01em;
+    color: var(--white);
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .fx-persona-morph__story-stack {
+    position: relative;
+    margin-top: 12px;
+    width: 100%;
+    height: 44px; /* two 22px lines: long stories may wrap instead of clipping */
+  }
+  .fx-persona-morph__story {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    display: grid;
+    place-items: center;
+    font-family: "Inter", system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 22px;
+    color: rgb(255 255 255 / .85);
+    opacity: 0;
+    transform: translateY(5px);
+    transition: opacity .48s cubic-bezier(.33, 1, .68, 1), transform .48s cubic-bezier(.33, 1, .68, 1);
+  }
+  .fx-persona-morph__story--active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* yearline sparkline along the card's bottom inner edge */
+  .fx-persona-morph__sparkline {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    bottom: 26px;
+    width: calc(100% - 56px);
+    height: 44px;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .fx-persona-morph__sparkline-path {
+    fill: none;
+    stroke: rgb(255 255 255 / .92);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: var(--fx-spark-len, 520px);
+    /* +1px so the round cap never peeks before the draw begins */
+    stroke-dashoffset: calc(var(--fx-spark-len, 520px) + 1px);
+  }
+  .fx-persona-morph__spark-dot {
+    fill: var(--white);
+    opacity: 0;
+    transform: scale(0);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .fx-persona-morph--live .fx-persona-morph__sparkline-path {
+    animation: fx05-spark-draw 18s linear infinite;
+  }
+  .fx-persona-morph--live .fx-persona-morph__spark-dot {
+    animation: fx05-spark-dot 18s linear infinite;
+  }
+  .fx-persona-morph--paused .fx-persona-morph__sparkline-path,
+  .fx-persona-morph--paused .fx-persona-morph__spark-dot {
+    animation-play-state: paused;
+  }
+  @keyframes fx05-spark-draw {
+    0% {
+      stroke-dashoffset: calc(var(--fx-spark-len, 520px) + 1px);
+      opacity: 1;
+      animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); /* ease-out draw */
+    }
+    3.6% { stroke-dashoffset: 0px; opacity: 1; }        /* 648ms ease-out draw ≈ 600ms spec */
+    96.4% {
+      stroke-dashoffset: 0px;
+      opacity: 1;
+      animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+    }
+    100% { stroke-dashoffset: 0px; opacity: 0; }        /* gentle reset → seamless wrap */
+  }
+  @keyframes fx05-spark-dot {
+    0%, 3.2% { transform: scale(0); opacity: 0; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+    3.9%     { transform: scale(1.45); opacity: 1; }    /* overshoot peak */
+    5%       { transform: scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1); }
+    96.4%    { transform: scale(1); opacity: 1; }
+    100%     { transform: scale(1); opacity: 0; }
+  }
+
+  /* responsive centering: the 540px card is WIDER than small stages, and grid
+     "safe" centering falls back to start on overflow -> card stranded off-canvas
+     on phones. absolute + translate centering is overflow-proof at every width,
+     and `translate` composes independently of the breathe/scale `transform`. */
+  .fx-persona-morph__card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+  }
+
+  /* mobile: stack to ~720px, card scales down via transform only (stepped so the
+     scaled card always fits the track: 540px * scale <= 100vw - 48px wrap pad) */
+  @media (max-width: 720px) {
+    .fx-persona-morph { aspect-ratio: auto; height: 470px; --fx-card-scale: .75; }
+  }
+  @media (max-width: 560px) {
+    .fx-persona-morph { height: 440px; --fx-card-scale: .62; }
+  }
+  @media (max-width: 430px) {
+    .fx-persona-morph { height: 400px; --fx-card-scale: .55; }
+  }
+  @media (max-width: 360px) {
+    .fx-persona-morph { height: 372px; --fx-card-scale: .48; }
+  }
+
+  /* reduced motion: static composed frame — first persona shown, sparkline drawn */
+  @media (prefers-reduced-motion: reduce) {
+    .fx-persona-morph .fx-persona-morph__card {
+      animation: none !important;
+      transform: scale(var(--fx-card-scale, 1));
+    }
+    .fx-persona-morph .fx-persona-morph__sparkline-path {
+      animation: none !important;
+      stroke-dashoffset: 0 !important;
+      opacity: 1;
+    }
+    .fx-persona-morph .fx-persona-morph__spark-dot {
+      animation: none !important;
+      opacity: 1;
+      transform: none;
+    }
+    .fx-persona-morph .fx-persona-morph__story { transition: none; }
+  }
+
+/* ---- fx-06-queue-recap ---- */
+/* == fx-06 queue-recap module styles — ALL selectors scoped under .fx-queue-recap == */
+  .fx.fx-queue-recap{
+    /* §1 design tokens (inlined) */
+    --electric-500:#0A5CFF; --electric-600:#0047E0; --volt-500:#00D5FF; --violet-500:#6333FF;
+    --spark-500:#C8FF4D; --ink-950:#05070E; --ink-900:#0A0E1A; --ink-800:#131A2B;
+    --ink-300:#9AA8C4; --ink-200:#C6D0E4; --ink-50:#F5F8FE; --white:#FFFFFF;
+    --grad-brand:linear-gradient(135deg,#6333FF,#0A5CFF,#00D5FF);
+    --radius-card:28px; --radius-md:14px; --radius-pill:999px;
+    --shadow-card:0 8px 30px rgb(5 7 14 / .35);
+    --glow-electric:0 0 0 1px rgb(10 92 255 / .25), 0 12px 48px rgb(10 92 255 / .35);
+
+    position:relative; width:100%; max-width:1200px; aspect-ratio:16/9;
+    background:var(--ink-950); overflow:hidden; user-select:none;
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+  }
+  .fx-queue-recap__stage{
+    position:absolute; left:50%; top:50%; width:1200px; height:675px;
+    transform:translate(-50%,-50%) scale(var(--fx-qr-scale,1));
+    transform-origin:center;
+  }
+
+  /* ambient light — the two radial glows (OG-kit language), breathing opacity only */
+  .fx-queue-recap__glow{position:absolute; border-radius:50%; pointer-events:none}
+  .fx-queue-recap__glow--a{left:420px; top:-140px; width:560px; height:560px;
+    background:radial-gradient(closest-side, rgb(10 92 255/.16), rgb(10 92 255/0));
+    animation:fx-qr-glow 7.5s ease-in-out infinite alternate}
+  .fx-queue-recap__glow--b{left:-80px; top:320px; width:520px; height:520px;
+    background:radial-gradient(closest-side, rgb(99 51 255/.13), rgb(99 51 255/0));
+    animation:fx-qr-glow 7.5s ease-in-out infinite alternate-reverse}
+  @keyframes fx-qr-glow{from{opacity:.55}to{opacity:1}}
+
+  /* ---- recap card ---- */
+  .fx-queue-recap__card{
+    position:absolute; left:390px; top:148px; width:420px; height:280px;
+    background:var(--white); border-radius:var(--radius-card);
+    box-shadow:var(--shadow-card); will-change:transform,opacity;
+    -webkit-font-smoothing:antialiased;
+  }
+  .fx-queue-recap__content{
+    display:flex; flex-direction:column; justify-content:center;
+    height:100%; padding:0 36px; will-change:transform,opacity;
+  }
+  .fx-queue-recap__meta{
+    display:flex; align-items:center; gap:8px; height:18px; will-change:transform,opacity;
+  }
+  .fx-queue-recap__meta-dot{
+    width:6px; height:6px; border-radius:50%; background:var(--electric-500); opacity:.4; flex:none;
+  }
+  .fx.fx-queue-recap.is-composing .fx-queue-recap__meta-dot{
+    animation:fx-qr-dot 1.6s ease-in-out infinite;
+  }
+  @keyframes fx-qr-dot{0%,100%{opacity:.35; transform:scale(1)} 50%{opacity:1; transform:scale(1.3)}}
+  .fx-queue-recap__meta-label{
+    font:500 11px/1 'Inter',system-ui,sans-serif; letter-spacing:.06em;
+    color:#5A6B8C; /* solid, 5.4:1 on white — was #33405C at opacity .72 ≈ 2.9:1 */
+  }
+  .fx-queue-recap__meta-tag{
+    margin-left:auto; font:500 10px/1 'JetBrains Mono',ui-monospace,monospace;
+    letter-spacing:.05em; color:#33405C; background:var(--ink-50);
+    border:1px solid rgb(5 7 14/.06); border-radius:var(--radius-pill); padding:4px 9px 3px;
+  }
+  .fx-queue-recap__line{margin:0; white-space:nowrap}
+  .fx-queue-recap__line--head{
+    margin-top:24px; min-height:30px;
+    font:700 24px/1.25 'Space Grotesk','Inter',system-ui,sans-serif;
+    letter-spacing:-.01em; color:var(--ink-950);
+  }
+  .fx-queue-recap__rule{height:1px; background:rgb(5 7 14/.08); margin-top:22px; flex:none}
+  .fx-queue-recap__line--stats,.fx-queue-recap__line--body{
+    margin-top:20px; min-height:21px;
+    font:400 14px/1.5 'Inter',system-ui,sans-serif; color:#33405C;
+  }
+  .fx-queue-recap__line--body{margin-top:10px}
+  .fx-queue-recap__type{
+    display:inline-block; position:relative; white-space:pre;
+  }
+  /* thin caret — opacity/transform only */
+  .fx-queue-recap__caret{
+    display:inline-block; width:2px; border-radius:1px; margin-left:2px;
+    background:var(--electric-500); opacity:0;
+  }
+  .fx-queue-recap__caret--head{height:22px; vertical-align:-3px}
+  .fx-queue-recap__caret--stats,.fx-queue-recap__caret--body{height:15px; vertical-align:-2px}
+  .fx-queue-recap__caret.is-on{animation:fx-qr-caret 1.06s linear infinite}
+  @keyframes fx-qr-caret{0%,49%{opacity:1} 50%,100%{opacity:0}}
+
+  /* ---- mini channel chips (fan arc above the card) ---- */
+  .fx-queue-recap__chip{position:absolute; width:52px; height:52px}
+  .fx-queue-recap__chip:nth-of-type(1){left:339px; top:152px; --tilt:-18deg; --dot:#6333FF}
+  .fx-queue-recap__chip:nth-of-type(2){left:424px; top:129px; --tilt:-12deg; --dot:#FF8A00}
+  .fx-queue-recap__chip:nth-of-type(3){left:512px; top:115px; --tilt:-6deg;  --dot:#0A5CFF}
+  .fx-queue-recap__chip:nth-of-type(4){left:600px; top:110px; --tilt:0deg;   --dot:#0047E0}
+  .fx-queue-recap__chip:nth-of-type(5){left:688px; top:115px; --tilt:6deg;   --dot:#C8FF4D}
+  .fx-queue-recap__chip:nth-of-type(6){left:776px; top:129px; --tilt:12deg;  --dot:#FF5C5C}
+  .fx-queue-recap__chip:nth-of-type(7){left:861px; top:152px; --tilt:18deg;  --dot:#00D5FF}
+  .fx-queue-recap__chip-in{
+    position:relative; width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--ink-800); border:1px solid rgb(255 255 255/.06); border-radius:var(--radius-md);
+    box-shadow:inset 0 1px 0 rgb(255 255 255/.07), 0 10px 24px rgb(5 7 14/.5);
+    opacity:0; transform:rotate(var(--tilt,0deg)); will-change:transform,opacity;
+  }
+  .fx-queue-recap__chip-glyph{
+    font:600 15px/1 'Inter',system-ui,sans-serif; color:var(--white); letter-spacing:.01em;
+  }
+  .fx-queue-recap__chip:nth-of-type(1) .fx-queue-recap__chip-glyph{font-size:16px}
+  .fx-queue-recap__chip:nth-of-type(2) .fx-queue-recap__chip-glyph{font-size:12.5px}
+  .fx-queue-recap__chip:nth-of-type(3) .fx-queue-recap__chip-glyph{font-size:13.5px}
+  .fx-queue-recap__chip:nth-of-type(4) .fx-queue-recap__chip-glyph{font-size:15px}
+  .fx-queue-recap__chip:nth-of-type(5) .fx-queue-recap__chip-glyph{font-size:16.5px}
+  .fx-queue-recap__chip:nth-of-type(6) .fx-queue-recap__chip-glyph{font-size:11px}
+  .fx-queue-recap__chip:nth-of-type(7) .fx-queue-recap__chip-glyph{font-size:12px}
+  .fx-queue-recap__chip-dot{
+    position:absolute; right:7px; top:7px; width:6px; height:6px; border-radius:50%;
+    background:var(--dot,var(--white)); opacity:1;
+  }
+  .fx-queue-recap__chip-check{
+    position:absolute; left:50%; top:50%; width:24px; height:24px; margin:-12px 0 0 -12px;
+    opacity:0; transform:scale(.55); will-change:transform,opacity;
+  }
+  .fx-queue-recap__chip-check path{
+    fill:none; stroke:var(--volt-500); stroke-width:2.7; stroke-linecap:round; stroke-linejoin:round;
+    stroke-dasharray:1; stroke-dashoffset:1;
+  }
+
+  /* ---- primary CTA mock — deliberately quieter than the real button below:
+          electric-600 fill, half-strength glow, inert to taps (rage-tap guard) ---- */
+  .fx-queue-recap__cta{position:absolute; left:50%; top:462px; height:50px; transform:translateX(-50%); pointer-events:none}
+  .fx-queue-recap__cta-halo{
+    position:absolute; inset:-46px -70px; border-radius:var(--radius-pill); opacity:0;
+    background:radial-gradient(closest-side, rgb(10 92 255/.22), rgb(10 92 255/0) 74%);
+    will-change:opacity; pointer-events:none;
+  }
+  .fx-queue-recap__cta-glowhot{
+    position:absolute; inset:0; border-radius:var(--radius-pill); opacity:0; z-index:1;
+    box-shadow:0 0 0 1px rgb(10 92 255/.3), 0 14px 60px rgb(10 92 255/.32), 0 4px 18px rgb(10 92 255/.22);
+    will-change:opacity,transform; pointer-events:none;
+  }
+  .fx-queue-recap__cta-press{
+    position:relative; z-index:2; display:flex; align-items:center; height:50px; padding:0 30px;
+    border-radius:var(--radius-pill); background:var(--electric-600); color:rgb(255 255 255/.92);
+    font:500 15px/1 'Inter',system-ui,sans-serif; letter-spacing:.01em; white-space:nowrap;
+    box-shadow:0 0 0 1px rgb(10 92 255/.2), 0 8px 26px rgb(5 7 14/.45); will-change:transform;
+  }
+  .fx-queue-recap__cta-note{
+    position:absolute; left:50%; top:532px; transform:translateX(-50%);
+    font:500 12px/1 'JetBrains Mono',ui-monospace,monospace; letter-spacing:.05em;
+    color:var(--ink-300); white-space:nowrap;
+  }
+  @media (max-width: 720px){
+    .fx-queue-recap__cta-note{display:none} /* fit() crops the stage; the real button is directly below */
+  }
+
+  /* paused by the landing page's visibility observer */
+  .fx.fx-queue-recap.is-paused .fx-queue-recap__caret,
+  .fx.fx-queue-recap.is-paused .fx-queue-recap__glow,
+  .fx.fx-queue-recap.is-paused .fx-queue-recap__meta-dot{animation-play-state:paused}
+
+  /* ---- the courier: the written post condenses into this icon, then it
+          ferries the recap to every channel chip (left -> right sweep) ---- */
+  .fx-queue-recap__courier{
+    position:absolute; left:0; top:0; width:44px; height:44px;
+    margin:-22px 0 0 -22px; border-radius:12px;
+    background:var(--white);
+    box-shadow:0 8px 22px rgb(5 7 14/.5), 0 0 0 1px rgb(5 7 14/.05),
+               0 0 26px rgb(10 92 255/.4);
+    display:grid; place-items:center;
+    opacity:0; z-index:3; pointer-events:none;
+    will-change:transform,opacity;
+  }
+  .fx-queue-recap__courier svg{width:26px;height:26px;display:block}
+
+  /* mobile: trade the 16/9 fit for a taller cropped composition (see fit() in JS) */
+  @media (max-width: 720px){
+    .fx.fx-queue-recap{aspect-ratio:auto; height:340px}
+  }
+  @media (max-width: 430px){
+    .fx.fx-queue-recap{height:300px}
+  }
+
+  /* reduced motion: static composed frame, no loop, no blink, no breathe */
+  @media (prefers-reduced-motion: reduce){
+    .fx-queue-recap__caret{animation:none !important; opacity:0 !important}
+    .fx-queue-recap__glow,.fx-queue-recap__meta-dot{animation:none !important}
+  }
+  .fx.fx-queue-recap.is-static .fx-queue-recap__caret{animation:none !important; opacity:0 !important}
+  .fx.fx-queue-recap.is-static .fx-queue-recap__glow,
+  .fx.fx-queue-recap.is-static .fx-queue-recap__meta-dot{animation:none !important}
+</style>
+<noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a href="#top" aria-label="fizzyfeed home"><img class="brand" src="logo/lockup-on-dark.svg" alt="fizzyfeed" height="26"></a>
+    <nav aria-label="sections">
+      <a href="#how">how it works</a>
+      <a href="#chapters">chapters</a>
+      <a href="#persona">alter ego</a>
+    </nav>
+    <a class="btn small" data-connect href="/api/auth/buffer/login">connect buffer</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero" aria-labelledby="hero-h">
+    <div class="wrap hero-copy">
+      <span class="overline reveal">built for buffer commit 2026</span>
+      <h1 id="hero-h" class="reveal">your year in posts.</h1>
+      <p class="sub reveal">connect buffer, and twelve months of publishing become a deck of seven story
+      cards, an ai-named posting alter ego, and a recap post queued to every channel — in one click.</p>
+      <div class="hero-cta reveal">
+        <a class="btn" data-connect href="/api/auth/buffer/login">connect buffer</a>
+        <a class="btn ghost" href="#chapters">see the deck</a>
+      </div>
+      <p class="hero-note reveal"><b>read-only</b> oauth by default · one-click revoke · honest numbers only</p>
+    </div>
+    <div class="wrap hero-fx">
+<div class="fx fx-hero-deck" data-brand-name="fizzyfeed" role="img" aria-label="an animated loop: a bright line draws across a dark grid, twelve month ticks light up along it, then the line folds into a fan of three gradient cards whose white spark pops and the deck sways gently">
+  <div class="fx-hero-deck__stage">
+
+    <div class="fx-hero-deck__glow fx-hero-deck__glow--a"></div>
+    <div class="fx-hero-deck__glow fx-hero-deck__glow--b"></div>
+
+    <svg class="fx-hero-deck__svg" viewBox="0 0 1200 675" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="fx01-bolt" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#0A5CFF"/>
+          <stop offset="1" stop-color="#00D5FF"/>
+        </linearGradient>
+        <linearGradient id="fx01-shade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#05070E" stop-opacity="0"/>
+          <stop offset="1" stop-color="#05070E" stop-opacity=".38"/>
+        </linearGradient>
+        <linearGradient id="fx01-shade-top" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#05070E" stop-opacity=".35"/>
+          <stop offset=".35" stop-color="#05070E" stop-opacity="0"/>
+          <stop offset="1" stop-color="#05070E" stop-opacity="0"/>
+        </linearGradient>
+        <radialGradient id="fx01-halog">
+          <stop offset="0" stop-color="#FFFFFF" stop-opacity=".9"/>
+          <stop offset=".55" stop-color="#FFFFFF" stop-opacity=".26"/>
+          <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="fx01-poolg">
+          <stop offset="0" stop-color="#0A5CFF" stop-opacity=".3"/>
+          <stop offset="1" stop-color="#0A5CFF" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="fx01-shadowg">
+          <stop offset="0" stop-color="#05070E" stop-opacity=".5"/>
+          <stop offset="1" stop-color="#05070E" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="fx01-gridfade" cx=".5" cy=".46" r=".75">
+          <stop offset="0" stop-color="#FFFFFF"/>
+          <stop offset=".55" stop-color="#FFFFFF"/>
+          <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+        </radialGradient>
+        <mask id="fx01-gridmask" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="675">
+          <rect width="1200" height="675" fill="url(#fx01-gridfade)"/>
+        </mask>
+      </defs>
+
+      <!-- subtle dark grid -->
+      <g class="fx-hero-deck__grid" mask="url(#fx01-gridmask)">
+        <path fill="none" stroke="#131A2B" stroke-width="1" d="M0 0V675 M60 0V675 M120 0V675 M180 0V675 M240 0V675 M300 0V675 M360 0V675 M420 0V675 M480 0V675 M540 0V675 M600 0V675 M660 0V675 M720 0V675 M780 0V675 M840 0V675 M900 0V675 M960 0V675 M1020 0V675 M1080 0V675 M1140 0V675 M1200 0V675 M0 0H1200 M0 60H1200 M0 120H1200 M0 180H1200 M0 240H1200 M0 300H1200 M0 360H1200 M0 420H1200 M0 480H1200 M0 540H1200 M0 600H1200 M0 660H1200"/>
+      </g>
+
+      <!-- faint post tiles drifting in the deep background -->
+      <g class="fx-hero-deck__tiles">
+        <g transform="translate(150 108) rotate(-4)" opacity=".1">
+          <g class="fx-hero-deck__tilefloat" style="--td:16s;--tdel:-3s">
+            <rect x="-23" y="-29" width="46" height="58" rx="12" fill="#131A2B"/>
+            <circle cx="-11" cy="-15" r="3.5" fill="#0A5CFF"/>
+            <rect x="-13" y="0" width="26" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
+            <rect x="-13" y="10" width="17" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+          </g>
+        </g>
+        <g transform="translate(1002 132) rotate(3)" opacity=".09">
+          <g class="fx-hero-deck__tilefloat" style="--td:13s;--tdel:-8s">
+            <rect x="-36" y="-26" width="72" height="52" rx="12" fill="#131A2B"/>
+            <circle cx="-23" cy="-12" r="3.5" fill="#00D5FF"/>
+            <rect x="-25" y="2" width="34" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
+            <rect x="-25" y="12" width="22" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+          </g>
+        </g>
+        <g transform="translate(96 500) rotate(3)" opacity=".12">
+          <g class="fx-hero-deck__tilefloat" style="--td:18s;--tdel:-6s">
+            <rect x="-22" y="-28" width="44" height="56" rx="12" fill="#131A2B"/>
+            <circle cx="-10" cy="-14" r="3.5" fill="#6333FF"/>
+            <rect x="-12" y="0" width="24" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
+            <rect x="-12" y="10" width="15" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+          </g>
+        </g>
+        <g transform="translate(1092 470) rotate(-3)" opacity=".09">
+          <g class="fx-hero-deck__tilefloat" style="--td:12s;--tdel:-2s">
+            <rect x="-33" y="-24" width="66" height="48" rx="12" fill="#131A2B"/>
+            <circle cx="-21" cy="-10" r="3.5" fill="#C8FF4D"/>
+            <rect x="-23" y="2" width="30" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
+            <rect x="-23" y="12" width="19" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+          </g>
+        </g>
+        <g transform="translate(782 72) rotate(-2)" opacity=".1">
+          <g class="fx-hero-deck__tilefloat" style="--td:15s;--tdel:-11s">
+            <rect x="-20" y="-25" width="40" height="50" rx="12" fill="#131A2B"/>
+            <circle cx="-9" cy="-12" r="3.5" fill="#00D5FF"/>
+            <rect x="-11" y="0" width="22" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
+            <rect x="-11" y="10" width="14" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+          </g>
+        </g>
+        <g transform="translate(420 84) rotate(2)" opacity=".08">
+          <g class="fx-hero-deck__tilefloat" style="--td:17s;--tdel:-5s">
+            <rect x="-19" y="-24" width="38" height="48" rx="12" fill="#131A2B"/>
+            <circle cx="-8" cy="-11" r="3.5" fill="#0A5CFF"/>
+            <rect x="-10" y="0" width="20" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
+            <rect x="-10" y="10" width="13" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+          </g>
+        </g>
+      </g>
+
+      <!-- the yearline: three segments fold at two creases -->
+      <g class="fx-hero-deck__line">
+        <g class="fx-hero-deck__seggroup fx-hero-deck__seggroup--l">
+          <path class="fx-hero-deck__seg" pathLength="1" d="M 150.00 400.00 C 163.67 395.33 204.67 374.00 232.00 372.00 C 259.33 370.00 286.67 392.67 314.00 388.00 C 341.33 383.33 368.67 348.67 396.00 344.00 C 414.33 340.87 432.67 351.24 451.00 356.99"/>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--0">
+            <circle class="fx-hero-deck__mtring" style="--d:0s" cx="150" cy="400" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:0s" cx="150" cy="400" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="150" y="424">j</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--1">
+            <circle class="fx-hero-deck__mtring" style="--d:.06s" cx="232" cy="372" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.06s" cx="232" cy="372" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="232" y="396">f</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--2">
+            <circle class="fx-hero-deck__mtring" style="--d:.122s" cx="314" cy="388" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.122s" cx="314" cy="388" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="314" y="412">m</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--3">
+            <circle class="fx-hero-deck__mtring" style="--d:.197s" cx="396" cy="344" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.197s" cx="396" cy="344" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="396" y="368">a</text>
+          </g>
+        </g>
+        <g class="fx-hero-deck__seggroup fx-hero-deck__seggroup--m">
+          <path class="fx-hero-deck__seg" pathLength="1" d="M 451.00 356.99 C 460.00 359.82 469.00 361.54 478.00 360.00 C 505.33 355.33 532.67 320.00 560.00 316.00 C 587.33 312.00 614.67 339.33 642.00 336.00 C 669.33 332.67 696.67 293.33 724.00 296.00 C 732.33 296.81 740.67 301.96 749.00 308.84"/>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--4">
+            <circle class="fx-hero-deck__mtring" style="--d:.27s" cx="478" cy="360" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.27s" cx="478" cy="360" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="478" y="384">m</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--5">
+            <circle class="fx-hero-deck__mtring" style="--d:.358s" cx="560" cy="316" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.358s" cx="560" cy="316" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="560" y="340">j</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--6">
+            <circle class="fx-hero-deck__mtring" style="--d:.449s" cx="642" cy="336" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.449s" cx="642" cy="336" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="642" y="360">j</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--7">
+            <circle class="fx-hero-deck__mtring" style="--d:.56s" cx="724" cy="296" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.56s" cx="724" cy="296" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="724" y="320">a</text>
+          </g>
+        </g>
+        <g class="fx-hero-deck__seggroup fx-hero-deck__seggroup--r">
+          <path class="fx-hero-deck__seg" pathLength="1" d="M 749.00 308.84 C 768.00 324.53 787.00 349.22 806.00 352.00 C 833.33 356.00 860.67 321.33 888.00 320.00 C 915.33 318.67 942.67 347.33 970.00 344.00 C 997.33 340.67 1038.33 307.33 1052.00 300.00"/>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--8">
+            <circle class="fx-hero-deck__mtring" style="--d:.705s" cx="806" cy="352" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.705s" cx="806" cy="352" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="806" y="376">s</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--9">
+            <circle class="fx-hero-deck__mtring" style="--d:.867s" cx="888" cy="320" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:.867s" cx="888" cy="320" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="888" y="344">o</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--10">
+            <circle class="fx-hero-deck__mtring" style="--d:1.089s" cx="970" cy="344" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:1.089s" cx="970" cy="344" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="970" y="368">n</text>
+          </g>
+          <g class="fx-hero-deck__mt fx-hero-deck__mt--11">
+            <circle class="fx-hero-deck__mtring" style="--d:2s" cx="1052" cy="300" r="7" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+            <circle class="fx-hero-deck__mtdot" style="--d:2s" cx="1052" cy="300" r="3.5" fill="#FFFFFF"/>
+            <text class="fx-hero-deck__mtletter" x="1052" y="324">d</text>
+          </g>
+        </g>
+        <!-- yearline end dot: overshoot pop on completion + bookend pop after dissolve -->
+        <g class="fx-hero-deck__linedot">
+          <circle cx="1052" cy="300" r="13" fill="url(#fx01-halog)"/>
+          <circle cx="1052" cy="300" r="5.5" fill="#FFFFFF"/>
+        </g>
+      </g>
+
+      <!-- floor light + shadow (pre-baked layers) -->
+      <ellipse class="fx-hero-deck__pool" cx="600" cy="588" rx="235" ry="30" fill="url(#fx01-poolg)"/>
+      <ellipse class="fx-hero-deck__shadow" cx="600" cy="589" rx="200" ry="24" fill="url(#fx01-shadowg)"/>
+
+      <!-- the deck -->
+      <g class="fx-hero-deck__deck">
+        <g class="fx-hero-deck__card fx-hero-deck__card--bl">
+          <rect x="465" y="187" width="270" height="340" rx="28" fill="#6333FF"/>
+          <rect x="465" y="187" width="270" height="340" rx="28" fill="url(#fx01-shade)"/>
+        </g>
+        <g class="fx-hero-deck__card fx-hero-deck__card--br">
+          <rect x="465" y="187" width="270" height="340" rx="28" fill="#00D5FF"/>
+          <rect x="465" y="187" width="270" height="340" rx="28" fill="url(#fx01-shade)"/>
+        </g>
+        <g class="fx-hero-deck__card fx-hero-deck__card--fr">
+          <rect x="465" y="205" width="270" height="340" rx="28" fill="url(#fx01-bolt)"/>
+          <rect x="465" y="205" width="270" height="340" rx="28" fill="url(#fx01-shade-top)"/>
+          <text class="fx-hero-deck__cardstat" x="497" y="250">5,214 posts</text>
+          <text class="fx-hero-deck__cardlabel" x="497" y="278">your year in posts</text>
+          <circle class="fx-hero-deck__sparkhalo" cx="700" cy="390" r="11" fill="url(#fx01-halog)"/>
+          <path class="fx-hero-deck__spark" pathLength="1" d="M 500.00 445.00 C 503.03 442.43 512.12 430.70 518.18 429.60 C 524.24 428.50 530.30 440.97 536.36 438.40 C 542.42 435.83 548.48 416.77 554.55 414.20 C 560.61 411.63 566.67 425.57 572.73 423.00 C 578.79 420.43 584.85 401.00 590.91 398.80 C 596.97 396.60 603.03 411.63 609.09 409.80 C 615.15 407.97 621.21 386.33 627.27 387.80 C 633.33 389.27 639.39 416.40 645.45 418.60 C 651.52 420.80 657.58 401.73 663.64 401.00 C 669.70 400.27 675.76 416.03 681.82 414.20 C 687.88 412.37 696.97 394.03 700.00 390.00"/>
+          <g class="fx-hero-deck__sparkdot">
+            <circle cx="700" cy="390" r="4.5" fill="#FFFFFF"/>
+          </g>
+        </g>
+      </g>
+    </svg>
+
+    <p class="fx-hero-deck__caption">every post, dealt into one deck</p>
+  </div>
+</div>
+    </div>
+
+  </section>
+
+  <section class="proof" aria-labelledby="proof-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="overline reveal">the proof</span>
+        <h2 id="proof-h" class="reveal">your rhythm, honestly.</h2>
+        <p class="sub reveal">the chart is the aesthetic. we draw your actual year — real days, real
+        streaks, real quiet months. nothing inflated, nothing invented.</p>
+      </div>
+<div class="fx fx-yearline-draw" data-brand-name="fizzyfeed" role="img" aria-label="Animated stat band: a year of posting activity draws left to right across twelve months while counters rise to 5,214 posts, 389,102 words, a 141-day streak and 12 channels, closing with a lime glow pulse.">
+  <div class="fx-yearline-draw__frame">
+    <div class="fx-yearline-draw__head">
+      <span class="fx-yearline-draw__sparkdot" aria-hidden="true"></span>
+      <span class="fx-yearline-draw__tagline">your rhythm, honestly</span>
+    </div>
+
+    <div class="fx-yearline-draw__anim">
+      <div class="fx-yearline-draw__stats">
+        <div class="fx-yearline-draw__stat">
+          <div class="fx-yearline-draw__value" data-stat="posts">5,214</div>
+          <div class="fx-yearline-draw__label">posts</div>
+        </div>
+        <div class="fx-yearline-draw__stat">
+          <div class="fx-yearline-draw__value" data-stat="words">389,102</div>
+          <div class="fx-yearline-draw__label">words</div>
+        </div>
+        <div class="fx-yearline-draw__stat">
+          <div class="fx-yearline-draw__value" data-stat="streak">141</div>
+          <div class="fx-yearline-draw__label">day streak</div>
+        </div>
+        <div class="fx-yearline-draw__stat">
+          <div class="fx-yearline-draw__value" data-stat="channels">12</div>
+          <div class="fx-yearline-draw__label">channels</div>
+        </div>
+      </div>
+
+      <svg class="fx-yearline-draw__chart" viewBox="0 0 1088 232" aria-hidden="true" focusable="false">
+        <defs>
+          <radialGradient id="fx4-tint">
+            <stop offset="0" stop-color="#C8FF4D" stop-opacity=".9"/>
+            <stop offset=".55" stop-color="#C8FF4D" stop-opacity=".35"/>
+            <stop offset="1" stop-color="#C8FF4D" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <g class="fx-yearline-draw__grid">
+          <line class="fx-yearline-draw__gridline" x1="10" y1="73.8" x2="1076" y2="73.8"/>
+          <line class="fx-yearline-draw__gridline" x1="10" y1="131.9" x2="1076" y2="131.9"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--axis" x1="10" y1="190" x2="1076" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="98.8" y1="18" x2="98.8" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="187.7" y1="18" x2="187.7" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="276.5" y1="18" x2="276.5" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="365.3" y1="18" x2="365.3" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="454.2" y1="18" x2="454.2" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="543" y1="18" x2="543" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="631.8" y1="18" x2="631.8" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="720.7" y1="18" x2="720.7" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="809.5" y1="18" x2="809.5" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="898.3" y1="18" x2="898.3" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="987.2" y1="18" x2="987.2" y2="190"/>
+        </g>
+
+        <path class="fx-yearline-draw__line fx-yearline-draw__line--halo" d="M10.0 165.4L12.9 162.8L15.9 166.2L18.8 168.3L21.7 168.6L24.6 168.0L27.6 167.2L30.5 166.7L33.4 166.6L36.4 165.7L39.3 163.1L42.2 160.5L45.1 160.2L48.1 160.9L51.0 160.0L53.9 157.6L56.9 155.2L59.8 153.6L62.7 153.3L65.6 153.2L68.6 151.7L71.5 150.2L74.4 150.4L77.4 151.5L80.3 152.1L83.2 152.2L86.1 152.2L89.1 153.2L92.0 154.8L94.9 154.4L97.9 151.7L100.8 149.3L103.7 148.6L106.6 148.5L109.6 148.2L112.5 147.8L115.4 147.6L118.4 147.4L121.3 146.6L124.2 145.2L127.1 143.7L130.1 142.9L133.0 143.7L135.9 145.9L138.9 147.6L141.8 148.2L144.7 147.9L147.6 116.5L150.6 146.1L153.5 119.5L156.4 143.1L159.4 142.2L162.3 140.5L165.2 138.5L168.1 137.9L171.1 138.1L174.0 113.7L176.9 136.7L179.9 134.1L182.8 129.9L185.7 125.3L188.6 122.4L191.6 121.3L194.5 120.6L197.4 120.3L200.4 120.9L203.3 121.2L206.2 119.7L209.1 117.1L212.1 115.3L215.0 114.8L217.9 114.3L220.9 112.8L223.8 111.1L226.7 93.3L229.6 109.7L232.6 107.5L235.5 104.3L238.4 102.0L241.4 101.6L244.3 102.0L247.2 81.0L250.1 101.3L253.1 99.3L256.0 96.7L258.9 94.6L261.9 94.0L264.8 94.4L267.7 94.9L270.6 67.3L273.6 95.3L276.5 94.8L279.4 92.6L282.4 89.9L285.3 88.5L288.2 88.2L291.1 87.9L294.1 87.0L297.0 85.7L299.9 84.9L302.9 85.6L305.8 86.4L308.7 85.8L311.6 85.0L314.6 84.8L317.5 84.1L320.4 81.4L323.4 77.9L326.3 76.0L329.2 76.7L332.1 79.0L335.1 81.3L338.0 83.0L340.9 84.3L343.9 84.7L346.8 84.1L349.7 83.6L352.6 84.2L355.6 85.3L358.5 86.0L361.4 85.9L364.4 86.8L367.3 89.7L370.2 93.1L373.1 94.5L376.1 93.5L379.0 92.2L381.9 92.4L384.9 93.6L387.8 94.5L390.7 94.7L393.6 95.0L396.6 96.2L399.5 96.8L402.4 95.9L405.4 95.1L408.3 96.6L411.2 81.0L414.1 100.7L417.1 99.0L420.0 96.5L422.9 96.2L425.9 98.7L428.8 102.2L431.7 104.3L434.6 103.8L437.6 101.5L440.5 100.0L443.4 101.1L446.4 82.8L449.3 105.5L452.2 105.0L455.1 104.2L458.1 104.3L461.0 105.3L463.9 107.5L466.9 111.1L469.8 114.1L472.7 114.8L475.6 114.3L478.6 114.3L481.5 115.0L484.4 116.0L487.4 117.7L490.3 120.2L493.2 121.8L496.1 122.1L499.1 122.9L502.0 125.4L504.9 128.4L507.9 130.3L510.8 130.7L513.7 130.5L516.6 130.7L519.6 131.3L522.5 132.2L525.4 134.6L528.4 137.8L531.3 139.6L534.2 138.7L537.1 136.3L540.1 134.5L543.0 134.9L545.9 137.2L548.9 139.1L551.8 139.3L554.7 138.3L557.6 136.9L560.6 135.8L563.5 135.4L566.4 135.5L569.4 136.3L572.3 137.6L575.2 138.9L578.1 138.6L581.1 136.5L584.0 134.3L586.9 133.6L589.9 133.2L592.8 130.8L595.7 127.4L598.6 125.4L601.6 124.6L604.5 124.1L607.4 123.3L610.4 91.9L613.3 122.9L616.2 123.0L619.1 122.4L622.1 121.4L625.0 120.7L627.9 120.1L630.9 119.3L633.8 117.9L636.7 116.0L639.6 114.4L642.6 113.5L645.5 112.5L648.4 110.8L651.4 108.5L654.3 106.2L657.2 103.9L660.1 82.7L663.1 101.5L666.0 101.8L668.9 101.7L671.9 100.4L674.8 98.0L677.7 96.0L680.6 95.7L683.6 96.8L686.5 97.4L689.4 95.8L692.4 92.9L695.3 90.4L698.2 88.6L701.1 88.3L704.1 89.4L707.0 90.9L709.9 91.8L712.9 91.5L715.8 89.7L718.7 87.4L721.6 86.3L724.6 86.5L727.5 86.1L730.4 84.2L733.4 81.4L736.3 78.6L739.2 76.5L742.1 75.3L745.1 74.3L748.0 73.8L750.9 74.9L753.9 76.3L756.8 75.3L759.7 72.1L762.6 69.4L765.6 69.0L768.5 69.6L771.4 68.9L774.4 66.7L777.3 65.3L780.2 65.7L783.1 65.5L786.1 63.7L789.0 61.9L791.9 61.1L794.9 60.4L797.8 59.5L800.7 58.2L803.6 56.2L806.6 54.5L809.5 53.8L812.4 53.8L815.4 53.7L818.3 53.5L821.2 53.5L824.1 53.1L827.1 51.3L830.0 49.3L832.9 48.6L835.9 48.5L838.8 48.9L841.7 50.2L844.6 51.4L847.6 50.8L850.5 49.0L853.4 47.8L856.4 47.0L859.3 45.8L862.2 44.6L865.1 43.8L868.1 44.0L871.0 31.2L873.9 18.3L876.9 45.0L879.8 43.4L882.7 41.5L885.6 39.1L888.6 37.5L891.5 37.8L894.4 39.2L897.4 40.5L900.3 41.3L903.2 41.9L906.1 42.7L909.1 43.1L912.0 42.8L914.9 42.8L917.9 43.9L920.8 45.5L923.7 45.9L926.6 45.2L929.6 45.5L932.5 48.1L935.4 52.4L938.4 56.8L941.3 60.1L944.2 61.8L947.1 62.0L950.1 61.4L953.0 61.4L955.9 62.8L958.9 65.7L961.8 69.3L964.7 71.9L967.6 73.5L970.6 75.2L973.5 76.2L976.4 75.1L979.4 73.3L982.3 72.4L985.2 72.2L988.1 72.7L991.1 74.0L994.0 74.7L996.9 73.3L999.9 70.8L1002.8 69.0L1005.7 68.1L1008.6 67.1L1011.6 66.0L1014.5 64.5L1017.4 62.7L1020.4 61.0L1023.3 59.0L1026.2 56.4L1029.1 53.4L1032.1 51.0L1035.0 48.8L1037.9 45.1L1040.9 40.7L1043.8 37.4L1046.7 34.7L1049.6 32.0L1052.6 29.7L1055.5 27.8L1058.4 25.8L1061.4 23.4L1064.3 20.8L1067.2 18.1L1070.1 15.5L1073.1 14.0L1076.0 14.0"/>
+        <path class="fx-yearline-draw__line fx-yearline-draw__line--glow" d="M10.0 165.4L12.9 162.8L15.9 166.2L18.8 168.3L21.7 168.6L24.6 168.0L27.6 167.2L30.5 166.7L33.4 166.6L36.4 165.7L39.3 163.1L42.2 160.5L45.1 160.2L48.1 160.9L51.0 160.0L53.9 157.6L56.9 155.2L59.8 153.6L62.7 153.3L65.6 153.2L68.6 151.7L71.5 150.2L74.4 150.4L77.4 151.5L80.3 152.1L83.2 152.2L86.1 152.2L89.1 153.2L92.0 154.8L94.9 154.4L97.9 151.7L100.8 149.3L103.7 148.6L106.6 148.5L109.6 148.2L112.5 147.8L115.4 147.6L118.4 147.4L121.3 146.6L124.2 145.2L127.1 143.7L130.1 142.9L133.0 143.7L135.9 145.9L138.9 147.6L141.8 148.2L144.7 147.9L147.6 116.5L150.6 146.1L153.5 119.5L156.4 143.1L159.4 142.2L162.3 140.5L165.2 138.5L168.1 137.9L171.1 138.1L174.0 113.7L176.9 136.7L179.9 134.1L182.8 129.9L185.7 125.3L188.6 122.4L191.6 121.3L194.5 120.6L197.4 120.3L200.4 120.9L203.3 121.2L206.2 119.7L209.1 117.1L212.1 115.3L215.0 114.8L217.9 114.3L220.9 112.8L223.8 111.1L226.7 93.3L229.6 109.7L232.6 107.5L235.5 104.3L238.4 102.0L241.4 101.6L244.3 102.0L247.2 81.0L250.1 101.3L253.1 99.3L256.0 96.7L258.9 94.6L261.9 94.0L264.8 94.4L267.7 94.9L270.6 67.3L273.6 95.3L276.5 94.8L279.4 92.6L282.4 89.9L285.3 88.5L288.2 88.2L291.1 87.9L294.1 87.0L297.0 85.7L299.9 84.9L302.9 85.6L305.8 86.4L308.7 85.8L311.6 85.0L314.6 84.8L317.5 84.1L320.4 81.4L323.4 77.9L326.3 76.0L329.2 76.7L332.1 79.0L335.1 81.3L338.0 83.0L340.9 84.3L343.9 84.7L346.8 84.1L349.7 83.6L352.6 84.2L355.6 85.3L358.5 86.0L361.4 85.9L364.4 86.8L367.3 89.7L370.2 93.1L373.1 94.5L376.1 93.5L379.0 92.2L381.9 92.4L384.9 93.6L387.8 94.5L390.7 94.7L393.6 95.0L396.6 96.2L399.5 96.8L402.4 95.9L405.4 95.1L408.3 96.6L411.2 81.0L414.1 100.7L417.1 99.0L420.0 96.5L422.9 96.2L425.9 98.7L428.8 102.2L431.7 104.3L434.6 103.8L437.6 101.5L440.5 100.0L443.4 101.1L446.4 82.8L449.3 105.5L452.2 105.0L455.1 104.2L458.1 104.3L461.0 105.3L463.9 107.5L466.9 111.1L469.8 114.1L472.7 114.8L475.6 114.3L478.6 114.3L481.5 115.0L484.4 116.0L487.4 117.7L490.3 120.2L493.2 121.8L496.1 122.1L499.1 122.9L502.0 125.4L504.9 128.4L507.9 130.3L510.8 130.7L513.7 130.5L516.6 130.7L519.6 131.3L522.5 132.2L525.4 134.6L528.4 137.8L531.3 139.6L534.2 138.7L537.1 136.3L540.1 134.5L543.0 134.9L545.9 137.2L548.9 139.1L551.8 139.3L554.7 138.3L557.6 136.9L560.6 135.8L563.5 135.4L566.4 135.5L569.4 136.3L572.3 137.6L575.2 138.9L578.1 138.6L581.1 136.5L584.0 134.3L586.9 133.6L589.9 133.2L592.8 130.8L595.7 127.4L598.6 125.4L601.6 124.6L604.5 124.1L607.4 123.3L610.4 91.9L613.3 122.9L616.2 123.0L619.1 122.4L622.1 121.4L625.0 120.7L627.9 120.1L630.9 119.3L633.8 117.9L636.7 116.0L639.6 114.4L642.6 113.5L645.5 112.5L648.4 110.8L651.4 108.5L654.3 106.2L657.2 103.9L660.1 82.7L663.1 101.5L666.0 101.8L668.9 101.7L671.9 100.4L674.8 98.0L677.7 96.0L680.6 95.7L683.6 96.8L686.5 97.4L689.4 95.8L692.4 92.9L695.3 90.4L698.2 88.6L701.1 88.3L704.1 89.4L707.0 90.9L709.9 91.8L712.9 91.5L715.8 89.7L718.7 87.4L721.6 86.3L724.6 86.5L727.5 86.1L730.4 84.2L733.4 81.4L736.3 78.6L739.2 76.5L742.1 75.3L745.1 74.3L748.0 73.8L750.9 74.9L753.9 76.3L756.8 75.3L759.7 72.1L762.6 69.4L765.6 69.0L768.5 69.6L771.4 68.9L774.4 66.7L777.3 65.3L780.2 65.7L783.1 65.5L786.1 63.7L789.0 61.9L791.9 61.1L794.9 60.4L797.8 59.5L800.7 58.2L803.6 56.2L806.6 54.5L809.5 53.8L812.4 53.8L815.4 53.7L818.3 53.5L821.2 53.5L824.1 53.1L827.1 51.3L830.0 49.3L832.9 48.6L835.9 48.5L838.8 48.9L841.7 50.2L844.6 51.4L847.6 50.8L850.5 49.0L853.4 47.8L856.4 47.0L859.3 45.8L862.2 44.6L865.1 43.8L868.1 44.0L871.0 31.2L873.9 18.3L876.9 45.0L879.8 43.4L882.7 41.5L885.6 39.1L888.6 37.5L891.5 37.8L894.4 39.2L897.4 40.5L900.3 41.3L903.2 41.9L906.1 42.7L909.1 43.1L912.0 42.8L914.9 42.8L917.9 43.9L920.8 45.5L923.7 45.9L926.6 45.2L929.6 45.5L932.5 48.1L935.4 52.4L938.4 56.8L941.3 60.1L944.2 61.8L947.1 62.0L950.1 61.4L953.0 61.4L955.9 62.8L958.9 65.7L961.8 69.3L964.7 71.9L967.6 73.5L970.6 75.2L973.5 76.2L976.4 75.1L979.4 73.3L982.3 72.4L985.2 72.2L988.1 72.7L991.1 74.0L994.0 74.7L996.9 73.3L999.9 70.8L1002.8 69.0L1005.7 68.1L1008.6 67.1L1011.6 66.0L1014.5 64.5L1017.4 62.7L1020.4 61.0L1023.3 59.0L1026.2 56.4L1029.1 53.4L1032.1 51.0L1035.0 48.8L1037.9 45.1L1040.9 40.7L1043.8 37.4L1046.7 34.7L1049.6 32.0L1052.6 29.7L1055.5 27.8L1058.4 25.8L1061.4 23.4L1064.3 20.8L1067.2 18.1L1070.1 15.5L1073.1 14.0L1076.0 14.0"/>
+        <path class="fx-yearline-draw__line fx-yearline-draw__line--core" d="M10.0 165.4L12.9 162.8L15.9 166.2L18.8 168.3L21.7 168.6L24.6 168.0L27.6 167.2L30.5 166.7L33.4 166.6L36.4 165.7L39.3 163.1L42.2 160.5L45.1 160.2L48.1 160.9L51.0 160.0L53.9 157.6L56.9 155.2L59.8 153.6L62.7 153.3L65.6 153.2L68.6 151.7L71.5 150.2L74.4 150.4L77.4 151.5L80.3 152.1L83.2 152.2L86.1 152.2L89.1 153.2L92.0 154.8L94.9 154.4L97.9 151.7L100.8 149.3L103.7 148.6L106.6 148.5L109.6 148.2L112.5 147.8L115.4 147.6L118.4 147.4L121.3 146.6L124.2 145.2L127.1 143.7L130.1 142.9L133.0 143.7L135.9 145.9L138.9 147.6L141.8 148.2L144.7 147.9L147.6 116.5L150.6 146.1L153.5 119.5L156.4 143.1L159.4 142.2L162.3 140.5L165.2 138.5L168.1 137.9L171.1 138.1L174.0 113.7L176.9 136.7L179.9 134.1L182.8 129.9L185.7 125.3L188.6 122.4L191.6 121.3L194.5 120.6L197.4 120.3L200.4 120.9L203.3 121.2L206.2 119.7L209.1 117.1L212.1 115.3L215.0 114.8L217.9 114.3L220.9 112.8L223.8 111.1L226.7 93.3L229.6 109.7L232.6 107.5L235.5 104.3L238.4 102.0L241.4 101.6L244.3 102.0L247.2 81.0L250.1 101.3L253.1 99.3L256.0 96.7L258.9 94.6L261.9 94.0L264.8 94.4L267.7 94.9L270.6 67.3L273.6 95.3L276.5 94.8L279.4 92.6L282.4 89.9L285.3 88.5L288.2 88.2L291.1 87.9L294.1 87.0L297.0 85.7L299.9 84.9L302.9 85.6L305.8 86.4L308.7 85.8L311.6 85.0L314.6 84.8L317.5 84.1L320.4 81.4L323.4 77.9L326.3 76.0L329.2 76.7L332.1 79.0L335.1 81.3L338.0 83.0L340.9 84.3L343.9 84.7L346.8 84.1L349.7 83.6L352.6 84.2L355.6 85.3L358.5 86.0L361.4 85.9L364.4 86.8L367.3 89.7L370.2 93.1L373.1 94.5L376.1 93.5L379.0 92.2L381.9 92.4L384.9 93.6L387.8 94.5L390.7 94.7L393.6 95.0L396.6 96.2L399.5 96.8L402.4 95.9L405.4 95.1L408.3 96.6L411.2 81.0L414.1 100.7L417.1 99.0L420.0 96.5L422.9 96.2L425.9 98.7L428.8 102.2L431.7 104.3L434.6 103.8L437.6 101.5L440.5 100.0L443.4 101.1L446.4 82.8L449.3 105.5L452.2 105.0L455.1 104.2L458.1 104.3L461.0 105.3L463.9 107.5L466.9 111.1L469.8 114.1L472.7 114.8L475.6 114.3L478.6 114.3L481.5 115.0L484.4 116.0L487.4 117.7L490.3 120.2L493.2 121.8L496.1 122.1L499.1 122.9L502.0 125.4L504.9 128.4L507.9 130.3L510.8 130.7L513.7 130.5L516.6 130.7L519.6 131.3L522.5 132.2L525.4 134.6L528.4 137.8L531.3 139.6L534.2 138.7L537.1 136.3L540.1 134.5L543.0 134.9L545.9 137.2L548.9 139.1L551.8 139.3L554.7 138.3L557.6 136.9L560.6 135.8L563.5 135.4L566.4 135.5L569.4 136.3L572.3 137.6L575.2 138.9L578.1 138.6L581.1 136.5L584.0 134.3L586.9 133.6L589.9 133.2L592.8 130.8L595.7 127.4L598.6 125.4L601.6 124.6L604.5 124.1L607.4 123.3L610.4 91.9L613.3 122.9L616.2 123.0L619.1 122.4L622.1 121.4L625.0 120.7L627.9 120.1L630.9 119.3L633.8 117.9L636.7 116.0L639.6 114.4L642.6 113.5L645.5 112.5L648.4 110.8L651.4 108.5L654.3 106.2L657.2 103.9L660.1 82.7L663.1 101.5L666.0 101.8L668.9 101.7L671.9 100.4L674.8 98.0L677.7 96.0L680.6 95.7L683.6 96.8L686.5 97.4L689.4 95.8L692.4 92.9L695.3 90.4L698.2 88.6L701.1 88.3L704.1 89.4L707.0 90.9L709.9 91.8L712.9 91.5L715.8 89.7L718.7 87.4L721.6 86.3L724.6 86.5L727.5 86.1L730.4 84.2L733.4 81.4L736.3 78.6L739.2 76.5L742.1 75.3L745.1 74.3L748.0 73.8L750.9 74.9L753.9 76.3L756.8 75.3L759.7 72.1L762.6 69.4L765.6 69.0L768.5 69.6L771.4 68.9L774.4 66.7L777.3 65.3L780.2 65.7L783.1 65.5L786.1 63.7L789.0 61.9L791.9 61.1L794.9 60.4L797.8 59.5L800.7 58.2L803.6 56.2L806.6 54.5L809.5 53.8L812.4 53.8L815.4 53.7L818.3 53.5L821.2 53.5L824.1 53.1L827.1 51.3L830.0 49.3L832.9 48.6L835.9 48.5L838.8 48.9L841.7 50.2L844.6 51.4L847.6 50.8L850.5 49.0L853.4 47.8L856.4 47.0L859.3 45.8L862.2 44.6L865.1 43.8L868.1 44.0L871.0 31.2L873.9 18.3L876.9 45.0L879.8 43.4L882.7 41.5L885.6 39.1L888.6 37.5L891.5 37.8L894.4 39.2L897.4 40.5L900.3 41.3L903.2 41.9L906.1 42.7L909.1 43.1L912.0 42.8L914.9 42.8L917.9 43.9L920.8 45.5L923.7 45.9L926.6 45.2L929.6 45.5L932.5 48.1L935.4 52.4L938.4 56.8L941.3 60.1L944.2 61.8L947.1 62.0L950.1 61.4L953.0 61.4L955.9 62.8L958.9 65.7L961.8 69.3L964.7 71.9L967.6 73.5L970.6 75.2L973.5 76.2L976.4 75.1L979.4 73.3L982.3 72.4L985.2 72.2L988.1 72.7L991.1 74.0L994.0 74.7L996.9 73.3L999.9 70.8L1002.8 69.0L1005.7 68.1L1008.6 67.1L1011.6 66.0L1014.5 64.5L1017.4 62.7L1020.4 61.0L1023.3 59.0L1026.2 56.4L1029.1 53.4L1032.1 51.0L1035.0 48.8L1037.9 45.1L1040.9 40.7L1043.8 37.4L1046.7 34.7L1049.6 32.0L1052.6 29.7L1055.5 27.8L1058.4 25.8L1061.4 23.4L1064.3 20.8L1067.2 18.1L1070.1 15.5L1073.1 14.0L1076.0 14.0"/>
+
+        <g class="fx-yearline-draw__mdots">
+          <circle class="fx-yearline-draw__mdot" cx="53.9" cy="157.6" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="144.7" cy="147.9" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="232.6" cy="107.5" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="320.4" cy="81.4" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="411.2" cy="81" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="499.1" cy="122.9" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="586.9" cy="133.6" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="677.7" cy="96" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="765.6" cy="69" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="853.4" cy="47.8" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="944.2" cy="61.8" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="1032.1" cy="51" r="3.2"/>
+        </g>
+
+        <circle class="fx-yearline-draw__tint" cx="1076" cy="14" r="170" fill="url(#fx4-tint)"/>
+
+        <g class="fx-yearline-draw__spark" transform="translate(1076 14)">
+          <circle class="fx-yearline-draw__spark-halo" r="9"/>
+          <circle class="fx-yearline-draw__spark-core" r="4"/>
+        </g>
+
+        <g class="fx-yearline-draw__maxis">
+          <text class="fx-yearline-draw__mlabel" x="53.9" y="218">J</text>
+          <text class="fx-yearline-draw__mlabel" x="144.7" y="218">F</text>
+          <text class="fx-yearline-draw__mlabel" x="232.6" y="218">M</text>
+          <text class="fx-yearline-draw__mlabel" x="320.4" y="218">A</text>
+          <text class="fx-yearline-draw__mlabel" x="411.2" y="218">M</text>
+          <text class="fx-yearline-draw__mlabel" x="499.1" y="218">J</text>
+          <text class="fx-yearline-draw__mlabel" x="586.9" y="218">J</text>
+          <text class="fx-yearline-draw__mlabel" x="677.7" y="218">A</text>
+          <text class="fx-yearline-draw__mlabel" x="765.6" y="218">S</text>
+          <text class="fx-yearline-draw__mlabel" x="853.4" y="218">O</text>
+          <text class="fx-yearline-draw__mlabel" x="944.2" y="218">N</text>
+          <text class="fx-yearline-draw__mlabel" x="1032.1" y="218">D</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</div>
+    </div>
+<script type="module">
+/* fx-04 yearline-draw — module script, no globals, no network except the torph import below. */
+const CYCLE = 16000;    // full loop
+const DRAW = 10800;     // left→right draw window (ease-out)
+const OUT_AT = 13200;   // dissolve begins (≈2s hold after the dot lands)
+const PREP_AT = 14500;  // swap curve variant + reset while fully faded
+const N = 365, W = 1088, PADL = 10, PADR = 12, YBASE = 190, YH = 176;
+const FINALS = [5214, 389102, 141, 12];
+const CH_STEPS = [1, 1, 2, 3, 4, 4, 5, 6, 7, 8, 9, 11]; // channels discovered per month; 12 lands with the dot
+const VARIANTS = [
+  { seed: 20240117, overrides: [] },
+  { seed: 733114, overrides: [[7, 0.26], [12, 0.9], [4, 0.66]] },
+  { seed: 990552, overrides: [[4, 0.68], [7, 0.34], [13, 0.62], [14, 0.68], [11, 0.76]] },
+];
+
+/* ---- curve synthesis (deterministic, pre-seeded) ---- */
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const BASE_ANCHORS = [
+  [0.0, 0.14], [0.055, 0.2], [0.115, 0.24], [0.2, 0.44], [0.29, 0.62],
+  [0.345, 0.55], [0.42, 0.48], [0.5, 0.3], [0.555, 0.36], [0.63, 0.52],
+  [0.7, 0.66], [0.775, 0.8], [0.845, 0.86], [0.9, 0.66], [0.945, 0.72], [1.0, 1.0],
+];
+function catmullY(anchors, x) {
+  const n = anchors.length;
+  let k = 0;
+  while (k < n - 2 && x > anchors[k + 1][0]) k++;
+  const p1 = anchors[k], p2 = anchors[k + 1];
+  const p0 = anchors[Math.max(0, k - 1)], p3 = anchors[Math.min(n - 1, k + 2)];
+  const t = (x - p1[0]) / (p2[0] - p1[0]), t2 = t * t, t3 = t2 * t;
+  return 0.5 * ((2 * p1[1]) + (-p0[1] + p2[1]) * t
+    + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2
+    + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3);
+}
+function makeCurve(seed, overrides) {
+  const anchors = BASE_ANCHORS.map(a => a.slice());
+  for (const [i, v] of overrides || []) anchors[i][1] = v;
+  const rng = mulberry32(seed);
+  let noise = Array.from({ length: N }, () => rng() * 2 - 1);
+  for (let pass = 0; pass < 3; pass++) {
+    const s = noise.slice();
+    for (let i = 0; i < N; i++) {
+      const l = s[Math.max(0, i - 1)], r = s[Math.min(N - 1, i + 1)];
+      noise[i] = 0.25 * l + 0.5 * s[i] + 0.25 * r;
+    }
+  }
+  const bursts = new Map();
+  const count = 10 + Math.floor(rng() * 5);
+  for (let b = 0; b < count; b++) {
+    const idx = 2 + Math.floor(rng() * (N - 4));
+    bursts.set(idx, (bursts.get(idx) || 0) + 0.05 + rng() * 0.13);
+  }
+  const v = new Array(N);
+  for (let i = 0; i < N; i++) {
+    const val = catmullY(anchors, i / (N - 1)) + noise[i] * 0.05 + (bursts.get(i) || 0);
+    v[i] = Math.min(1, Math.max(0.02, val));
+  }
+  v[0] = anchors[0][1];
+  v[N - 1] = 1;
+  return v;
+}
+const xOf = i => PADL + (i / (N - 1)) * (W - PADL - PADR);
+const yOf = v => YBASE - v * YH;
+function pathD(v) {
+  let d = '';
+  for (let i = 0; i < N; i++) d += (i ? 'L' : 'M') + xOf(i).toFixed(1) + ' ' + yOf(v[i]).toFixed(1);
+  return d;
+}
+function cumArea(v) {
+  const c = new Array(N); c[0] = 0;
+  for (let i = 1; i < N; i++) c[i] = c[i - 1] + (v[i - 1] + v[i]) / 2;
+  return c;
+}
+
+/* ---- torph loader: dynamic import in try/catch, never blocks or breaks the loop ----
+   (esm.sh/torph exports the vanilla class as TextMorph; inspected at runtime with
+   fallbacks for other shapes. If it fails or times out we simply keep the rAF count-up.) */
+let TextMorphCtor = null, torphSettled = false, torphStarted = false;
+const loadTorph = () => {
+  if (torphStarted) return;
+  torphStarted = true;
+  try {
+    Promise.race([
+      import('https://esm.sh/torph'),
+      new Promise(res => setTimeout(() => res(null), 2500)),
+    ]).then(m => {
+      TextMorphCtor = (m && (m.TextMorph || m.textMorph
+        || (m.default && (m.default.TextMorph || m.default.textMorph)))) || null;
+      torphSettled = true;
+    }).catch(() => { torphSettled = true; });
+  } catch (e) { torphSettled = true; }
+};
+
+const fmt = n => n.toLocaleString('en-US');
+const easeOutCubic = u => 1 - Math.pow(1 - u, 3);
+
+function initModule(root) {
+  if (root.dataset.fxReady) return;
+  root.dataset.fxReady = '1';
+
+  const qa = s => Array.from(root.querySelectorAll(s));
+  const paths = qa('.fx-yearline-draw__line');
+  const mdots = qa('.fx-yearline-draw__mdot');
+  const mlabels = qa('.fx-yearline-draw__mlabel');
+  const spark = root.querySelector('.fx-yearline-draw__spark');
+  const tint = root.querySelector('.fx-yearline-draw__tint');
+  const values = qa('.fx-yearline-draw__value');
+
+  const reduced = window.matchMedia
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) return; /* static composed frame already present in the markup */
+  loadTorph();
+
+  const variants = VARIANTS.map(({ seed, overrides }) => {
+    const v = makeCurve(seed, overrides);
+    const cum = cumArea(v);
+    return { v, d: pathD(v), cum, total: cum[N - 1] };
+  });
+  let vIdx = 0, pathLen = 0;
+
+  const applyVariant = i => {
+    const vd = variants[i];
+    for (const p of paths) {
+      p.setAttribute('d', vd.d);
+      const L = p.getTotalLength();
+      p.style.strokeDasharray = L + ' ' + L;
+      p.style.strokeDashoffset = L;
+    }
+    pathLen = paths[0].getTotalLength();
+    for (let m = 0; m < 12; m++) {
+      const idx = Math.round(((m + 0.5) / 12) * (N - 1));
+      mdots[m].setAttribute('cx', xOf(idx).toFixed(1));
+      mdots[m].setAttribute('cy', yOf(vd.v[idx]).toFixed(1));
+    }
+  };
+
+  let start = 0, rafId = 0, running = false, pauseAt = 0, hiddenAt = 0;
+  let lastCyc = -1, popped = 0, landed = false, outSet = false, didPrepare = false;
+  let lastCounterAt = -1e9, lastShown = [-1, -1, -1, -1];
+  let morphers = null, torphChecked = false;
+
+  const tryAttachTorph = () => {
+    if (morphers || !TextMorphCtor) return;
+    try {
+      morphers = values.map((el, i) => {
+        el.textContent = ''; /* TextMorph owns the element's content from here on */
+        const m = new TextMorphCtor({
+          element: el, locale: 'en', duration: 420,
+          ease: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        });
+        m.update(lastShown[i] >= 0 ? lastShown[i] : 0);
+        return m;
+      });
+    } catch (e) { morphers = null; }
+  };
+
+  const areaAt = (p, vd) => {
+    const f = p * (N - 1), i = Math.min(N - 2, Math.floor(f)), fr = f - i;
+    return (vd.cum[i] + (vd.cum[i + 1] - vd.cum[i]) * fr) / vd.total;
+  };
+  const runningValues = (p, vd) => {
+    const a = areaAt(p, vd);
+    return [
+      Math.round(FINALS[0] * a),
+      Math.round(FINALS[1] * Math.pow(a, 0.94)),
+      Math.round(FINALS[2] * Math.pow(p, 1.28)),
+      morphers ? CH_STEPS[Math.min(11, Math.floor(p * 12))]
+               : (p <= 0 ? 0 : Math.min(12, Math.max(1, Math.round(p * 13.2)))),
+    ];
+  };
+  const setCounters = (vals, force) => {
+    for (let i = 0; i < 4; i++) {
+      const val = vals[i];
+      if (!force && val === lastShown[i]) continue;
+      lastShown[i] = val;
+      if (morphers) {
+        try { morphers[i].update(val); }
+        catch (e) { values[i].textContent = fmt(val); }
+      } else {
+        values[i].textContent = fmt(val);
+      }
+    }
+  };
+
+  const resetCycleBits = () => {
+    popped = 0;
+    for (const d of mdots) d.classList.remove('is-on');
+    for (const l of mlabels) l.classList.remove('is-on');
+    spark.classList.remove('is-landed');
+    tint.classList.remove('is-pulse');
+    lastShown = [-1, -1, -1, -1];
+  };
+  const toStartState = () => {
+    applyVariant(vIdx);
+    for (let i = 0; i < 4; i++) {
+      if (morphers) {
+        try { morphers[i].update(0); continue; } catch (e) { /* fall back below */ }
+      }
+      values[i].textContent = '0';
+    }
+    resetCycleBits();
+  };
+
+  const popThrough = m => {
+    while (popped < m) {
+      const k = popped++;
+      mdots[k].classList.add('is-on');
+      mlabels[k].classList.add('is-on');
+    }
+  };
+
+  const frame = now => {
+    rafId = 0;
+    if (!torphChecked && torphSettled) { torphChecked = true; tryAttachTorph(); }
+    const el = now - start;
+    const cyc = Math.floor(el / CYCLE);
+    const t = el - cyc * CYCLE;
+    if (cyc !== lastCyc) {
+      lastCyc = cyc;
+      root.classList.remove('is-out'); /* fade the band back in as the new year starts */
+      spark.classList.remove('is-landed'); /* re-arm the overshoot pop for this cycle */
+      tint.classList.remove('is-pulse');
+      if (!didPrepare) { vIdx = (vIdx + 1) % variants.length; toStartState(); } /* glitch recovery */
+      didPrepare = false;
+      landed = false;
+      outSet = false;
+    }
+    const vd = variants[vIdx];
+    if (t < DRAW) {
+      const p = easeOutCubic(t / DRAW);
+      const off = String(pathLen * (1 - p));
+      for (const path of paths) path.style.strokeDashoffset = off;
+      const i = Math.min(N - 1, Math.round(p * (N - 1)));
+      spark.setAttribute('transform',
+        'translate(' + xOf(i).toFixed(1) + ' ' + yOf(vd.v[i]).toFixed(1) + ')');
+      popThrough(Math.min(12, Math.floor(p * 12)));
+      const cadence = morphers ? 300 : 0;
+      if (now - lastCounterAt >= cadence) {
+        lastCounterAt = now;
+        setCounters(runningValues(p, vd), false);
+      }
+    } else if (!landed) {
+      landed = true;
+      for (const path of paths) path.style.strokeDashoffset = '0';
+      spark.setAttribute('transform', 'translate(' + xOf(N - 1).toFixed(1) + ' ' + yOf(1).toFixed(1) + ')');
+      popThrough(12);
+      setCounters(FINALS.slice(), true);
+      spark.classList.add('is-landed');
+      tint.classList.add('is-pulse');
+    }
+    if (landed) {
+      if (t >= OUT_AT && !outSet) { outSet = true; root.classList.add('is-out'); }
+      if (t >= PREP_AT && !didPrepare) {
+        didPrepare = true;
+        vIdx = (vIdx + 1) % variants.length;
+        toStartState(); /* swap curve + zero counters while the band is invisible */
+      }
+    }
+    if (running) rafId = requestAnimationFrame(frame);
+  };
+
+  const setActive = on => {
+    if (on && !running) {
+      running = true;
+      if (pauseAt) { start += performance.now() - pauseAt; pauseAt = 0; }
+      else if (!start) start = performance.now();
+      if (!rafId) rafId = requestAnimationFrame(frame);
+    } else if (!on && running) {
+      running = false;
+      pauseAt = performance.now();
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+    }
+  };
+
+  let ioVisible = true;
+  const effective = () => ioVisible
+    && root.getAttribute('data-fx-state') !== 'idle'
+    && !document.hidden;
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => {
+      ioVisible = es[es.length - 1].isIntersecting;
+      setActive(effective());
+    }, { threshold: 0.12 });
+    io.observe(root);
+  }
+  if ('MutationObserver' in window) {
+    new MutationObserver(() => setActive(effective()))
+      .observe(root, { attributes: true, attributeFilter: ['data-fx-state'] });
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) hiddenAt = performance.now();
+    else if (hiddenAt) {
+      if (running) start += performance.now() - hiddenAt;
+      hiddenAt = 0;
+    }
+    setActive(effective());
+  });
+
+  /* boot: markup ships the composed final frame; live mode resets and draws */
+  root.classList.add('is-live', 'is-out');
+  toStartState();
+  didPrepare = true; /* the first cycle starts from the boot reset, not the wrap handler */
+  setActive(true);
+}
+
+document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
+</script>
+  </section>
+
+  <section id="how" aria-labelledby="how-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="overline reveal">how it works</span>
+        <h2 id="how-h" class="reveal">posts in, deck out.</h2>
+      </div>
+      <div class="how-grid">
+        <div class="steps">
+          <div class="step reveal"><span class="n">01</span><div><h3>connect</h3><p>sign in with buffer. read-only by default, tokens encrypted, one-click revoke.</p></div></div>
+          <div class="step reveal"><span class="n">02</span><div><h3>yearize</h3><p>we pull your past 12 months and compute the story — cadence, streaks, channel mix, peaks.</p></div></div>
+          <div class="step reveal"><span class="n">03</span><div><h3>your deck</h3><p>seven story cards render as shareable images in the recap-card palette. built to be screenshotted.</p></div></div>
+        </div>
+<div class="fx fx-feed-to-deck" data-brand-name="fizzyfeed" role="img" aria-label="Eleven monogram channel tiles drift in from the left and right edges and stream toward a central deck hub with slowly turning rings, while seven gradient story cards emerge one by one and float away to the upper right.">
+  <svg class="fx-feed-to-deck__svg" viewBox="0 0 1400 700" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    <defs>
+      <!-- static edge-fade masks: outer 6% horizontal, bottom 15% vertical -->
+      <linearGradient id="fx2FadeX" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/>
+        <stop offset=".06" stop-color="#FFFFFF" stop-opacity="1"/>
+        <stop offset=".94" stop-color="#FFFFFF" stop-opacity="1"/>
+        <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="fx2FadeY" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FFFFFF" stop-opacity="1"/>
+        <stop offset=".85" stop-color="#FFFFFF" stop-opacity="1"/>
+        <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+      </linearGradient>
+      <mask id="fx2MaskX" maskUnits="userSpaceOnUse" x="0" y="0" width="1400" height="700">
+        <rect width="1400" height="700" fill="url(#fx2FadeX)"/>
+      </mask>
+      <mask id="fx2MaskY" maskUnits="userSpaceOnUse" x="0" y="0" width="1400" height="700">
+        <rect width="1400" height="700" fill="url(#fx2FadeY)"/>
+      </mask>
+
+      <radialGradient id="fx2Glow">
+        <stop offset="0" stop-color="#0A5CFF" stop-opacity=".22"/>
+        <stop offset=".5" stop-color="#0A5CFF" stop-opacity=".1"/>
+        <stop offset="1" stop-color="#0A5CFF" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="fx2Slab" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#070d22"/>
+        <stop offset="1" stop-color="#0c1634"/>
+      </linearGradient>
+      <linearGradient id="fx2Intake" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#0A0E1A"/>
+        <stop offset="1" stop-color="#05070E"/>
+      </linearGradient>
+      <linearGradient id="fx2Bevel" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FFFFFF" stop-opacity=".5"/>
+        <stop offset=".16" stop-color="#FFFFFF" stop-opacity=".12"/>
+        <stop offset=".45" stop-color="#FFFFFF" stop-opacity="0"/>
+      </linearGradient>
+
+      <!-- story card gradients (§1, exact) -->
+      <linearGradient id="fx2GradBolt"   x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0A5CFF"/><stop offset="1" stop-color="#00D5FF"/></linearGradient>
+      <linearGradient id="fx2GradAurora" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00D5FF"/><stop offset="1" stop-color="#00FFA3"/></linearGradient>
+      <linearGradient id="fx2GradFizz"   x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C8FF4D"/><stop offset="1" stop-color="#00E5A0"/></linearGradient>
+      <linearGradient id="fx2GradGrape"  x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A855F7"/><stop offset="1" stop-color="#6366FA"/></linearGradient>
+      <linearGradient id="fx2GradSunset" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8A00"/><stop offset="1" stop-color="#FF3D77"/></linearGradient>
+      <linearGradient id="fx2GradNebula" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6333FF"/><stop offset="1" stop-color="#0A5CFF"/></linearGradient>
+      <linearGradient id="fx2GradCoral"  x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF5C5C"/><stop offset="1" stop-color="#FF9E2C"/></linearGradient>
+
+      <!-- the Deck mark's own gradient (official mark-gradient.svg geometry, scaled) -->
+      <linearGradient id="fx2GradMark" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#6333FF"/>
+        <stop offset=".45" stop-color="#0A5CFF"/>
+        <stop offset="1" stop-color="#00D5FF"/>
+      </linearGradient>
+
+      <!-- static filters (defined once, never animated) -->
+      <filter id="fx2Shadow" x="-60%" y="-140%" width="220%" height="380%"><feGaussianBlur stdDeviation="10"/></filter>
+      <filter id="fx2Soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.3"/></filter>
+
+      <!-- reusable shapes: tile base (accent dot takes currentColor) + story card -->
+      <g id="fx2TileBase">
+        <rect x="-28" y="-28" width="56" height="56" rx="14" fill="#131A2B" stroke="#FFFFFF" stroke-opacity=".07"/>
+        <circle cx="17" cy="-17" r="3" fill="currentColor"/>
+      </g>
+      <g id="fx2CardShape">
+        <rect x="-45" y="-60" width="90" height="120" rx="28" stroke="#FFFFFF" stroke-opacity=".1"/>
+      </g>
+    </defs>
+
+    <!-- ambient hub glow (static) -->
+    <circle cx="700" cy="398" r="272" fill="url(#fx2Glow)"/>
+
+    <!-- flowing layer: edge-fade masks (horizontal × vertical, nested) -->
+    <g mask="url(#fx2MaskX)"><g mask="url(#fx2MaskY)">
+      <!-- floor shadow under the hub (static, pre-blurred) -->
+      <ellipse cx="700" cy="552" rx="300" ry="34" fill="#05070E" opacity=".45" filter="url(#fx2Shadow)"/>
+      <ellipse cx="700" cy="552" rx="208" ry="20" fill="#05070E" opacity=".9" filter="url(#fx2Shadow)"/>
+
+      <!-- channel tiles: drift in from left / right edges, dissolve at the hub's outer ring -->
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:150px;--ex:452px;--ey:318px;--sc:.95;--o:.95;--r0:-6deg;--r1:5deg;--d:-1s;color:#0A5CFF;opacity:.95;transform:translate(170px,225px) scale(.95) rotate(-1deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">X</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:300px;--ex:428px;--ey:402px;--sc:1;--o:.92;--r0:4deg;--r1:-4deg;--d:-9.2s;color:#C8FF4D;opacity:.92;transform:translate(160px,345px) scale(1) rotate(0deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="15">IG</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:585px;--ex:452px;--ey:478px;--sc:.9;--o:.82;--r0:-5deg;--r1:4deg;--d:-4.6s;color:#00D5FF;opacity:.82;transform:translate(170px,535px) scale(.9) rotate(-1deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="15">in</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" filter="url(#fx2Soft)" style="--sx:-90px;--sy:96px;--ex:470px;--ey:258px;--sc:.7;--o:.5;--r0:6deg;--r1:-6deg;--d:-14.4s;color:#FF8A00;opacity:0;transform:translate(-90px,96px) scale(.7) rotate(6deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">f</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:434px;--ex:462px;--ey:432px;--sc:.8;--o:.68;--r0:-4deg;--r1:3deg;--d:-18.6s;color:#A855F7;opacity:0;transform:translate(-90px,434px) scale(.8) rotate(-4deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">♪</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:660px;--ex:476px;--ey:528px;--sc:.95;--o:.9;--r0:3deg;--r1:-5deg;--d:-6.9s;color:#00FFA3;opacity:0;transform:translate(-90px,660px) scale(.95) rotate(3deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">b</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" style="--sx:1490px;--sy:210px;--ex:948px;--ey:322px;--sc:.92;--o:.9;--r0:5deg;--r1:-4deg;--d:-2.8s;color:#FF3D77;opacity:.9;transform:translate(1220px,266px) scale(.92) rotate(1deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="17">▶</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" filter="url(#fx2Soft)" style="--sx:1490px;--sy:372px;--ex:968px;--ey:402px;--sc:.76;--o:.58;--r0:-5deg;--r1:5deg;--d:-11.6s;color:#6333FF;opacity:0;transform:translate(1490px,372px) scale(.76) rotate(-5deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="15">th</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" style="--sx:1490px;--sy:620px;--ex:942px;--ey:486px;--sc:.9;--o:.85;--r0:4deg;--r1:-3deg;--d:-7.7s;color:#FF9E2C;opacity:.85;transform:translate(1215px,552px) scale(.9) rotate(1deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">P</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" filter="url(#fx2Soft)" style="--sx:1490px;--sy:120px;--ex:952px;--ey:262px;--sc:.68;--o:.5;--r0:-6deg;--r1:6deg;--d:-16.3s;color:#00E5A0;opacity:0;transform:translate(1490px,120px) scale(.68) rotate(-6deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">M</text>
+      </g>
+      <g class="fx-feed-to-deck__tile" style="--sx:1490px;--sy:520px;--ex:958px;--ey:540px;--sc:.98;--o:.95;--r0:2deg;--r1:-4deg;--d:-20.1s;color:#6366FA;opacity:.95;transform:translate(1225px,530px) scale(.98) rotate(-1deg)">
+        <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">G</text>
+      </g>
+
+      <!-- story cards: born behind the hub, rise up-right, fade before the edges -->
+      <g transform="translate(700 392)">
+        <g class="fx-feed-to-deck__card" style="--tilt:-8deg;--tx:430px;--ty:-290px;--d:-.6s;opacity:1;transform:translate(215px,-170px) scale(1) rotate(-8deg)">
+          <use href="#fx2CardShape" fill="url(#fx2GradBolt)"/>
+        </g>
+        <g class="fx-feed-to-deck__card" style="--tilt:-4deg;--tx:392px;--ty:-248px;--d:-3.7s;opacity:0;transform:translate(0,0) scale(.35) rotate(-4deg)">
+          <use href="#fx2CardShape" fill="url(#fx2GradAurora)"/>
+        </g>
+        <g class="fx-feed-to-deck__card" style="--tilt:3deg;--tx:468px;--ty:-318px;--d:-6.8s;opacity:0;transform:translate(0,0) scale(.35) rotate(3deg)">
+          <use href="#fx2CardShape" fill="url(#fx2GradFizz)"/>
+        </g>
+        <g class="fx-feed-to-deck__card" style="--tilt:7deg;--tx:362px;--ty:-214px;--d:-9.9s;opacity:0;transform:translate(0,0) scale(.35) rotate(7deg)">
+          <use href="#fx2CardShape" fill="url(#fx2GradGrape)"/>
+        </g>
+        <g class="fx-feed-to-deck__card" style="--tilt:-6deg;--tx:452px;--ty:-262px;--d:-13s;opacity:1;transform:translate(390px,-275px) scale(1) rotate(-6deg)">
+          <use href="#fx2CardShape" fill="url(#fx2GradSunset)"/>
+        </g>
+        <g class="fx-feed-to-deck__card" style="--tilt:2deg;--tx:410px;--ty:-332px;--d:-16.1s;opacity:0;transform:translate(0,0) scale(.35) rotate(2deg)">
+          <use href="#fx2CardShape" fill="url(#fx2GradNebula)"/>
+        </g>
+        <g class="fx-feed-to-deck__card" style="--tilt:5deg;--tx:478px;--ty:-286px;--d:-19.2s;opacity:0;transform:translate(0,0) scale(.35) rotate(5deg)">
+          <use href="#fx2CardShape" fill="url(#fx2GradCoral)"/>
+        </g>
+      </g>
+    </g></g>
+
+    <!-- deck hub (painted above the flow so cards are born behind it) -->
+    <g class="fx-feed-to-deck__hub">
+      <rect class="fx-feed-to-deck__slab" x="505" y="438" width="390" height="108" rx="54" fill="url(#fx2Slab)"/>
+      <ellipse class="fx-feed-to-deck__intake" cx="700" cy="492" rx="148" ry="30" fill="url(#fx2Intake)" stroke="#0A5CFF" stroke-opacity=".28"/>
+      <rect class="fx-feed-to-deck__bevel" x="505" y="438" width="390" height="108" rx="54" fill="none" stroke="url(#fx2Bevel)" stroke-width="1.4"/>
+      <circle class="fx-feed-to-deck__ringA" cx="700" cy="390" r="104" fill="none" stroke="#FFFFFF" stroke-opacity=".5" stroke-width="1.5" pathLength="360" stroke-dasharray="262 98"/>
+      <circle class="fx-feed-to-deck__ringB" cx="700" cy="390" r="146" fill="none" stroke="#0A5CFF" stroke-opacity=".85" stroke-width="2" pathLength="360" stroke-dasharray="198 162"/>
+      <!-- the Deck mark: three fanned gradient cards + white yearline spark (official geometry, scaled) -->
+      <g transform="translate(700 392)">
+        <g class="fx-feed-to-deck__markBob">
+          <rect x="-23" y="-31" width="46" height="62" rx="13" fill="url(#fx2GradAurora)" transform="translate(-17 4) rotate(-11)" opacity=".92"/>
+          <rect x="-23" y="-31" width="46" height="62" rx="13" fill="url(#fx2GradNebula)" transform="translate(17 4) rotate(11)" opacity=".92"/>
+          <rect x="-23" y="-31" width="46" height="62" rx="13" fill="url(#fx2GradMark)"/>
+          <path class="fx-feed-to-deck__spark" d="M-11 9 L-3 1 L1.5 6 L9 -3" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" pathLength="100" stroke-dasharray="100 100"/>
+          <g transform="translate(9 -3)"><g class="fx-feed-to-deck__sparkDot"><circle r="2.7" fill="#FFFFFF" style="opacity:.9"/></g></g>
+        </g>
+      </g>
+    </g>
+  </svg>
+</div>
+      </div>
+    </div>
+
+  </section>
+
+  <section id="chapters" aria-labelledby="ch-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="overline reveal">the deck</span>
+        <h2 id="ch-h" class="reveal">seven chapters.</h2>
+        <p class="sub reveal">one card per moment, led by the brand gradients. the whole year in one sitting — not a dashboard.</p>
+      </div>
+<div class="fx fx-deck-fan" data-brand-name="fizzyfeed" role="img" aria-label="A deck of seven gradient story cards rests, fans out one by one to reveal the seven chapters of the posting year — each card printed with its chapter illustration in halftone dots — holds, restacks in reverse order, and closes with a small white spark pulse on the top card.">
+  <div class="fx-deck-fan__viewport">
+    <div class="fx-deck-fan__glow"></div>
+    <div class="fx-deck-fan__stage">
+      <div class="fx-deck-fan__floor"></div>
+      <div class="fx-deck-fan__beat">
+        <div class="fx-deck-fan__sway">
+
+          <div class="fx-deck-fan__card fx-deck-fan__card--1">
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-01-kickoff.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
+            <div class="fx-deck-fan__scrim"></div>
+            <span class="fx-deck-fan__num">01</span>
+            <span class="fx-deck-fan__label">kickoff</span>
+          </div>
+
+          <div class="fx-deck-fan__card fx-deck-fan__card--2">
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-02-rhythm.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
+            <div class="fx-deck-fan__scrim"></div>
+            <span class="fx-deck-fan__num">02</span>
+            <span class="fx-deck-fan__label">rhythm</span>
+          </div>
+
+          <div class="fx-deck-fan__card fx-deck-fan__card--3">
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-03-streaks.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
+            <div class="fx-deck-fan__scrim"></div>
+            <span class="fx-deck-fan__num">03</span>
+            <span class="fx-deck-fan__label">streaks</span>
+          </div>
+
+          <div class="fx-deck-fan__card fx-deck-fan__card--4">
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-04-the-mix.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
+            <div class="fx-deck-fan__scrim"></div>
+            <span class="fx-deck-fan__num">04</span>
+            <span class="fx-deck-fan__label">the mix</span>
+          </div>
+
+          <div class="fx-deck-fan__card fx-deck-fan__card--5">
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-05-peaks.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
+            <div class="fx-deck-fan__scrim"></div>
+            <span class="fx-deck-fan__num">05</span>
+            <span class="fx-deck-fan__label">peaks</span>
+          </div>
+
+          <div class="fx-deck-fan__card fx-deck-fan__card--6">
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-06-alter-ego.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
+            <div class="fx-deck-fan__scrim"></div>
+            <span class="fx-deck-fan__num">06</span>
+            <span class="fx-deck-fan__label">alter ego</span>
+          </div>
+
+          <div class="fx-deck-fan__card fx-deck-fan__card--7">
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-07-the-recap.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
+            <div class="fx-deck-fan__scrim"></div>
+            <span class="fx-deck-fan__num">07</span>
+            <span class="fx-deck-fan__label">the recap</span>
+            <span class="fx-deck-fan__spark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                <path d="M12 0C13.1 6.9 17.1 10.9 24 12C17.1 13.1 13.1 17.1 12 24C10.9 17.1 6.9 13.1 0 12C6.9 10.9 10.9 6.9 12 0Z" fill="#FFFFFF"/>
+              </svg>
+            </span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="chapters-grid">
+        <div class="chapter reveal"><span class="cn">01</span><b>kickoff</b><span>where the year started</span></div>
+        <div class="chapter reveal"><span class="cn">02</span><b>rhythm</b><span>best day, favorite hour</span></div>
+        <div class="chapter reveal"><span class="cn">03</span><b>streaks</b><span>the grind you forgot</span></div>
+        <div class="chapter reveal"><span class="cn">04</span><b>the mix</b><span>channels &amp; topics</span></div>
+        <div class="chapter reveal"><span class="cn">05</span><b>peaks</b><span>biggest month, busiest week</span></div>
+        <div class="chapter reveal"><span class="cn">06</span><b>alter ego</b><span>ai-named, data-derived</span></div>
+        <div class="chapter reveal"><span class="cn">07</span><b>the recap</b><span>queue your recap post</span></div>
+        <div class="chapter reveal"><span class="cn">+</span><b>greatest hits</b><span>opt-in real top posts</span></div>
+      </div>
+    </div>
+
+  </section>
+
+  <section id="persona" aria-labelledby="pe-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="overline reveal">named by the numbers</span>
+        <h2 id="pe-h" class="reveal">an alter ego, earned.</h2>
+        <p class="sub reveal">ai studies your real patterns — the hours, the streaks, the channels you fed —
+        and names the posting persona you became this year. cross-check it: the numbers agree.</p>
+      </div>
+<!-- MODULE ROOT: this whole div is what the landing page embeds -->
+<div class="fx fx-persona-morph" data-brand-name="fizzyfeed" role="img"
+     aria-label="a gradient card breathing softly while the posting persona name morphs between four alter egos and a thin white yearline draws along its base">
+
+  <div class="fx-persona-morph__glow" aria-hidden="true"></div>
+
+  <div class="fx-persona-morph__stage">
+    <div class="fx-persona-morph__card">
+      <span class="fx-persona-morph__overline">your alter ego</span>
+
+      <div class="fx-persona-morph__name" data-fx-name>the midnight archivist</div>
+
+      <div class="fx-persona-morph__story-stack">
+        <p class="fx-persona-morph__story fx-persona-morph__story--active">posted 214 nights after 11pm — consistency masquerading as insomnia</p>
+        <p class="fx-persona-morph__story">49-post march, zero missed fridays</p>
+        <p class="fx-persona-morph__story">shows up twice a week, every week, since january</p>
+        <p class="fx-persona-morph__story">slow posts, long game, 12 months of compound interest</p>
+      </div>
+
+      <svg class="fx-persona-morph__sparkline" viewBox="0 0 484 44" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path class="fx-persona-morph__sparkline-path" d="M 2 34 C 30 31, 52 36, 82 33 C 112 30, 128 25, 158 26 C 188 27, 204 34, 234 33 C 264 32, 280 22, 310 20 C 340 18, 356 26, 386 24 C 416 22, 448 12, 482 9"/>
+        <circle class="fx-persona-morph__spark-dot" cx="482" cy="9" r="3.25"/>
+      </svg>
+    </div>
+
+    <div class="fx-persona-morph__roster" aria-hidden="true">
+      <span class="is-active">01 the midnight archivist</span>
+      <span>02 the quiet storm</span>
+      <span>03 the tuesday regular</span>
+      <span>04 the long-game builder</span>
+    </div>
+  </div>
+
+</div>
+    </div>
+<script type="module">
+/* fx-05 persona-morph — module script. No globals; loops driven by rAF clock + CSS. */
+(() => {
+  const PERSONAS = [
+    { name: 'the midnight archivist', story: 'posted 214 nights after 11pm — consistency masquerading as insomnia' },
+    { name: 'the quiet storm',        story: '49-post march, zero missed fridays' },
+    { name: 'the tuesday regular',    story: 'shows up twice a week, every week, since january' },
+    { name: 'the long-game builder',  story: 'slow posts, long game, 12 months of compound interest' }
+  ];
+  const LOOP_MS = 18000;
+  /* persona i holds slot [4500·i, 4500·(i+1)); at each boundary the name morphs to the
+     next persona — the last morph (P4 → P1) lands right on the 18s wrap, seamless. */
+  const BOUNDARIES = [4500, 9000, 13500, 17100];
+  const STAGGER_MS = 20;
+
+  /* -------- torph engine (preferred) --------
+     Names are handed over with nbsp for blanks: with no plain spaces in the string,
+     torph selects its grapheme segmenter → one span per CHARACTER (the brief's
+     character-wise morph). Display is unchanged (nbsp renders as a space). */
+  function toCharStream(text) { return text.replace(/ /g, '\u00A0'); }
+
+  function createTorphEngine(nameEl, Ctor, initialText) {
+    let morph = null;
+    return {
+      type: 'torph',
+      init() {
+        morph = new Ctor({
+          element: nameEl,
+          duration: 700,
+          ease: { stiffness: 120, damping: 20 } /* soft spring → letters slide/settle, no flicker */
+        });
+        morph.update(toCharStream(initialText)); /* initial render places spans, no animation */
+      },
+      morph(text) {
+        if (!morph) throw new Error('torph: not ready');
+        morph.update(toCharStream(text));
+        staggerChars(nameEl, STAGGER_MS);
+      },
+      setStatic(text) { nameEl.textContent = text; },
+      finishNow() { /* torph settles on its own */ }
+    };
+  }
+
+  /* per-character stagger: torph animates each glyph with WAAPI (fill both), so a
+     negative currentTime delays each char while it holds its from-state — a clean
+     left→right cascade with no flicker. Best-effort; torph timing is the fallback. */
+  function staggerChars(el, step) {
+    let i = 0;
+    for (const child of el.children) {
+      let anims = [];
+      try {
+        anims = typeof child.getAnimations === 'function' ? child.getAnimations({ subtree: true }) : [];
+      } catch (_) { anims = []; }
+      if (!anims.length) continue; /* sr-only node etc. */
+      for (const a of anims) {
+        try {
+          /* direct negative currentTime → the animation sits in its before-phase
+             (a pause/play roundtrip would clamp it to 0, so never use that here) */
+          if (a.playState !== 'running' && a.playState !== 'pending') continue;
+          a.currentTime = -(i * step);
+        } catch (_) { /* keep torph's default timing */ }
+      }
+      i++;
+    }
+  }
+
+  /* -------- hand-rolled per-char morph (fallback if the import fails) -------- */
+  function createFallbackEngine(nameEl) {
+    let spans = null;
+    let text = null;
+    let rafId = 0;
+    let items = [];
+
+    function buildChars(str) {
+      nameEl.textContent = '';
+      spans = [];
+      const frag = document.createDocumentFragment();
+      for (const ch of str) {
+        const s = document.createElement('span');
+        s.textContent = ch === ' ' ? '\u00A0' : ch;
+        frag.appendChild(s);
+        spans.push(s);
+      }
+      nameEl.appendChild(frag);
+    }
+
+    function finishNow() {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+      for (const it of items) {
+        if (it.ghost) { if (it.el.parentNode) it.el.remove(); }
+        else { it.el.style.opacity = ''; it.el.style.transform = ''; it.el.style.willChange = ''; }
+      }
+      items = [];
+    }
+
+    /* LCS pairing → shared glyphs slide between slots, the rest fades in/out */
+    function lcsPairs(a, b) {
+      const n = a.length, m = b.length;
+      const dp = [];
+      for (let i = 0; i <= n; i++) dp.push(new Array(m + 1).fill(0));
+      for (let i = n - 1; i >= 0; i--) {
+        for (let j = m - 1; j >= 0; j--) {
+          dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+        }
+      }
+      const pairs = [];
+      let i = 0, j = 0;
+      while (i < n && j < m) {
+        if (a[i] === b[j]) { pairs.push([i, j]); i++; j++; }
+        else if (dp[i + 1][j] >= dp[i][j + 1]) i++;
+        else j++;
+      }
+      return pairs;
+    }
+
+    function morph(target) {
+      if (text === null) { buildChars(target); text = target; return; }
+      if (text === target) return;
+      finishNow();
+      const from = text;
+      const pairs = lcsPairs(from, target);
+      const oldByNew = new Map(pairs.map(p => [p[1], p[0]]));
+      const newByOld = new Map(pairs.map(p => [p[0], p[1]]));
+
+      /* measure old slots in local coords (offsetParent = nameEl) */
+      const oldPos = spans.map(s => ({ x: s.offsetLeft, y: s.offsetTop }));
+      const exiting = [];
+      const kept = new Map();
+      spans.forEach((s, i) => {
+        const j = newByOld.get(i);
+        if (j === undefined) exiting.push({ el: s, oldIndex: i, pos: oldPos[i] });
+        else kept.set(j, s);
+      });
+
+      /* build the target line, reusing paired span elements */
+      nameEl.textContent = '';
+      const newSpans = [];
+      const frag = document.createDocumentFragment();
+      for (let j = 0; j < target.length; j++) {
+        let s = kept.get(j);
+        if (!s) {
+          s = document.createElement('span');
+          const ch = target[j];
+          s.textContent = ch === ' ' ? '\u00A0' : ch;
+        }
+        frag.appendChild(s);
+        newSpans.push(s);
+      }
+      nameEl.appendChild(frag);
+      const newPos = newSpans.map(s => ({ x: s.offsetLeft, y: s.offsetTop }));
+
+      const next = [];
+      newSpans.forEach((s, j) => {
+        const i = oldByNew.get(j);
+        if (i === undefined) {
+          s.style.opacity = '0';
+          next.push({ el: s, kind: 'enter', delay: j * STAGGER_MS, dur: 520 });
+        } else {
+          next.push({
+            el: s, kind: 'slide',
+            dx: oldPos[i].x - newPos[j].x, dy: oldPos[i].y - newPos[j].y,
+            delay: j * STAGGER_MS, dur: 620
+          });
+        }
+        s.style.willChange = 'transform, opacity';
+      });
+      /* removed glyphs become absolutely-placed ghosts that fade out */
+      for (const ex of exiting) {
+        ex.el.style.cssText = 'position:absolute;display:inline-block;margin:0;will-change:transform,opacity;';
+        ex.el.style.left = ex.pos.x + 'px';
+        ex.el.style.top = ex.pos.y + 'px';
+        nameEl.appendChild(ex.el);
+        next.push({ el: ex.el, kind: 'exit', delay: ex.oldIndex * STAGGER_MS, dur: 400, ghost: true });
+      }
+
+      spans = newSpans;
+      text = target;
+      items = next;
+
+      const t0 = performance.now();
+      const tick = (now) => {
+        rafId = 0;
+        const t = now - t0;
+        let pending = false;
+        for (const it of items) {
+          const p = Math.min(Math.max((t - it.delay) / it.dur, 0), 1);
+          if (p < 1) pending = true;
+          const e = 1 - Math.pow(1 - p, 3); /* cubic ease-out */
+          if (it.kind === 'slide') {
+            it.el.style.transform = p >= 1 ? '' :
+              'translate(' + (it.dx * (1 - e)).toFixed(2) + 'px,' + (it.dy * (1 - e)).toFixed(2) + 'px)';
+          } else if (it.kind === 'enter') {
+            it.el.style.opacity = e.toFixed(3);
+            it.el.style.transform = 'translateY(' + ((1 - e) * 8).toFixed(2) + 'px) scale(' + (0.94 + 0.06 * e).toFixed(3) + ')';
+            if (p >= 1) { it.el.style.opacity = ''; it.el.style.transform = ''; }
+          } else {
+            it.el.style.opacity = (1 - e).toFixed(3);
+            it.el.style.transform = 'translateY(' + (e * 7).toFixed(2) + 'px) scale(' + (1 - 0.06 * e).toFixed(3) + ')';
+          }
+        }
+        if (pending) rafId = requestAnimationFrame(tick);
+        else finishNow();
+      };
+      rafId = requestAnimationFrame(tick);
+    }
+
+    return {
+      type: 'fallback',
+      init() { if (text === null) { buildChars(PERSONAS[0].name); text = PERSONAS[0].name; } },
+      morph,
+      setStatic(str) { finishNow(); nameEl.textContent = str; spans = null; text = null; },
+      finishNow
+    };
+  }
+
+  /* -------- per-instance setup -------- */
+  function initModule(root) {
+    const nameEl = root.querySelector('[data-fx-name]');
+    const storyEls = Array.from(root.querySelectorAll('.fx-persona-morph__story'));
+    const sparkPath = root.querySelector('.fx-persona-morph__sparkline-path');
+    const rosterEls = Array.from(root.querySelectorAll('.fx-persona-morph__roster span'));
+    if (!nameEl || !storyEls.length) return;
+
+    /* exact sparkline length for the dash draw */
+    if (sparkPath && typeof sparkPath.getTotalLength === 'function') {
+      try {
+        const len = Math.ceil(sparkPath.getTotalLength()) + 2;
+        sparkPath.style.setProperty('--fx-spark-len', len + 'px'); /* length unit required: calc(var + 1px) must stay valid */
+      } catch (_) { /* CSS default 520 holds */ }
+    }
+
+    let currentName = PERSONAS[0].name;
+    let engine = createFallbackEngine(nameEl);
+    engine.init();
+
+    /* upgrade to torph when it loads (first morph usually lands after this) */
+    (async () => {
+      try {
+        const mod = await import('https://esm.sh/torph');
+        const Ctor = mod && (mod.TextMorph || (mod.default && mod.default.TextMorph));
+        if (typeof Ctor !== 'function') throw new Error('torph: TextMorph export missing');
+        engine.finishNow();
+        nameEl.textContent = currentName; /* hand the engine a clean plain-text element */
+        const torph = createTorphEngine(nameEl, Ctor, currentName);
+        torph.init();
+        engine = torph;
+      } catch (_) {
+        /* import failed or API mismatch → keep the hand-rolled engine */
+        try {
+          const fb = createFallbackEngine(nameEl);
+          nameEl.textContent = currentName;
+          fb.init();
+          engine = fb;
+        } catch (_) { /* text stays as-is; loop continues without morphs */ }
+      }
+    })();
+
+    function morphTo(index) {
+      const p = PERSONAS[index];
+      storyEls.forEach((el, i) => el.classList.toggle('fx-persona-morph__story--active', i === index));
+      rosterEls.forEach((el, i) => el.classList.toggle('is-active', i === index));
+      if (p.name === currentName) return;
+      currentName = p.name;
+      try {
+        engine.morph(p.name);
+      } catch (_) {
+        try {
+          const fb = createFallbackEngine(nameEl);
+          nameEl.textContent = currentName;
+          fb.init();
+          engine = fb;
+          engine.morph(p.name);
+        } catch (_) { /* never break the loop */ }
+      }
+    }
+
+    /* ---- master clock (accumulated active time → pause-safe, seamless wrap) ---- */
+    let running = false;
+    let rafId = 0;
+    let lastNow = 0;
+    let elapsed = 0;
+    let lastT = 0;
+
+    function frame(now) {
+      if (!running) return;
+      const dt = Math.min(Math.max(now - lastNow, 0), 250);
+      lastNow = now;
+      elapsed += dt;
+      const t = elapsed % LOOP_MS;
+      for (let k = 0; k < BOUNDARIES.length; k++) {
+        const b = BOUNDARIES[k];
+        if (lastT < b && t >= b) morphTo((k + 1) % PERSONAS.length);
+      }
+      lastT = t;
+      rafId = requestAnimationFrame(frame);
+    }
+
+    function start() {
+      if (running || reduce.matches) return;
+      running = true;
+      root.classList.add('fx-persona-morph--live');
+      root.classList.remove('fx-persona-morph--paused');
+      lastNow = performance.now();
+      rafId = requestAnimationFrame(frame);
+    }
+
+    function pause() {
+      running = false;
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+      root.classList.add('fx-persona-morph--paused');
+    }
+
+    function restart() {
+      elapsed = 0;
+      lastT = 0;
+      if (currentName !== PERSONAS[0].name) morphTo(0);
+      start();
+    }
+
+    /* ---- visibility + orchestration hooks ---- */
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let ioVisible = true;
+    let stateLive = true;
+
+    function apply() {
+      if (reduce.matches) { pause(); return; }
+      if (ioVisible && stateLive && !document.hidden) start();
+      else pause();
+    }
+
+    if (typeof IntersectionObserver === 'function') {
+      new IntersectionObserver((entries) => {
+        ioVisible = entries[entries.length - 1].isIntersecting;
+        apply();
+      }, { threshold: 0.12 }).observe(root);
+    }
+
+    const readState = () => { stateLive = root.getAttribute('data-fx-state') !== 'idle'; };
+    if (root.hasAttribute('data-fx-state')) readState();
+    if (typeof MutationObserver === 'function') {
+      new MutationObserver(() => { readState(); apply(); })
+        .observe(root, { attributes: true, attributeFilter: ['data-fx-state'] });
+    }
+
+    document.addEventListener('visibilitychange', apply);
+
+    function onReduceChange() {
+      if (reduce.matches) {
+        pause();
+        elapsed = 0; lastT = 0;
+        currentName = PERSONAS[0].name;
+        engine.setStatic(PERSONAS[0].name);
+        storyEls.forEach((el, i) => el.classList.toggle('fx-persona-morph__story--active', i === 0));
+      } else {
+        restart();
+      }
+    }
+    if (typeof reduce.addEventListener === 'function') reduce.addEventListener('change', onReduceChange);
+    else if (typeof reduce.addListener === 'function') reduce.addListener(onReduceChange);
+
+    apply();
+  }
+
+  const roots = document.querySelectorAll('.fx-persona-morph');
+  roots.forEach((root) => {
+    if (root.dataset.fxPersonaMorphReady) return;
+    root.dataset.fxPersonaMorphReady = '1';
+    initModule(root);
+  });
+})();
+</script>
+  </section>
+
+  <section id="cta" aria-labelledby="cta-h">
+    <div class="wrap">
+      <div class="sec-head sec-head--center">
+        <span class="overline reveal">the real action</span>
+        <h2 id="cta-h" class="reveal">one click, queued everywhere.</h2>
+        <p class="sub reveal">the recap post is composed from your year, previewed, and queued through buffer to
+        every channel. you approve; it publishes.</p>
+      </div>
+      <div class="cta-box reveal">
+<!-- MODULE ROOT: this whole div is what the landing page embeds -->
+<div class="fx fx-queue-recap" data-brand-name="fizzyfeed" data-fx-state="idle" role="img"
+     aria-label="Animation: a recap post reading ‘your year in posts.’ types itself onto a white card, a ‘queue the recap’ button presses once, the post condenses into a small deck-mark icon, and the icon ferries the recap to seven channel chips along the fan arc — each channel pops and receives a cyan checkmark as it lands.">
+  <div class="fx-queue-recap__stage">
+    <div class="fx-queue-recap__glow fx-queue-recap__glow--a"></div>
+    <div class="fx-queue-recap__glow fx-queue-recap__glow--b"></div>
+
+    <div class="fx-queue-recap__chips">
+      <div class="fx-queue-recap__chip"><div class="fx-queue-recap__chip-in"><span class="fx-queue-recap__chip-glyph">X</span><span class="fx-queue-recap__chip-dot"></span><svg class="fx-queue-recap__chip-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.9l4 4.1 8-9.4" pathLength="1"/></svg></div></div>
+      <div class="fx-queue-recap__chip"><div class="fx-queue-recap__chip-in"><span class="fx-queue-recap__chip-glyph">IG</span><span class="fx-queue-recap__chip-dot"></span><svg class="fx-queue-recap__chip-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.9l4 4.1 8-9.4" pathLength="1"/></svg></div></div>
+      <div class="fx-queue-recap__chip"><div class="fx-queue-recap__chip-in"><span class="fx-queue-recap__chip-glyph">in</span><span class="fx-queue-recap__chip-dot"></span><svg class="fx-queue-recap__chip-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.9l4 4.1 8-9.4" pathLength="1"/></svg></div></div>
+      <div class="fx-queue-recap__chip"><div class="fx-queue-recap__chip-in"><span class="fx-queue-recap__chip-glyph">f</span><span class="fx-queue-recap__chip-dot"></span><svg class="fx-queue-recap__chip-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.9l4 4.1 8-9.4" pathLength="1"/></svg></div></div>
+      <div class="fx-queue-recap__chip"><div class="fx-queue-recap__chip-in"><span class="fx-queue-recap__chip-glyph">&#9834;&#xFE0E;</span><span class="fx-queue-recap__chip-dot"></span><svg class="fx-queue-recap__chip-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.9l4 4.1 8-9.4" pathLength="1"/></svg></div></div>
+      <div class="fx-queue-recap__chip"><div class="fx-queue-recap__chip-in"><span class="fx-queue-recap__chip-glyph">&#9654;&#xFE0E;</span><span class="fx-queue-recap__chip-dot"></span><svg class="fx-queue-recap__chip-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.9l4 4.1 8-9.4" pathLength="1"/></svg></div></div>
+      <div class="fx-queue-recap__chip"><div class="fx-queue-recap__chip-in"><span class="fx-queue-recap__chip-glyph">th</span><span class="fx-queue-recap__chip-dot"></span><svg class="fx-queue-recap__chip-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.9l4 4.1 8-9.4" pathLength="1"/></svg></div></div>
+    </div>
+
+    <div class="fx-queue-recap__courier" aria-hidden="true">
+      <svg viewBox="0 0 26 26" aria-hidden="true" focusable="false">
+        <defs><linearGradient id="fx-qr-courier-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6333FF"/><stop offset=".5" stop-color="#0A5CFF"/><stop offset="1" stop-color="#00D5FF"/></linearGradient></defs>
+        <rect x="4.6" y="5.2" width="9.6" height="13.4" rx="2.4" transform="rotate(-13 9.4 11.9)" fill="#6333FF" opacity=".85"/>
+        <rect x="11.8" y="5.2" width="9.6" height="13.4" rx="2.4" transform="rotate(13 16.6 11.9)" fill="#00D5FF" opacity=".85"/>
+        <rect x="7.9" y="4.6" width="10.2" height="14.6" rx="2.6" fill="url(#fx-qr-courier-grad)"/>
+        <path d="M10.2 13.6c1.9-.5 3.5-2 4.3-4.6M10.4 16.5c3-.6 5.4-2.4 6.5-5.6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+
+    <div class="fx-queue-recap__card">
+      <div class="fx-queue-recap__content">
+        <div class="fx-queue-recap__meta">
+          <span class="fx-queue-recap__meta-dot"></span>
+          <span class="fx-queue-recap__meta-label">new post</span>
+          <span class="fx-queue-recap__meta-tag">draft</span>
+        </div>
+        <p class="fx-queue-recap__line fx-queue-recap__line--head"><span class="fx-queue-recap__type" data-type="head">your year in posts.</span><span class="fx-queue-recap__caret fx-queue-recap__caret--head" data-caret="head"></span></p>
+        <div class="fx-queue-recap__rule"></div>
+        <p class="fx-queue-recap__line fx-queue-recap__line--stats"><span class="fx-queue-recap__type" data-type="stats">5,214 posts · 389,102 words · 141-day streak</span><span class="fx-queue-recap__caret fx-queue-recap__caret--stats" data-caret="stats"></span></p>
+        <p class="fx-queue-recap__line fx-queue-recap__line--body"><span class="fx-queue-recap__type" data-type="body">the deck says: you never missed a friday.</span><span class="fx-queue-recap__caret fx-queue-recap__caret--body" data-caret="body"></span></p>
+      </div>
+    </div>
+
+    <div class="fx-queue-recap__cta">
+      <div class="fx-queue-recap__cta-halo"></div>
+      <div class="fx-queue-recap__cta-glowhot"></div>
+      <div class="fx-queue-recap__cta-press">queue the recap</div>
+    </div>
+    <div class="fx-queue-recap__cta-note" aria-hidden="true">composer preview — queue the recap below</div>
+  </div>
+</div>
+
+        <a class="btn" data-connect href="/api/auth/buffer/login">connect buffer</a>
+        <p class="cta-micro">free during buffer commit 2026 · seven cards, one queue, zero dashboard</p>
+      </div>
+    </div>
+<script type="module">
+(() => {
+      const root = document.querySelector('.fx-queue-recap');
+      if (!root || root.dataset.qrBound) return;
+      root.dataset.qrBound = '1';
+
+      /* ---------- refs ---------- */
+      const stage   = root.querySelector('.fx-queue-recap__stage');
+      const card    = root.querySelector('.fx-queue-recap__card');
+      const content = root.querySelector('.fx-queue-recap__content');
+      const meta    = root.querySelector('.fx-queue-recap__meta');
+      const press   = root.querySelector('.fx-queue-recap__cta-press');
+      const glowHot = root.querySelector('.fx-queue-recap__cta-glowhot');
+      const halo    = root.querySelector('.fx-queue-recap__cta-halo');
+      const courier = root.querySelector('.fx-queue-recap__courier');
+
+      const LINES = {
+        head:  { el: root.querySelector('[data-type="head"]'),  full: 'your year in posts.',                            t0: 0.35, tick: 0.042, last: '' },
+        stats: { el: root.querySelector('[data-type="stats"]'), full: '5,214 posts \u00B7 389,102 words \u00B7 141-day streak', t0: 1.75, tick: 0.030, last: '' },
+        body:  { el: root.querySelector('[data-type="body"]'),  full: 'the deck says: you never missed a friday.',      t0: 3.50, tick: 0.026, last: '' }
+      };
+      const CARETS = {
+        head:  root.querySelector('[data-caret="head"]'),
+        stats: root.querySelector('[data-caret="stats"]'),
+        body:  root.querySelector('[data-caret="body"]')
+      };
+
+      /* timeline beats (seconds of the 15s cycle)
+         act 1  type the recap post            0.35 – 4.7
+         act 2  press ‘queue the recap’        4.75
+         act 3  card condenses into the courier icon   5.55 – 6.45
+         act 4  the icon ferries the recap to every channel (left -> right),
+                each arrival lands a check     6.75 – 10.6
+         act 5  all-queued hold + glow pulse   10.6 – 13.9 */
+      const T = {
+        head: 0.35, stats: 1.75, body: 3.50,
+        press: 4.75,
+        collapse: 5.55, cardOut: 5.70, emerge: 5.90,
+        tour: 6.75, leg: 0.42, dwell: 0.07,
+        pulse: 12.40,
+        reset: 13.90, cardIn: 13.95, caretBack: 14.70
+      };
+      const CARD_CX = 600, CARD_CY = 288;      /* chips are born at the card centre */
+      const EMERGE_ORD = [3, 2, 4, 1, 5, 0, 6]; /* centre-out bloom, 50ms apart */
+      const RESET_ORD  = [0, 6, 1, 5, 2, 4, 3]; /* outermost back first, 40ms apart */
+      const CYCLE = 15;
+
+      /* ---------- chips: read geometry + tilt from CSS (single source of truth) ---------- */
+      const chipState = Array.from(root.querySelectorAll('.fx-queue-recap__chip')).map((chip, i) => {
+        const inner = chip.querySelector('.fx-queue-recap__chip-in');
+        const checkSvg = chip.querySelector('.fx-queue-recap__chip-check');
+        let tilt = 0;
+        try { tilt = parseFloat(getComputedStyle(inner).getPropertyValue('--tilt')) || 0; } catch (e) { tilt = 0; }
+        return {
+          i, inner, checkSvg,
+          checkPath: checkSvg ? checkSvg.querySelector('path') : null,
+          dot: chip.querySelector('.fx-queue-recap__chip-dot'),
+          ax: chip.offsetLeft + chip.offsetWidth / 2,
+          ay: chip.offsetTop + chip.offsetHeight / 2,
+          tilt,
+          ord: EMERGE_ORD.indexOf(i),
+          rord: RESET_ORD.indexOf(i)
+        };
+      });
+
+      /* ---------- the courier’s route: chips left -> right along the fan arc ---------- */
+      const VISIT = chipState.map(c => c.i).sort((a, b) => chipState[a].ax - chipState[b].ax);
+      for (const c of chipState) {
+        c.visit = VISIT.indexOf(c.i);
+        c.arrive = T.tour + T.leg + c.visit * (T.leg + T.dwell); /* check lands on arrival */
+      }
+
+      /* ---------- tiny easing kit ---------- */
+      const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
+      const easeOutQuad  = p => 1 - (1 - p) * (1 - p);
+      const easeOutCubic = p => 1 - Math.pow(1 - p, 3);
+      const easeInCubic  = p => p * p * p;
+      const easeInOutCubic = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      const easeOutBack = (p, k) => { const c1 = k, c3 = c1 + 1, x = p - 1; return 1 + c3 * x * x * x + c1 * x * x; };
+
+      /* ---------- torph: dynamic import, inspect exports, fall back cleanly ---------- */
+      let morphs = null;
+      (async () => {
+        try {
+          const m = await import('https://esm.sh/torph');
+          if (!m || typeof m.TextMorph !== 'function') return;
+          const next = {};
+          for (const key in LINES) {
+            next[key] = new m.TextMorph({
+              element: LINES[key].el,
+              duration: 150,
+              ease: 'cubic-bezier(0.33, 1, 0.68, 1)',
+              numbers: true,
+              locale: 'en',
+              respectReducedMotion: true
+            });
+          }
+          morphs = next;
+          if (staticMode) for (const key in LINES) morphs[key].update(LINES[key].full, LINES[key].full.length);
+        } catch (e) { /* torph unavailable — rAF typewriter fallback stays active */ }
+      })();
+
+      function writeText(key, s) {
+        const L = LINES[key];
+        if (morphs && morphs[key]) morphs[key].update(s, s.length); /* cursorIndex = caret pos */
+        else L.el.textContent = s;
+      }
+      function typedStr(full, t, t0, tick) {
+        if (t <= t0) return '';
+        return full.slice(0, Math.min(full.length, Math.floor((t - t0) / tick) + 1));
+      }
+
+      /* ---------- stateful-ish toggles (class flips only, cached) ---------- */
+      function setCaret(key, on) {
+        const el = CARETS[key];
+        if (!el || el.__on === on) return;
+        el.__on = on;
+        el.classList.toggle('is-on', on);
+      }
+      let composing = false;
+      function setComposing(v) {
+        if (v === composing) return;
+        composing = v;
+        root.classList.toggle('is-composing', v);
+      }
+
+      /* ---------- button press: down 90ms, spring back 410ms ---------- */
+      function pressScale(t) {
+        const u = t - T.press;
+        if (u <= 0) return 1;
+        if (u < 0.09) return 1 - 0.03 * easeOutQuad(u / 0.09);
+        if (u < 0.5) {
+          const v = (u - 0.09) / 0.41;
+          return 0.97 + 0.03 * (1 - Math.exp(-5.2 * v) * Math.cos(9.5 * v));
+        }
+        return 1;
+      }
+
+      /* ---------- master render: pure function of cycle time t ∈ [0,15) ---------- */
+      function render(t) {
+        /* typewriter lines */
+        for (const key in LINES) {
+          const L = LINES[key];
+          const s = typedStr(L.full, t, L.t0, L.tick);
+          if (s !== L.last) { L.last = s; writeText(key, s); }
+        }
+
+        /* carets hop line to line, rest after press, return near cycle end */
+        setCaret('head',  t < T.stats || t >= T.caretBack);
+        setCaret('stats', t >= T.stats && t < T.body);
+        setCaret('body',  t >= T.body && t < T.press);
+        setComposing(t < T.press || t >= T.caretBack);
+
+        /* header rises in with the reveal grammar */
+        const hie = easeOutCubic(clamp01((t - 0.15) / 0.35));
+        meta.style.opacity = hie.toFixed(3);
+        meta.style.transform = 'translateY(' + ((1 - hie) * 8).toFixed(2) + 'px)';
+
+        /* card content collapses up into the chips */
+        const cwe = easeInCubic(clamp01((t - T.collapse) / 0.6));
+        content.style.opacity = (1 - cwe).toFixed(3);
+        content.style.transform = 'translateY(' + (-12 * cwe).toFixed(2) + 'px) scale(' + (1 - 0.06 * cwe).toFixed(4) + ')';
+
+        /* card surface exits, then returns for the seamless reset */
+        let co, cs;
+        if (t < T.cardIn) {
+          const e = easeInOutCubic(clamp01((t - T.cardOut) / 0.75));
+          co = 1 - e; cs = 1 - 0.08 * e;
+        } else {
+          const e = easeOutCubic(clamp01((t - T.cardIn) / 0.9));
+          co = e; cs = 0.92 + 0.08 * e;
+        }
+        card.style.opacity = co.toFixed(3);
+        card.style.transform = 'scale(' + cs.toFixed(4) + ')';
+
+        /* CTA press + the single closing glow pulse (pre-baked layers crossfaded) */
+        const ps = pressScale(t);
+        press.style.transform = 'scale(' + ps.toFixed(4) + ')';
+        let hot = 0, hal = 0, swell = 0;
+        if (t >= T.pulse) {
+          const w = Math.sin(Math.PI * clamp01((t - T.pulse) / 1.4));
+          hot = w; hal = w * 0.75; swell = w * 0.015;
+        }
+        glowHot.style.opacity = hot.toFixed(3);
+        glowHot.style.transform = 'scale(' + (ps + swell).toFixed(4) + ')';
+        halo.style.opacity = hal.toFixed(3);
+
+        /* chips: bloom centre-out fast (all settled before the courier departs),
+           breathe, receive the icon one by one, then retract on the reset */
+        for (const c of chipState) {
+          const st = T.emerge + c.ord * 0.05;
+          const rst = T.reset + c.rord * 0.04;
+          let pe, op;
+          if (t < rst) {
+            pe = clamp01((t - st) / 0.5);
+            op = clamp01(pe / 0.18);
+          } else {
+            const pr = clamp01((t - rst) / 0.55);
+            pe = 1 - easeInOutCubic(pr);
+            op = 1 - clamp01(pr / 0.7);
+          }
+          const e = easeOutBack(pe, 1.25);
+          let br = 0;
+          if (pe >= 1 && t < rst) {
+            const bw = clamp01((t - st - 0.5) / 0.9) * clamp01((rst - t) / 0.4);
+            br = 2.6 * Math.sin((t / 5.2) * 2 * Math.PI + c.i * 0.9) * bw;
+          }
+          /* the courier just landed here: the chip receives it with a small pop */
+          const rcv = Math.sin(Math.PI * clamp01((t - c.arrive) / 0.4));
+          const x = c.ax + (CARD_CX - c.ax) * (1 - e);
+          const y = c.ay + (CARD_CY - c.ay) * (1 - e) + br;
+          c.inner.style.opacity = op.toFixed(3);
+          c.inner.style.transform =
+            'translate(' + (x - c.ax).toFixed(2) + 'px,' + (y - c.ay).toFixed(2) + 'px) ' +
+            'rotate(' + (c.tilt * e).toFixed(2) + 'deg) scale(' + ((0.2 + 0.8 * e) * (1 + 0.13 * rcv)).toFixed(4) + ')';
+
+          /* volt checkmark draws the moment the courier lands, dot yields */
+          const cp = clamp01((t - c.arrive) / 0.26);
+          if (c.checkPath) c.checkPath.style.strokeDashoffset = (1 - easeOutCubic(cp)).toFixed(4);
+          if (c.checkSvg) {
+            c.checkSvg.style.opacity = clamp01(cp * 8).toFixed(3);
+            c.checkSvg.style.transform = 'scale(' + (0.55 + 0.45 * easeOutBack(cp, 1.8)).toFixed(4) + ')';
+          }
+          if (c.dot) c.dot.style.opacity = (1 - clamp01(cp * 1.4)).toFixed(3);
+        }
+
+        /* ---- the courier: the post condenses into this icon at the card centre,
+                then ferries the recap along a tossed arc to every channel,
+                returns to centre and dissolves once every check has landed ---- */
+        if (courier) {
+          const born = 5.95, gone = 11.15;
+          const lastV = chipState.length - 1;
+          const backAt = T.tour + T.leg + lastV * (T.leg + T.dwell) + 0.12;
+          let o = 0, x = CARD_CX, y = CARD_CY, rot = 0, s = 1;
+          if (t >= born && t < gone) {
+            const bp = clamp01((t - born) / 0.34);
+            s = 0.4 + 0.6 * easeOutBack(bp, 1.9);
+            o = clamp01(bp / 0.45);
+            if (t >= T.tour && t < backAt) {
+              const v = Math.min(lastV, Math.floor((t - T.tour) / (T.leg + T.dwell)));
+              const d = T.tour + v * (T.leg + T.dwell);
+              const p = easeInOutCubic(clamp01((t - d) / T.leg));
+              const A = v === 0 ? [CARD_CX, CARD_CY]
+                                : [chipState[VISIT[v - 1]].ax, chipState[VISIT[v - 1]].ay];
+              const B = chipState[VISIT[v]];
+              const lift = v === 0 ? 38 : 20;
+              const q = 1 - p;
+              const cx2 = (A[0] + B.ax) / 2, cy2 = (A[1] + B.ay) / 2 - lift;
+              x = q * q * A[0] + 2 * q * p * cx2 + p * p * B.ax;
+              y = q * q * A[1] + 2 * q * p * cy2 + p * p * B.ay;
+              rot = 7 * Math.sin(p * Math.PI) * (v % 2 ? -1 : 1);
+            } else if (t >= backAt) {
+              const rp = clamp01((t - backAt) / 0.4);
+              const e = easeInOutCubic(rp);
+              const Lc = chipState[VISIT[lastV]];
+              x = Lc.ax + (CARD_CX - Lc.ax) * e;
+              y = Lc.ay + (CARD_CY - Lc.ay) * e;
+              rot = (1 - e) * -4;
+              s *= 1 - 0.35 * e;
+              o = 1 - clamp01((t - (backAt + 0.28)) / 0.45);
+            }
+          }
+          courier.style.opacity = o.toFixed(3);
+          courier.style.transform =
+            'translate(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px) rotate(' + rot.toFixed(2) + 'deg) scale(' + s.toFixed(4) + ')';
+        }
+      }
+
+      /* ---------- reduced motion: final composed frame, chips all checked ---------- */
+      const rmQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let staticMode = rmQuery.matches;
+
+      function renderStatic() {
+        for (const key in LINES) {
+          const L = LINES[key];
+          L.last = L.full;
+          if (morphs && morphs[key]) morphs[key].update(L.full, L.full.length);
+          else L.el.textContent = L.full;
+        }
+        meta.style.opacity = '1'; meta.style.transform = 'none';
+        content.style.opacity = '1'; content.style.transform = 'none';
+        card.style.opacity = '1'; card.style.transform = 'none';
+        if (courier) courier.style.opacity = '0';
+        for (const key in CARETS) setCaret(key, false);
+        setComposing(false);
+        for (const c of chipState) {
+          c.inner.style.opacity = '1';
+          c.inner.style.transform = 'rotate(' + c.tilt + 'deg)';
+          if (c.checkSvg) { c.checkSvg.style.opacity = '1'; c.checkSvg.style.transform = 'scale(1)'; }
+          if (c.checkPath) c.checkPath.style.strokeDashoffset = '0';
+          if (c.dot) c.dot.style.opacity = '0';
+        }
+        press.style.transform = 'none';
+        glowHot.style.opacity = '0'; glowHot.style.transform = 'none';
+        halo.style.opacity = '0';
+        root.classList.add('is-static');
+      }
+
+      function onRmChange() {
+        const v = rmQuery.matches;
+        if (v === staticMode) return;
+        staticMode = v;
+        root.classList.toggle('is-static', v);
+        if (v) { pauseLoop(); renderStatic(); }
+        else { root.classList.remove('is-static'); resumeLoop(); }
+      }
+      if (typeof rmQuery.addEventListener === 'function') rmQuery.addEventListener('change', onRmChange);
+      else if (typeof rmQuery.addListener === 'function') rmQuery.addListener(onRmChange);
+
+      /* ---------- loop clock: pure t keeps every cycle seamless ---------- */
+      let rafId = 0, running = false, lastT = 0, t0 = 0;
+      function frame(now) {
+        rafId = 0;
+        if (staticMode) { running = false; return; }
+        lastT = ((now - t0) % (CYCLE * 1000)) / 1000;
+        render(lastT);
+        rafId = requestAnimationFrame(frame);
+      }
+      function pauseLoop() {
+        if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+        running = false;
+      }
+      function resumeLoop() {
+        if (running || staticMode) return;
+        running = true;
+        t0 = performance.now() - lastT * 1000;
+        rafId = requestAnimationFrame(frame);
+      }
+
+      /* ---------- visibility (landing orchestrator hooks data-fx-state) ---------- */
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(entries => {
+          for (const en of entries) {
+            if (en.isIntersecting && !staticMode) {
+              root.dataset.fxState = 'live';
+              root.classList.remove('is-paused');
+              resumeLoop();
+            } else {
+              root.dataset.fxState = 'idle';
+              root.classList.add('is-paused');
+              pauseLoop();
+            }
+          }
+        }, { threshold: 0.15 });
+        io.observe(root);
+      } else {
+        root.dataset.fxState = 'live';
+        resumeLoop();
+      }
+
+      /* ---------- responsive stage: uniform scale of the fixed 1200x675 canvas ---------- */
+      function fit() {
+        const w = root.clientWidth || 1200;
+        /* mobile: crop-scale ~1.8x fit-width so the stage-centered recap card + cta
+           keep a strong presence; side chips crop away (module overflow: hidden).
+           tablet band: 1.4x crop keeps the composer stats line ≥12px at 768-1199px */
+        const scale = w < 720 ? Math.min((w / 1200) * 1.8, 0.66)
+                    : w < 1200 ? Math.min((w / 1200) * 1.4, 0.8)
+                    : w / 1200;
+        stage.style.setProperty('--fx-qr-scale', String(scale));
+      }
+      if ('ResizeObserver' in window) new ResizeObserver(fit).observe(root);
+      else window.addEventListener('resize', fit, { passive: true });
+      fit();
+
+      /* ---------- boot: clear composed markup into frame-0, start the clock ---------- */
+      for (const key in LINES) { LINES[key].el.textContent = ''; LINES[key].last = ''; }
+      if (staticMode) { renderStatic(); root.dataset.fxState = 'live'; }
+      else resumeLoop();
+    })();
+</script>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="f-row">
+      <div class="f-brand">
+        <img src="logo/lockup-on-dark.svg" alt="fizzyfeed" data-brand-name-img height="20">
+        <span>your year in posts.</span>
+      </div>
+      <div class="f-right">
+        <p>built for buffer commit 2026 (oct 28 – nov 13) · brand kit v0.1 · © <span data-year>2026</span></p>
+        <p><a href="../preview/index.html">brand board</a> · <a href="../docs/specs/00-PRODUCT.md">build specs</a> ·
+        <a href="../IDEA.md">the idea</a></p>
+      </div>
+    </div>
+    <p class="legal">buffer is a trademark of buffer inc.; this page references the contest but grants no
+    rights to buffer's name or logo. no engagement is faked anywhere in this product — if a number is
+    shown, it happened.</p>
+  </div>
+</footer>
+
+<script src="halftone.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

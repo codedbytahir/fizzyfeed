@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fx · yearline-draw</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  /* == page scaffold (standalone preview only — landing strips this block) == */
+  html,body{margin:0;background:#05070E}
+  body{min-height:100vh;display:grid;place-items:center;padding:24px}
+
+  /* == fx-yearline-draw module styles — all selectors scoped under .fx-yearline-draw == */
+  .fx-yearline-draw{
+    /* design tokens §1 */
+    --electric-500:#0A5CFF; --electric-600:#0047E0; --volt-500:#00D5FF;
+    --spark-500:#C8FF4D; --ink-950:#05070E; --ink-900:#0A0E1A; --ink-800:#131A2B;
+    --ink-300:#9AA8C4; --ink-200:#C6D0E4; --ink-50:#F5F8FE; --white:#FFFFFF;
+
+    position:relative; overflow:hidden; box-sizing:border-box;
+    width:100%; max-width:1200px;
+    padding:30px 56px 24px;
+    background:
+      radial-gradient(720px 320px at 88% -20%, rgb(10 92 255 / .12), transparent 62%),
+      var(--ink-950);
+    color:var(--ink-200);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+  }
+  .fx-yearline-draw,.fx-yearline-draw *{box-sizing:border-box}
+
+  .fx-yearline-draw__frame{position:relative;z-index:1}
+  .fx-yearline-draw__head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .fx-yearline-draw__sparkdot{width:7px;height:7px;border-radius:50%;background:var(--spark-500);box-shadow:0 0 10px rgb(200 255 77 / .4)}
+  .fx-yearline-draw__tagline{
+    font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;
+    letter-spacing:.01em;color:var(--ink-200);
+  }
+
+  .fx-yearline-draw__anim{transition:opacity .45s ease}
+  .fx-yearline-draw.is-out .fx-yearline-draw__anim{opacity:0;transition-duration:1.15s}
+
+  .fx-yearline-draw__stats{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-bottom:22px}
+  .fx-yearline-draw__stat{min-width:0}
+  .fx-yearline-draw__value{
+    font-family:'JetBrains Mono',monospace;font-weight:500;
+    font-size:40px;line-height:1;color:var(--ink-50);
+    font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1;
+  }
+  .fx-yearline-draw__label{
+    margin-top:9px;font-size:13px;line-height:1;font-weight:400;
+    letter-spacing:.02em;color:var(--ink-300);
+  }
+
+  .fx-yearline-draw__chart{display:block;width:100%;height:auto}
+  .fx-yearline-draw__gridline{stroke:var(--ink-800);stroke-width:1;opacity:.55}
+  .fx-yearline-draw__gridline--v{opacity:.32}
+  .fx-yearline-draw__gridline--axis{opacity:.9}
+
+  .fx-yearline-draw__line{fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .fx-yearline-draw__line--halo{stroke:var(--electric-500);stroke-width:12;opacity:.13}
+  .fx-yearline-draw__line--glow{stroke:var(--electric-500);stroke-width:6;opacity:.34}
+  .fx-yearline-draw__line--core{stroke:var(--white);stroke-width:2.5}
+
+  .fx-yearline-draw__mdot{
+    fill:var(--white);stroke:var(--electric-500);stroke-width:2;
+    transform-box:fill-box;transform-origin:center;
+  }
+  .fx-yearline-draw__mlabel{
+    font-family:'JetBrains Mono',monospace;font-weight:500;font-size:11.5px;
+    fill:var(--ink-300);text-anchor:middle;
+    transform-box:fill-box;transform-origin:50% 100%;
+  }
+
+  /* live mode: markers stay hidden until the line passes them */
+  .fx-yearline-draw.is-live .fx-yearline-draw__mdot{opacity:0;transform:scale(0)}
+  .fx-yearline-draw.is-live .fx-yearline-draw__mdot.is-on{animation:fx4-pop .48s cubic-bezier(.3,1.6,.45,1) both}
+  .fx-yearline-draw.is-live .fx-yearline-draw__mlabel{opacity:0;transform:scale(.4)}
+  .fx-yearline-draw.is-live .fx-yearline-draw__mlabel.is-on{animation:fx4-poplabel .5s cubic-bezier(.3,1.6,.45,1) both}
+
+  @keyframes fx4-pop{
+    0%{opacity:0;transform:scale(0)}
+    60%{opacity:1;transform:scale(1.45)}
+    100%{opacity:1;transform:scale(1)}
+  }
+  @keyframes fx4-poplabel{
+    0%{opacity:0;transform:scale(.4)}
+    60%{opacity:1;transform:scale(1.18)}
+    100%{opacity:1;transform:scale(1)}
+  }
+
+  .fx-yearline-draw__spark-halo{fill:var(--electric-500);opacity:.55;transform-box:fill-box;transform-origin:center}
+  .fx-yearline-draw__spark-core{fill:var(--white);transform-box:fill-box;transform-origin:center}
+  .fx-yearline-draw__spark.is-landed .fx-yearline-draw__spark-core{animation:fx4-land .2s ease-out both}
+  .fx-yearline-draw__spark.is-landed .fx-yearline-draw__spark-halo{animation:fx4-landhalo .2s ease-out both}
+  @keyframes fx4-land{0%{transform:scale(1)}45%{transform:scale(1.7)}100%{transform:scale(1)}}
+  @keyframes fx4-landhalo{
+    0%{transform:scale(1);opacity:.55}
+    45%{transform:scale(2.5);opacity:.9}
+    100%{transform:scale(1);opacity:.55}
+  }
+
+  .fx-yearline-draw__tint{opacity:0;transform-box:fill-box;transform-origin:center}
+  .fx-yearline-draw__tint.is-pulse{animation:fx4-tint 1.05s ease-out both}
+  @keyframes fx4-tint{
+    0%{opacity:0;transform:scale(.6)}
+    30%{opacity:.2}
+    100%{opacity:0;transform:scale(1.3)}
+  }
+
+  @media (max-width:720px){
+    .fx-yearline-draw{padding:22px 20px 16px}
+    .fx-yearline-draw__stats{grid-template-columns:repeat(2,1fr);gap:18px 16px;margin-bottom:14px}
+    .fx-yearline-draw__value{font-size:32px}
+    .fx-yearline-draw__head{margin-bottom:12px}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .fx-yearline-draw,.fx-yearline-draw *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- FX-MODULE-START -->
+<div class="fx fx-yearline-draw" data-brand-name="fizzyfeed" role="img" aria-label="Animated stat band: a year of posting activity draws left to right across twelve months while counters rise to 5,214 posts, 389,102 words, a 141-day streak and 12 channels, closing with a lime glow pulse.">
+  <div class="fx-yearline-draw__frame">
+    <div class="fx-yearline-draw__head">
+      <span class="fx-yearline-draw__sparkdot" aria-hidden="true"></span>
+      <span class="fx-yearline-draw__tagline">your rhythm, honestly</span>
+    </div>
+
+    <div class="fx-yearline-draw__anim">
+      <div class="fx-yearline-draw__stats">
+        <div class="fx-yearline-draw__stat">
+          <div class="fx-yearline-draw__value" data-stat="posts">5,214</div>
+          <div class="fx-yearline-draw__label">posts</div>
+        </div>
+        <div class="fx-yearline-draw__stat">
+          <div class="fx-yearline-draw__value" data-stat="words">389,102</div>
+          <div class="fx-yearline-draw__label">words</div>
+        </div>
+        <div class="fx-yearline-draw__stat">
+          <div class="fx-yearline-draw__value" data-stat="streak">141</div>
+          <div class="fx-yearline-draw__label">day streak</div>
+        </div>
+        <div class="fx-yearline-draw__stat">
+          <div class="fx-yearline-draw__value" data-stat="channels">12</div>
+          <div class="fx-yearline-draw__label">channels</div>
+        </div>
+      </div>
+
+      <svg class="fx-yearline-draw__chart" viewBox="0 0 1088 232" aria-hidden="true" focusable="false">
+        <defs>
+          <radialGradient id="fx4-tint">
+            <stop offset="0" stop-color="#C8FF4D" stop-opacity=".9"/>
+            <stop offset=".55" stop-color="#C8FF4D" stop-opacity=".35"/>
+            <stop offset="1" stop-color="#C8FF4D" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <g class="fx-yearline-draw__grid">
+          <line class="fx-yearline-draw__gridline" x1="10" y1="73.8" x2="1076" y2="73.8"/>
+          <line class="fx-yearline-draw__gridline" x1="10" y1="131.9" x2="1076" y2="131.9"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--axis" x1="10" y1="190" x2="1076" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="98.8" y1="18" x2="98.8" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="187.7" y1="18" x2="187.7" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="276.5" y1="18" x2="276.5" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="365.3" y1="18" x2="365.3" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="454.2" y1="18" x2="454.2" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="543" y1="18" x2="543" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="631.8" y1="18" x2="631.8" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="720.7" y1="18" x2="720.7" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="809.5" y1="18" x2="809.5" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="898.3" y1="18" x2="898.3" y2="190"/>
+          <line class="fx-yearline-draw__gridline fx-yearline-draw__gridline--v" x1="987.2" y1="18" x2="987.2" y2="190"/>
+        </g>
+
+        <path class="fx-yearline-draw__line fx-yearline-draw__line--halo" d="M10.0 165.4L12.9 162.8L15.9 166.2L18.8 168.3L21.7 168.6L24.6 168.0L27.6 167.2L30.5 166.7L33.4 166.6L36.4 165.7L39.3 163.1L42.2 160.5L45.1 160.2L48.1 160.9L51.0 160.0L53.9 157.6L56.9 155.2L59.8 153.6L62.7 153.3L65.6 153.2L68.6 151.7L71.5 150.2L74.4 150.4L77.4 151.5L80.3 152.1L83.2 152.2L86.1 152.2L89.1 153.2L92.0 154.8L94.9 154.4L97.9 151.7L100.8 149.3L103.7 148.6L106.6 148.5L109.6 148.2L112.5 147.8L115.4 147.6L118.4 147.4L121.3 146.6L124.2 145.2L127.1 143.7L130.1 142.9L133.0 143.7L135.9 145.9L138.9 147.6L141.8 148.2L144.7 147.9L147.6 116.5L150.6 146.1L153.5 119.5L156.4 143.1L159.4 142.2L162.3 140.5L165.2 138.5L168.1 137.9L171.1 138.1L174.0 113.7L176.9 136.7L179.9 134.1L182.8 129.9L185.7 125.3L188.6 122.4L191.6 121.3L194.5 120.6L197.4 120.3L200.4 120.9L203.3 121.2L206.2 119.7L209.1 117.1L212.1 115.3L215.0 114.8L217.9 114.3L220.9 112.8L223.8 111.1L226.7 93.3L229.6 109.7L232.6 107.5L235.5 104.3L238.4 102.0L241.4 101.6L244.3 102.0L247.2 81.0L250.1 101.3L253.1 99.3L256.0 96.7L258.9 94.6L261.9 94.0L264.8 94.4L267.7 94.9L270.6 67.3L273.6 95.3L276.5 94.8L279.4 92.6L282.4 89.9L285.3 88.5L288.2 88.2L291.1 87.9L294.1 87.0L297.0 85.7L299.9 84.9L302.9 85.6L305.8 86.4L308.7 85.8L311.6 85.0L314.6 84.8L317.5 84.1L320.4 81.4L323.4 77.9L326.3 76.0L329.2 76.7L332.1 79.0L335.1 81.3L338.0 83.0L340.9 84.3L343.9 84.7L346.8 84.1L349.7 83.6L352.6 84.2L355.6 85.3L358.5 86.0L361.4 85.9L364.4 86.8L367.3 89.7L370.2 93.1L373.1 94.5L376.1 93.5L379.0 92.2L381.9 92.4L384.9 93.6L387.8 94.5L390.7 94.7L393.6 95.0L396.6 96.2L399.5 96.8L402.4 95.9L405.4 95.1L408.3 96.6L411.2 81.0L414.1 100.7L417.1 99.0L420.0 96.5L422.9 96.2L425.9 98.7L428.8 102.2L431.7 104.3L434.6 103.8L437.6 101.5L440.5 100.0L443.4 101.1L446.4 82.8L449.3 105.5L452.2 105.0L455.1 104.2L458.1 104.3L461.0 105.3L463.9 107.5L466.9 111.1L469.8 114.1L472.7 114.8L475.6 114.3L478.6 114.3L481.5 115.0L484.4 116.0L487.4 117.7L490.3 120.2L493.2 121.8L496.1 122.1L499.1 122.9L502.0 125.4L504.9 128.4L507.9 130.3L510.8 130.7L513.7 130.5L516.6 130.7L519.6 131.3L522.5 132.2L525.4 134.6L528.4 137.8L531.3 139.6L534.2 138.7L537.1 136.3L540.1 134.5L543.0 134.9L545.9 137.2L548.9 139.1L551.8 139.3L554.7 138.3L557.6 136.9L560.6 135.8L563.5 135.4L566.4 135.5L569.4 136.3L572.3 137.6L575.2 138.9L578.1 138.6L581.1 136.5L584.0 134.3L586.9 133.6L589.9 133.2L592.8 130.8L595.7 127.4L598.6 125.4L601.6 124.6L604.5 124.1L607.4 123.3L610.4 91.9L613.3 122.9L616.2 123.0L619.1 122.4L622.1 121.4L625.0 120.7L627.9 120.1L630.9 119.3L633.8 117.9L636.7 116.0L639.6 114.4L642.6 113.5L645.5 112.5L648.4 110.8L651.4 108.5L654.3 106.2L657.2 103.9L660.1 82.7L663.1 101.5L666.0 101.8L668.9 101.7L671.9 100.4L674.8 98.0L677.7 96.0L680.6 95.7L683.6 96.8L686.5 97.4L689.4 95.8L692.4 92.9L695.3 90.4L698.2 88.6L701.1 88.3L704.1 89.4L707.0 90.9L709.9 91.8L712.9 91.5L715.8 89.7L718.7 87.4L721.6 86.3L724.6 86.5L727.5 86.1L730.4 84.2L733.4 81.4L736.3 78.6L739.2 76.5L742.1 75.3L745.1 74.3L748.0 73.8L750.9 74.9L753.9 76.3L756.8 75.3L759.7 72.1L762.6 69.4L765.6 69.0L768.5 69.6L771.4 68.9L774.4 66.7L777.3 65.3L780.2 65.7L783.1 65.5L786.1 63.7L789.0 61.9L791.9 61.1L794.9 60.4L797.8 59.5L800.7 58.2L803.6 56.2L806.6 54.5L809.5 53.8L812.4 53.8L815.4 53.7L818.3 53.5L821.2 53.5L824.1 53.1L827.1 51.3L830.0 49.3L832.9 48.6L835.9 48.5L838.8 48.9L841.7 50.2L844.6 51.4L847.6 50.8L850.5 49.0L853.4 47.8L856.4 47.0L859.3 45.8L862.2 44.6L865.1 43.8L868.1 44.0L871.0 31.2L873.9 18.3L876.9 45.0L879.8 43.4L882.7 41.5L885.6 39.1L888.6 37.5L891.5 37.8L894.4 39.2L897.4 40.5L900.3 41.3L903.2 41.9L906.1 42.7L909.1 43.1L912.0 42.8L914.9 42.8L917.9 43.9L920.8 45.5L923.7 45.9L926.6 45.2L929.6 45.5L932.5 48.1L935.4 52.4L938.4 56.8L941.3 60.1L944.2 61.8L947.1 62.0L950.1 61.4L953.0 61.4L955.9 62.8L958.9 65.7L961.8 69.3L964.7 71.9L967.6 73.5L970.6 75.2L973.5 76.2L976.4 75.1L979.4 73.3L982.3 72.4L985.2 72.2L988.1 72.7L991.1 74.0L994.0 74.7L996.9 73.3L999.9 70.8L1002.8 69.0L1005.7 68.1L1008.6 67.1L1011.6 66.0L1014.5 64.5L1017.4 62.7L1020.4 61.0L1023.3 59.0L1026.2 56.4L1029.1 53.4L1032.1 51.0L1035.0 48.8L1037.9 45.1L1040.9 40.7L1043.8 37.4L1046.7 34.7L1049.6 32.0L1052.6 29.7L1055.5 27.8L1058.4 25.8L1061.4 23.4L1064.3 20.8L1067.2 18.1L1070.1 15.5L1073.1 14.0L1076.0 14.0"/>
+        <path class="fx-yearline-draw__line fx-yearline-draw__line--glow" d="M10.0 165.4L12.9 162.8L15.9 166.2L18.8 168.3L21.7 168.6L24.6 168.0L27.6 167.2L30.5 166.7L33.4 166.6L36.4 165.7L39.3 163.1L42.2 160.5L45.1 160.2L48.1 160.9L51.0 160.0L53.9 157.6L56.9 155.2L59.8 153.6L62.7 153.3L65.6 153.2L68.6 151.7L71.5 150.2L74.4 150.4L77.4 151.5L80.3 152.1L83.2 152.2L86.1 152.2L89.1 153.2L92.0 154.8L94.9 154.4L97.9 151.7L100.8 149.3L103.7 148.6L106.6 148.5L109.6 148.2L112.5 147.8L115.4 147.6L118.4 147.4L121.3 146.6L124.2 145.2L127.1 143.7L130.1 142.9L133.0 143.7L135.9 145.9L138.9 147.6L141.8 148.2L144.7 147.9L147.6 116.5L150.6 146.1L153.5 119.5L156.4 143.1L159.4 142.2L162.3 140.5L165.2 138.5L168.1 137.9L171.1 138.1L174.0 113.7L176.9 136.7L179.9 134.1L182.8 129.9L185.7 125.3L188.6 122.4L191.6 121.3L194.5 120.6L197.4 120.3L200.4 120.9L203.3 121.2L206.2 119.7L209.1 117.1L212.1 115.3L215.0 114.8L217.9 114.3L220.9 112.8L223.8 111.1L226.7 93.3L229.6 109.7L232.6 107.5L235.5 104.3L238.4 102.0L241.4 101.6L244.3 102.0L247.2 81.0L250.1 101.3L253.1 99.3L256.0 96.7L258.9 94.6L261.9 94.0L264.8 94.4L267.7 94.9L270.6 67.3L273.6 95.3L276.5 94.8L279.4 92.6L282.4 89.9L285.3 88.5L288.2 88.2L291.1 87.9L294.1 87.0L297.0 85.7L299.9 84.9L302.9 85.6L305.8 86.4L308.7 85.8L311.6 85.0L314.6 84.8L317.5 84.1L320.4 81.4L323.4 77.9L326.3 76.0L329.2 76.7L332.1 79.0L335.1 81.3L338.0 83.0L340.9 84.3L343.9 84.7L346.8 84.1L349.7 83.6L352.6 84.2L355.6 85.3L358.5 86.0L361.4 85.9L364.4 86.8L367.3 89.7L370.2 93.1L373.1 94.5L376.1 93.5L379.0 92.2L381.9 92.4L384.9 93.6L387.8 94.5L390.7 94.7L393.6 95.0L396.6 96.2L399.5 96.8L402.4 95.9L405.4 95.1L408.3 96.6L411.2 81.0L414.1 100.7L417.1 99.0L420.0 96.5L422.9 96.2L425.9 98.7L428.8 102.2L431.7 104.3L434.6 103.8L437.6 101.5L440.5 100.0L443.4 101.1L446.4 82.8L449.3 105.5L452.2 105.0L455.1 104.2L458.1 104.3L461.0 105.3L463.9 107.5L466.9 111.1L469.8 114.1L472.7 114.8L475.6 114.3L478.6 114.3L481.5 115.0L484.4 116.0L487.4 117.7L490.3 120.2L493.2 121.8L496.1 122.1L499.1 122.9L502.0 125.4L504.9 128.4L507.9 130.3L510.8 130.7L513.7 130.5L516.6 130.7L519.6 131.3L522.5 132.2L525.4 134.6L528.4 137.8L531.3 139.6L534.2 138.7L537.1 136.3L540.1 134.5L543.0 134.9L545.9 137.2L548.9 139.1L551.8 139.3L554.7 138.3L557.6 136.9L560.6 135.8L563.5 135.4L566.4 135.5L569.4 136.3L572.3 137.6L575.2 138.9L578.1 138.6L581.1 136.5L584.0 134.3L586.9 133.6L589.9 133.2L592.8 130.8L595.7 127.4L598.6 125.4L601.6 124.6L604.5 124.1L607.4 123.3L610.4 91.9L613.3 122.9L616.2 123.0L619.1 122.4L622.1 121.4L625.0 120.7L627.9 120.1L630.9 119.3L633.8 117.9L636.7 116.0L639.6 114.4L642.6 113.5L645.5 112.5L648.4 110.8L651.4 108.5L654.3 106.2L657.2 103.9L660.1 82.7L663.1 101.5L666.0 101.8L668.9 101.7L671.9 100.4L674.8 98.0L677.7 96.0L680.6 95.7L683.6 96.8L686.5 97.4L689.4 95.8L692.4 92.9L695.3 90.4L698.2 88.6L701.1 88.3L704.1 89.4L707.0 90.9L709.9 91.8L712.9 91.5L715.8 89.7L718.7 87.4L721.6 86.3L724.6 86.5L727.5 86.1L730.4 84.2L733.4 81.4L736.3 78.6L739.2 76.5L742.1 75.3L745.1 74.3L748.0 73.8L750.9 74.9L753.9 76.3L756.8 75.3L759.7 72.1L762.6 69.4L765.6 69.0L768.5 69.6L771.4 68.9L774.4 66.7L777.3 65.3L780.2 65.7L783.1 65.5L786.1 63.7L789.0 61.9L791.9 61.1L794.9 60.4L797.8 59.5L800.7 58.2L803.6 56.2L806.6 54.5L809.5 53.8L812.4 53.8L815.4 53.7L818.3 53.5L821.2 53.5L824.1 53.1L827.1 51.3L830.0 49.3L832.9 48.6L835.9 48.5L838.8 48.9L841.7 50.2L844.6 51.4L847.6 50.8L850.5 49.0L853.4 47.8L856.4 47.0L859.3 45.8L862.2 44.6L865.1 43.8L868.1 44.0L871.0 31.2L873.9 18.3L876.9 45.0L879.8 43.4L882.7 41.5L885.6 39.1L888.6 37.5L891.5 37.8L894.4 39.2L897.4 40.5L900.3 41.3L903.2 41.9L906.1 42.7L909.1 43.1L912.0 42.8L914.9 42.8L917.9 43.9L920.8 45.5L923.7 45.9L926.6 45.2L929.6 45.5L932.5 48.1L935.4 52.4L938.4 56.8L941.3 60.1L944.2 61.8L947.1 62.0L950.1 61.4L953.0 61.4L955.9 62.8L958.9 65.7L961.8 69.3L964.7 71.9L967.6 73.5L970.6 75.2L973.5 76.2L976.4 75.1L979.4 73.3L982.3 72.4L985.2 72.2L988.1 72.7L991.1 74.0L994.0 74.7L996.9 73.3L999.9 70.8L1002.8 69.0L1005.7 68.1L1008.6 67.1L1011.6 66.0L1014.5 64.5L1017.4 62.7L1020.4 61.0L1023.3 59.0L1026.2 56.4L1029.1 53.4L1032.1 51.0L1035.0 48.8L1037.9 45.1L1040.9 40.7L1043.8 37.4L1046.7 34.7L1049.6 32.0L1052.6 29.7L1055.5 27.8L1058.4 25.8L1061.4 23.4L1064.3 20.8L1067.2 18.1L1070.1 15.5L1073.1 14.0L1076.0 14.0"/>
+        <path class="fx-yearline-draw__line fx-yearline-draw__line--core" d="M10.0 165.4L12.9 162.8L15.9 166.2L18.8 168.3L21.7 168.6L24.6 168.0L27.6 167.2L30.5 166.7L33.4 166.6L36.4 165.7L39.3 163.1L42.2 160.5L45.1 160.2L48.1 160.9L51.0 160.0L53.9 157.6L56.9 155.2L59.8 153.6L62.7 153.3L65.6 153.2L68.6 151.7L71.5 150.2L74.4 150.4L77.4 151.5L80.3 152.1L83.2 152.2L86.1 152.2L89.1 153.2L92.0 154.8L94.9 154.4L97.9 151.7L100.8 149.3L103.7 148.6L106.6 148.5L109.6 148.2L112.5 147.8L115.4 147.6L118.4 147.4L121.3 146.6L124.2 145.2L127.1 143.7L130.1 142.9L133.0 143.7L135.9 145.9L138.9 147.6L141.8 148.2L144.7 147.9L147.6 116.5L150.6 146.1L153.5 119.5L156.4 143.1L159.4 142.2L162.3 140.5L165.2 138.5L168.1 137.9L171.1 138.1L174.0 113.7L176.9 136.7L179.9 134.1L182.8 129.9L185.7 125.3L188.6 122.4L191.6 121.3L194.5 120.6L197.4 120.3L200.4 120.9L203.3 121.2L206.2 119.7L209.1 117.1L212.1 115.3L215.0 114.8L217.9 114.3L220.9 112.8L223.8 111.1L226.7 93.3L229.6 109.7L232.6 107.5L235.5 104.3L238.4 102.0L241.4 101.6L244.3 102.0L247.2 81.0L250.1 101.3L253.1 99.3L256.0 96.7L258.9 94.6L261.9 94.0L264.8 94.4L267.7 94.9L270.6 67.3L273.6 95.3L276.5 94.8L279.4 92.6L282.4 89.9L285.3 88.5L288.2 88.2L291.1 87.9L294.1 87.0L297.0 85.7L299.9 84.9L302.9 85.6L305.8 86.4L308.7 85.8L311.6 85.0L314.6 84.8L317.5 84.1L320.4 81.4L323.4 77.9L326.3 76.0L329.2 76.7L332.1 79.0L335.1 81.3L338.0 83.0L340.9 84.3L343.9 84.7L346.8 84.1L349.7 83.6L352.6 84.2L355.6 85.3L358.5 86.0L361.4 85.9L364.4 86.8L367.3 89.7L370.2 93.1L373.1 94.5L376.1 93.5L379.0 92.2L381.9 92.4L384.9 93.6L387.8 94.5L390.7 94.7L393.6 95.0L396.6 96.2L399.5 96.8L402.4 95.9L405.4 95.1L408.3 96.6L411.2 81.0L414.1 100.7L417.1 99.0L420.0 96.5L422.9 96.2L425.9 98.7L428.8 102.2L431.7 104.3L434.6 103.8L437.6 101.5L440.5 100.0L443.4 101.1L446.4 82.8L449.3 105.5L452.2 105.0L455.1 104.2L458.1 104.3L461.0 105.3L463.9 107.5L466.9 111.1L469.8 114.1L472.7 114.8L475.6 114.3L478.6 114.3L481.5 115.0L484.4 116.0L487.4 117.7L490.3 120.2L493.2 121.8L496.1 122.1L499.1 122.9L502.0 125.4L504.9 128.4L507.9 130.3L510.8 130.7L513.7 130.5L516.6 130.7L519.6 131.3L522.5 132.2L525.4 134.6L528.4 137.8L531.3 139.6L534.2 138.7L537.1 136.3L540.1 134.5L543.0 134.9L545.9 137.2L548.9 139.1L551.8 139.3L554.7 138.3L557.6 136.9L560.6 135.8L563.5 135.4L566.4 135.5L569.4 136.3L572.3 137.6L575.2 138.9L578.1 138.6L581.1 136.5L584.0 134.3L586.9 133.6L589.9 133.2L592.8 130.8L595.7 127.4L598.6 125.4L601.6 124.6L604.5 124.1L607.4 123.3L610.4 91.9L613.3 122.9L616.2 123.0L619.1 122.4L622.1 121.4L625.0 120.7L627.9 120.1L630.9 119.3L633.8 117.9L636.7 116.0L639.6 114.4L642.6 113.5L645.5 112.5L648.4 110.8L651.4 108.5L654.3 106.2L657.2 103.9L660.1 82.7L663.1 101.5L666.0 101.8L668.9 101.7L671.9 100.4L674.8 98.0L677.7 96.0L680.6 95.7L683.6 96.8L686.5 97.4L689.4 95.8L692.4 92.9L695.3 90.4L698.2 88.6L701.1 88.3L704.1 89.4L707.0 90.9L709.9 91.8L712.9 91.5L715.8 89.7L718.7 87.4L721.6 86.3L724.6 86.5L727.5 86.1L730.4 84.2L733.4 81.4L736.3 78.6L739.2 76.5L742.1 75.3L745.1 74.3L748.0 73.8L750.9 74.9L753.9 76.3L756.8 75.3L759.7 72.1L762.6 69.4L765.6 69.0L768.5 69.6L771.4 68.9L774.4 66.7L777.3 65.3L780.2 65.7L783.1 65.5L786.1 63.7L789.0 61.9L791.9 61.1L794.9 60.4L797.8 59.5L800.7 58.2L803.6 56.2L806.6 54.5L809.5 53.8L812.4 53.8L815.4 53.7L818.3 53.5L821.2 53.5L824.1 53.1L827.1 51.3L830.0 49.3L832.9 48.6L835.9 48.5L838.8 48.9L841.7 50.2L844.6 51.4L847.6 50.8L850.5 49.0L853.4 47.8L856.4 47.0L859.3 45.8L862.2 44.6L865.1 43.8L868.1 44.0L871.0 31.2L873.9 18.3L876.9 45.0L879.8 43.4L882.7 41.5L885.6 39.1L888.6 37.5L891.5 37.8L894.4 39.2L897.4 40.5L900.3 41.3L903.2 41.9L906.1 42.7L909.1 43.1L912.0 42.8L914.9 42.8L917.9 43.9L920.8 45.5L923.7 45.9L926.6 45.2L929.6 45.5L932.5 48.1L935.4 52.4L938.4 56.8L941.3 60.1L944.2 61.8L947.1 62.0L950.1 61.4L953.0 61.4L955.9 62.8L958.9 65.7L961.8 69.3L964.7 71.9L967.6 73.5L970.6 75.2L973.5 76.2L976.4 75.1L979.4 73.3L982.3 72.4L985.2 72.2L988.1 72.7L991.1 74.0L994.0 74.7L996.9 73.3L999.9 70.8L1002.8 69.0L1005.7 68.1L1008.6 67.1L1011.6 66.0L1014.5 64.5L1017.4 62.7L1020.4 61.0L1023.3 59.0L1026.2 56.4L1029.1 53.4L1032.1 51.0L1035.0 48.8L1037.9 45.1L1040.9 40.7L1043.8 37.4L1046.7 34.7L1049.6 32.0L1052.6 29.7L1055.5 27.8L1058.4 25.8L1061.4 23.4L1064.3 20.8L1067.2 18.1L1070.1 15.5L1073.1 14.0L1076.0 14.0"/>
+
+        <g class="fx-yearline-draw__mdots">
+          <circle class="fx-yearline-draw__mdot" cx="53.9" cy="157.6" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="144.7" cy="147.9" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="232.6" cy="107.5" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="320.4" cy="81.4" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="411.2" cy="81" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="499.1" cy="122.9" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="586.9" cy="133.6" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="677.7" cy="96" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="765.6" cy="69" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="853.4" cy="47.8" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="944.2" cy="61.8" r="3.2"/>
+          <circle class="fx-yearline-draw__mdot" cx="1032.1" cy="51" r="3.2"/>
+        </g>
+
+        <circle class="fx-yearline-draw__tint" cx="1076" cy="14" r="170" fill="url(#fx4-tint)"/>
+
+        <g class="fx-yearline-draw__spark" transform="translate(1076 14)">
+          <circle class="fx-yearline-draw__spark-halo" r="9"/>
+          <circle class="fx-yearline-draw__spark-core" r="4"/>
+        </g>
+
+        <g class="fx-yearline-draw__maxis">
+          <text class="fx-yearline-draw__mlabel" x="53.9" y="218">J</text>
+          <text class="fx-yearline-draw__mlabel" x="144.7" y="218">F</text>
+          <text class="fx-yearline-draw__mlabel" x="232.6" y="218">M</text>
+          <text class="fx-yearline-draw__mlabel" x="320.4" y="218">A</text>
+          <text class="fx-yearline-draw__mlabel" x="411.2" y="218">M</text>
+          <text class="fx-yearline-draw__mlabel" x="499.1" y="218">J</text>
+          <text class="fx-yearline-draw__mlabel" x="586.9" y="218">J</text>
+          <text class="fx-yearline-draw__mlabel" x="677.7" y="218">A</text>
+          <text class="fx-yearline-draw__mlabel" x="765.6" y="218">S</text>
+          <text class="fx-yearline-draw__mlabel" x="853.4" y="218">O</text>
+          <text class="fx-yearline-draw__mlabel" x="944.2" y="218">N</text>
+          <text class="fx-yearline-draw__mlabel" x="1032.1" y="218">D</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</div>
+<!-- FX-MODULE-END -->
+
+<script type="module">
+/* fx-04 yearline-draw — module script, no globals, no network except the torph import below. */
+const CYCLE = 16000;    // full loop
+const DRAW = 10800;     // left→right draw window (ease-out)
+const OUT_AT = 13200;   // dissolve begins (≈2s hold after the dot lands)
+const PREP_AT = 14500;  // swap curve variant + reset while fully faded
+const N = 365, W = 1088, PADL = 10, PADR = 12, YBASE = 190, YH = 176;
+const FINALS = [5214, 389102, 141, 12];
+const CH_STEPS = [1, 1, 2, 3, 4, 4, 5, 6, 7, 8, 9, 11]; // channels discovered per month; 12 lands with the dot
+const VARIANTS = [
+  { seed: 20240117, overrides: [] },
+  { seed: 733114, overrides: [[7, 0.26], [12, 0.9], [4, 0.66]] },
+  { seed: 990552, overrides: [[4, 0.68], [7, 0.34], [13, 0.62], [14, 0.68], [11, 0.76]] },
+];
+
+/* ---- curve synthesis (deterministic, pre-seeded) ---- */
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const BASE_ANCHORS = [
+  [0.0, 0.14], [0.055, 0.2], [0.115, 0.24], [0.2, 0.44], [0.29, 0.62],
+  [0.345, 0.55], [0.42, 0.48], [0.5, 0.3], [0.555, 0.36], [0.63, 0.52],
+  [0.7, 0.66], [0.775, 0.8], [0.845, 0.86], [0.9, 0.66], [0.945, 0.72], [1.0, 1.0],
+];
+function catmullY(anchors, x) {
+  const n = anchors.length;
+  let k = 0;
+  while (k < n - 2 && x > anchors[k + 1][0]) k++;
+  const p1 = anchors[k], p2 = anchors[k + 1];
+  const p0 = anchors[Math.max(0, k - 1)], p3 = anchors[Math.min(n - 1, k + 2)];
+  const t = (x - p1[0]) / (p2[0] - p1[0]), t2 = t * t, t3 = t2 * t;
+  return 0.5 * ((2 * p1[1]) + (-p0[1] + p2[1]) * t
+    + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2
+    + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3);
+}
+function makeCurve(seed, overrides) {
+  const anchors = BASE_ANCHORS.map(a => a.slice());
+  for (const [i, v] of overrides || []) anchors[i][1] = v;
+  const rng = mulberry32(seed);
+  let noise = Array.from({ length: N }, () => rng() * 2 - 1);
+  for (let pass = 0; pass < 3; pass++) {
+    const s = noise.slice();
+    for (let i = 0; i < N; i++) {
+      const l = s[Math.max(0, i - 1)], r = s[Math.min(N - 1, i + 1)];
+      noise[i] = 0.25 * l + 0.5 * s[i] + 0.25 * r;
+    }
+  }
+  const bursts = new Map();
+  const count = 10 + Math.floor(rng() * 5);
+  for (let b = 0; b < count; b++) {
+    const idx = 2 + Math.floor(rng() * (N - 4));
+    bursts.set(idx, (bursts.get(idx) || 0) + 0.05 + rng() * 0.13);
+  }
+  const v = new Array(N);
+  for (let i = 0; i < N; i++) {
+    const val = catmullY(anchors, i / (N - 1)) + noise[i] * 0.05 + (bursts.get(i) || 0);
+    v[i] = Math.min(1, Math.max(0.02, val));
+  }
+  v[0] = anchors[0][1];
+  v[N - 1] = 1;
+  return v;
+}
+const xOf = i => PADL + (i / (N - 1)) * (W - PADL - PADR);
+const yOf = v => YBASE - v * YH;
+function pathD(v) {
+  let d = '';
+  for (let i = 0; i < N; i++) d += (i ? 'L' : 'M') + xOf(i).toFixed(1) + ' ' + yOf(v[i]).toFixed(1);
+  return d;
+}
+function cumArea(v) {
+  const c = new Array(N); c[0] = 0;
+  for (let i = 1; i < N; i++) c[i] = c[i - 1] + (v[i - 1] + v[i]) / 2;
+  return c;
+}
+
+/* ---- torph loader: dynamic import in try/catch, never blocks or breaks the loop ----
+   (esm.sh/torph exports the vanilla class as TextMorph; inspected at runtime with
+   fallbacks for other shapes. If it fails or times out we simply keep the rAF count-up.) */
+let TextMorphCtor = null, torphSettled = false, torphStarted = false;
+const loadTorph = () => {
+  if (torphStarted) return;
+  torphStarted = true;
+  try {
+    Promise.race([
+      import('https://esm.sh/torph'),
+      new Promise(res => setTimeout(() => res(null), 2500)),
+    ]).then(m => {
+      TextMorphCtor = (m && (m.TextMorph || m.textMorph
+        || (m.default && (m.default.TextMorph || m.default.textMorph)))) || null;
+      torphSettled = true;
+    }).catch(() => { torphSettled = true; });
+  } catch (e) { torphSettled = true; }
+};
+
+const fmt = n => n.toLocaleString('en-US');
+const easeOutCubic = u => 1 - Math.pow(1 - u, 3);
+
+function initModule(root) {
+  if (root.dataset.fxReady) return;
+  root.dataset.fxReady = '1';
+
+  const qa = s => Array.from(root.querySelectorAll(s));
+  const paths = qa('.fx-yearline-draw__line');
+  const mdots = qa('.fx-yearline-draw__mdot');
+  const mlabels = qa('.fx-yearline-draw__mlabel');
+  const spark = root.querySelector('.fx-yearline-draw__spark');
+  const tint = root.querySelector('.fx-yearline-draw__tint');
+  const values = qa('.fx-yearline-draw__value');
+
+  const reduced = window.matchMedia
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) return; /* static composed frame already present in the markup */
+  loadTorph();
+
+  const variants = VARIANTS.map(({ seed, overrides }) => {
+    const v = makeCurve(seed, overrides);
+    const cum = cumArea(v);
+    return { v, d: pathD(v), cum, total: cum[N - 1] };
+  });
+  let vIdx = 0, pathLen = 0;
+
+  const applyVariant = i => {
+    const vd = variants[i];
+    for (const p of paths) {
+      p.setAttribute('d', vd.d);
+      const L = p.getTotalLength();
+      p.style.strokeDasharray = L + ' ' + L;
+      p.style.strokeDashoffset = L;
+    }
+    pathLen = paths[0].getTotalLength();
+    for (let m = 0; m < 12; m++) {
+      const idx = Math.round(((m + 0.5) / 12) * (N - 1));
+      mdots[m].setAttribute('cx', xOf(idx).toFixed(1));
+      mdots[m].setAttribute('cy', yOf(vd.v[idx]).toFixed(1));
+    }
+  };
+
+  let start = 0, rafId = 0, running = false, pauseAt = 0, hiddenAt = 0;
+  let lastCyc = -1, popped = 0, landed = false, outSet = false, didPrepare = false;
+  let lastCounterAt = -1e9, lastShown = [-1, -1, -1, -1];
+  let morphers = null, torphChecked = false;
+
+  const tryAttachTorph = () => {
+    if (morphers || !TextMorphCtor) return;
+    try {
+      morphers = values.map((el, i) => {
+        el.textContent = ''; /* TextMorph owns the element's content from here on */
+        const m = new TextMorphCtor({
+          element: el, locale: 'en', duration: 420,
+          ease: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        });
+        m.update(lastShown[i] >= 0 ? lastShown[i] : 0);
+        return m;
+      });
+    } catch (e) { morphers = null; }
+  };
+
+  const areaAt = (p, vd) => {
+    const f = p * (N - 1), i = Math.min(N - 2, Math.floor(f)), fr = f - i;
+    return (vd.cum[i] + (vd.cum[i + 1] - vd.cum[i]) * fr) / vd.total;
+  };
+  const runningValues = (p, vd) => {
+    const a = areaAt(p, vd);
+    return [
+      Math.round(FINALS[0] * a),
+      Math.round(FINALS[1] * Math.pow(a, 0.94)),
+      Math.round(FINALS[2] * Math.pow(p, 1.28)),
+      morphers ? CH_STEPS[Math.min(11, Math.floor(p * 12))]
+               : (p <= 0 ? 0 : Math.min(12, Math.max(1, Math.round(p * 13.2)))),
+    ];
+  };
+  const setCounters = (vals, force) => {
+    for (let i = 0; i < 4; i++) {
+      const val = vals[i];
+      if (!force && val === lastShown[i]) continue;
+      lastShown[i] = val;
+      if (morphers) {
+        try { morphers[i].update(val); }
+        catch (e) { values[i].textContent = fmt(val); }
+      } else {
+        values[i].textContent = fmt(val);
+      }
+    }
+  };
+
+  const resetCycleBits = () => {
+    popped = 0;
+    for (const d of mdots) d.classList.remove('is-on');
+    for (const l of mlabels) l.classList.remove('is-on');
+    spark.classList.remove('is-landed');
+    tint.classList.remove('is-pulse');
+    lastShown = [-1, -1, -1, -1];
+  };
+  const toStartState = () => {
+    applyVariant(vIdx);
+    for (let i = 0; i < 4; i++) {
+      if (morphers) {
+        try { morphers[i].update(0); continue; } catch (e) { /* fall back below */ }
+      }
+      values[i].textContent = '0';
+    }
+    resetCycleBits();
+  };
+
+  const popThrough = m => {
+    while (popped < m) {
+      const k = popped++;
+      mdots[k].classList.add('is-on');
+      mlabels[k].classList.add('is-on');
+    }
+  };
+
+  const frame = now => {
+    rafId = 0;
+    if (!torphChecked && torphSettled) { torphChecked = true; tryAttachTorph(); }
+    const el = now - start;
+    const cyc = Math.floor(el / CYCLE);
+    const t = el - cyc * CYCLE;
+    if (cyc !== lastCyc) {
+      lastCyc = cyc;
+      root.classList.remove('is-out'); /* fade the band back in as the new year starts */
+      spark.classList.remove('is-landed'); /* re-arm the overshoot pop for this cycle */
+      tint.classList.remove('is-pulse');
+      if (!didPrepare) { vIdx = (vIdx + 1) % variants.length; toStartState(); } /* glitch recovery */
+      didPrepare = false;
+      landed = false;
+      outSet = false;
+    }
+    const vd = variants[vIdx];
+    if (t < DRAW) {
+      const p = easeOutCubic(t / DRAW);
+      const off = String(pathLen * (1 - p));
+      for (const path of paths) path.style.strokeDashoffset = off;
+      const i = Math.min(N - 1, Math.round(p * (N - 1)));
+      spark.setAttribute('transform',
+        'translate(' + xOf(i).toFixed(1) + ' ' + yOf(vd.v[i]).toFixed(1) + ')');
+      popThrough(Math.min(12, Math.floor(p * 12)));
+      const cadence = morphers ? 300 : 0;
+      if (now - lastCounterAt >= cadence) {
+        lastCounterAt = now;
+        setCounters(runningValues(p, vd), false);
+      }
+    } else if (!landed) {
+      landed = true;
+      for (const path of paths) path.style.strokeDashoffset = '0';
+      spark.setAttribute('transform', 'translate(' + xOf(N - 1).toFixed(1) + ' ' + yOf(1).toFixed(1) + ')');
+      popThrough(12);
+      setCounters(FINALS.slice(), true);
+      spark.classList.add('is-landed');
+      tint.classList.add('is-pulse');
+    }
+    if (landed) {
+      if (t >= OUT_AT && !outSet) { outSet = true; root.classList.add('is-out'); }
+      if (t >= PREP_AT && !didPrepare) {
+        didPrepare = true;
+        vIdx = (vIdx + 1) % variants.length;
+        toStartState(); /* swap curve + zero counters while the band is invisible */
+      }
+    }
+    if (running) rafId = requestAnimationFrame(frame);
+  };
+
+  const setActive = on => {
+    if (on && !running) {
+      running = true;
+      if (pauseAt) { start += performance.now() - pauseAt; pauseAt = 0; }
+      else if (!start) start = performance.now();
+      if (!rafId) rafId = requestAnimationFrame(frame);
+    } else if (!on && running) {
+      running = false;
+      pauseAt = performance.now();
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+    }
+  };
+
+  let ioVisible = true;
+  const effective = () => ioVisible
+    && root.getAttribute('data-fx-state') !== 'idle'
+    && !document.hidden;
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => {
+      ioVisible = es[es.length - 1].isIntersecting;
+      setActive(effective());
+    }, { threshold: 0.12 });
+    io.observe(root);
+  }
+  if ('MutationObserver' in window) {
+    new MutationObserver(() => setActive(effective()))
+      .observe(root, { attributes: true, attributeFilter: ['data-fx-state'] });
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) hiddenAt = performance.now();
+    else if (hiddenAt) {
+      if (running) start += performance.now() - hiddenAt;
+      hiddenAt = 0;
+    }
+    setActive(effective());
+  });
+
+  /* boot: markup ships the composed final frame; live mode resets and draws */
+  root.classList.add('is-live', 'is-out');
+  toStartState();
+  didPrepare = true; /* the first cycle starts from the boot reset, not the wrap handler */
+  setActive(true);
+}
+
+document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
+</script>
+</body>
+</html>
