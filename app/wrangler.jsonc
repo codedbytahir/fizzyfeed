@@ -20,13 +20,13 @@
     {
       "binding": "DB",
       "database_name": "fizzyfeed",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID"
+      "database_id": "07728bfc-341b-419d-82c9-89766f320180"
     }
   ],
   "kv_namespaces": [
     {
       "binding": "CACHE",
-      "id": "REPLACE_WITH_KV_NAMESPACE_ID"
+      "id": "8cf77c49f00a4cad8cdd6b954dcc9e3b"
     }
   ],
   "ai": {
