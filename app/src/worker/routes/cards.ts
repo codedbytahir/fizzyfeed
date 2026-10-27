@@ -6,7 +6,9 @@
  *
  * Cache keys: `card:og:v1` and `card:{userId}:{year}:card{n}-{hash8(stats)}` —
  * the stats fingerprint invalidates stale cards when aggregates change. Max 8
- * slugs per user-year by construction (7 cards + og).
+ * slugs per user-year by construction (7 cards + og). getCardPng is shared
+ * with routes/share.ts so the queued card media is byte-identical to the PNG
+ * the user previewed.
  */
 import { Hono } from "hono";
 import type { Env, HonoEnv } from "../env";
@@ -51,6 +53,29 @@ function findCard(cards: CardData[], n: number): CardData | undefined {
   return cards.find((card) => card.n === n);
 }
 
+/**
+ * Render (or KV-serve) the story-card PNG for one user + card number.
+ * Returns null when the card isn't in the user's deck (unknown n, or an
+ * account that only has the empty-state card). Same loader and cache key as
+ * GET /:slug — the PNG route and the card-share queue stay byte-identical.
+ */
+export async function getCardPng(env: Env, userId: string, n: number): Promise<Uint8Array | null> {
+  const { stats, cards: deckCards, year, persona } = await loadDeckContext(env, userId);
+  const card = findCard(deckCards, n);
+  if (!card) return null;
+  const cacheKey = `card:${userId}:${year}:card${n}-${hash8(JSON.stringify(stats))}`;
+  const cached = await env.CACHE.get(cacheKey, "arrayBuffer");
+  if (cached) return new Uint8Array(cached);
+  const fonts = await loadFonts(env.ASSETS);
+  const png = await renderCardPng(card, fonts, {
+    monthly: stats.peaks.monthly,
+    spark: stats.rhythm.dowHistogram,
+    traits: persona?.traits,
+  });
+  await env.CACHE.put(cacheKey, png, { expirationTtl: CARD_TTL_SEC });
+  return png;
+}
+
 const cards = new Hono<HonoEnv>();
 
 cards.get("/og.png", async (c) => {
@@ -79,21 +104,10 @@ cards.get("/:slug", async (c) => {
   if (!Number.isInteger(n) || n < 1 || n > 7) {
     return jsonError(c, 404, "not_found", "unknown card");
   }
-  const { stats, cards: deckCards, year, persona } = await loadDeckContext(c.env, userId);
-  const card = findCard(deckCards, n);
-  if (!card) {
+  const png = await getCardPng(c.env, userId, n);
+  if (!png) {
     return jsonError(c, 404, "card_unavailable", "card not in your deck yet");
   }
-  const cacheKey = `card:${userId}:${year}:card${n}-${hash8(JSON.stringify(stats))}`;
-  const cached = await c.env.CACHE.get(cacheKey, "arrayBuffer");
-  if (cached) return pngResponse(cached);
-  const fonts = await loadFonts(c.env.ASSETS);
-  const png = await renderCardPng(card, fonts, {
-    monthly: stats.peaks.monthly,
-    spark: stats.rhythm.dowHistogram,
-    traits: persona?.traits,
-  });
-  await c.env.CACHE.put(cacheKey, png, { expirationTtl: CARD_TTL_SEC });
   return pngResponse(png);
 });
 

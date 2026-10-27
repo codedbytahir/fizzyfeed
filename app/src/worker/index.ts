@@ -6,6 +6,7 @@ import { Hono } from "hono";
 import type { HonoEnv } from "./env";
 import { BRAND_NAME } from "../shared/brand";
 import { originCheck } from "./lib/http";
+import { rateLimit } from "./lib/ratelimit";
 import { readSessionUserId, slideSession } from "./lib/session";
 
 import auth from "./routes/auth";
@@ -15,10 +16,20 @@ import cards from "./routes/cards";
 import persona from "./routes/persona";
 import recap from "./routes/recap";
 import greatestHits from "./routes/greatestHits";
+import share from "./routes/share"; // parallel-agent module (lands before integration)
+import shareLink, { sharePublic } from "./routes/sharePage"; // parallel-agent module
 
 const api = new Hono<HonoEnv>();
 
 api.use("*", originCheck());
+
+// per-IP edge rate limits — the outer IP layer; per-user debounces live in routes
+api.use("/auth/*", rateLimit("auth"));
+api.use("/recap/queue", rateLimit("write"));
+api.use("/share/queue", rateLimit("write"));
+api.use("/share-link/*", rateLimit("write"));
+api.use("/yearize/*", rateLimit("write"));
+api.use("*", rateLimit("read")); // catch-all read/unknown, health exempt inside
 
 api.get("/health", (c) =>
   c.json({
@@ -36,6 +47,8 @@ api.route("/cards", cards);
 api.route("/persona", persona);
 api.route("/recap", recap);
 api.route("/greatest-hits", greatestHits);
+api.route("/share", share);
+api.route("/share-link", shareLink);
 
 // unknown API path → typed 404 (never SPA fallback)
 api.notFound((c) => c.json({ error: { code: "not_found", message: "unknown api route" } }, 404));
@@ -55,6 +68,12 @@ app.route("/api", api);
 app.all("/api/*", (c) =>
   c.json({ error: { code: "not_found", message: "unknown api route" } }, 404)
 );
+
+// public share pages (per-IP public class) — must precede the ASSETS fallback;
+// bare /u is throttled too so it can't slip through to the unthrottled SPA shell
+app.use("/u", rateLimit("public"));
+app.use("/u/*", rateLimit("public"));
+app.route("/u", sharePublic);
 
 // SPA + static assets fallback (ASSETS binding, SPA not-found handling)
 app.all("*", (c) => c.env.ASSETS.fetch(c.req.raw));

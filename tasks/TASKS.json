@@ -1,304 +1,370 @@
 {
-  "$schema": "./tasks.schema-note.md",
-  "meta": {
-    "project": "fizzyfeed (dev codename: kroma)",
-    "protocol": "Agents: claim a 'todo' task (set status=in_progress + claimant + updated_at), read its spec_ref, build the smallest complete change meeting 'acceptance', run scripts/agent-check.sh, then set status=done with evidence. One task at a time. Append context to worklog.md. Loop 2026-10-25: waves 1-2 (parallel agents) + a11y + app critic (9.67/10, 0 fatal 0 major) closed.",
-    "phases": {
-      "0": "scaffold",
-      "1": "oauth",
-      "2": "yearize+deck",
-      "3": "persona+recap",
-      "4": "greatest-hits+polish"
-    },
-    "timeline": "Oct 28 - Nov 13 (Buffer Commit 2026)"
+ "$schema": "./tasks.schema-note.md",
+ "meta": {
+  "project": "fizzyfeed (dev codename: kroma)",
+  "protocol": "Agents: claim a 'todo' task (set status=in_progress + claimant + updated_at), read its spec_ref, build the smallest complete change meeting 'acceptance', run scripts/agent-check.sh, then set status=done with evidence. One task at a time. Append context to worklog.md. Loop 2026-10-25: waves 1-2 (parallel agents) + a11y + app critic (9.67/10, 0 fatal 0 major) closed.",
+  "phases": {
+   "0": "scaffold",
+   "1": "oauth",
+   "2": "yearize+deck",
+   "3": "persona+recap",
+   "4": "greatest-hits+polish"
   },
-  "tasks": [
-    {
-      "id": "T01",
-      "phase": 0,
-      "title": "Scaffold app/ per spec 01 (Vite+React+Hono+wrangler, strict TS)",
-      "status": "done",
-      "spec_ref": "docs/specs/01-ARCHITECTURE.md#2",
-      "acceptance": [
-        "npm run dev serves SPA + /api/health on one origin",
-        "typecheck strict passes",
-        "single package.json"
-      ],
-      "claimant": "z.ai",
-      "evidence": "scaffold 80492e5: vite+react+hono+wrangler per spec 01 \u00a72; npm run dev serves SPA + /api/health on one origin (verified live 8787); typecheck strict + noUncheckedIndexedAccess passes; single package.json"
-    },
-    {
-      "id": "T02",
-      "phase": 0,
-      "title": "Import root tokens.css into client + BRAND_NAME const",
-      "status": "done",
-      "spec_ref": "docs/specs/01-ARCHITECTURE.md#2",
-      "acceptance": [
-        "grep proves one rename point",
-        "no raw hex in src/"
-      ],
-      "claimant": "z.ai",
-      "evidence": "scaffold: src/shared/brand.ts single BRAND_NAME const; tokens.css imported at repo-root source (styles/app.css @import); grep proves rename point; agent-check token discipline PASS"
-    },
-    {
-      "id": "T03",
-      "phase": 0,
-      "title": "CI: typecheck + vitest + agent-check.sh on main",
-      "status": "done",
-      "spec_ref": "docs/specs/08-BUILD-PLAN.md#phase-0",
-      "acceptance": [
-        "workflow file green",
-        "agent-check runs in CI"
-      ],
-      "claimant": "z.ai",
-      "evidence": ".github/workflows/ci.yml: agent-check.sh + typecheck + vitest + vite build + wrangler dry-run on push/PR; deploy.yml + schedule.yml ship worker+d1 migrations+health smoke (35dd791)"
-    },
-    {
-      "id": "T04",
-      "phase": 1,
-      "title": "D1 schema migration 0001_init.sql",
-      "status": "done",
-      "spec_ref": "docs/specs/01-ARCHITECTURE.md#3",
-      "acceptance": [
-        "migrations apply clean local",
-        "row types mirrored in shared/schema.ts"
-      ],
-      "claimant": "z.ai",
-      "evidence": "migrations/0001_init.sql verbatim spec 01 \u00a73; applies clean local (wrangler d1 migrations apply --local 0001 \u2713); schema.ts row types mirrored; migration.test.ts enforces column-level lockstep (10 tests)"
-    },
-    {
-      "id": "T05",
-      "phase": 1,
-      "title": "AES-GCM crypto lib + session cookie helpers",
-      "status": "done",
-      "spec_ref": "docs/specs/02-BUFFER-OAUTH.md#4",
-      "acceptance": [
-        "unit tests: roundtrip, tamper fails, AAD binds user_id"
-      ],
-      "claimant": "z.ai",
-      "evidence": "lib/crypto.ts AES-256-GCM PBKDF2-310k per-row salt+IV AAD=user_id; lib/session.ts HMAC cookies; 46 tests: roundtrip, every-byte tamper, AAD swap, wrong key, cookie expiry/tamper, oauth payload validation"
-    },
-    {
-      "id": "T06",
-      "phase": 1,
-      "title": "OAuth PKCE login + callback + logout + /api/me",
-      "status": "done",
-      "spec_ref": "docs/specs/02-BUFFER-OAUTH.md",
-      "acceptance": [
-        "real account connects",
-        "state single-use",
-        "tokens encrypted at rest"
-      ],
-      "claimant": "z.ai",
-      "evidence": "routes/auth.ts: PKCE S256 login/callback/logout/me/revoke + write-scope /upgrade (b7a5752); state single-use cookie, replay fails 400; tokens sealed AAD=userId; tests mock full flow; live connect awaits real Buffer credentials (docs/DEPLOY.md)"
-    },
-    {
-      "id": "T07",
-      "phase": 1,
-      "title": "Token refresh (proactive cron + reactive 401) with batch rotation",
-      "status": "done",
-      "spec_ref": "docs/specs/02-BUFFER-OAUTH.md#4",
-      "acceptance": [
-        "401 triggers one refresh+retry",
-        "rotation inside db.batch()"
-      ],
-      "claimant": "z.ai",
-      "evidence": "lib/refresh.ts: withAccessToken one silent refresh+retry on 401, rotation inside db.batch (tokens+sync_state touch); refreshExpiringTokens sweeps expires_at<now+24h in hourly cron; tests assert batch rotation params"
-    },
-    {
-      "id": "T08",
-      "phase": 1,
-      "title": "Typed Buffer API client (list channels, list posts)",
-      "status": "done",
-      "spec_ref": "docs/specs/01-ARCHITECTURE.md#2",
-      "acceptance": [
-        "endpoint constants in one file",
-        "no token logging (test asserted)"
-      ],
-      "claimant": "z.ai",
-      "evidence": "lib/buffer.ts: BUFFER_ENDPOINTS single file, createBufferClient typed per shared/types BufferClient port; sentinel test proves zero token logging"
-    },
-    {
-      "id": "T09",
-      "phase": 2,
-      "title": "Backfill sync (12mo) within 250 req/day/token ceiling",
-      "status": "done",
-      "spec_ref": "docs/specs/03-YEARIZE-PIPELINE.md#2",
-      "acceptance": [
-        "ceiling counter enforced",
-        "resumes across cron ticks"
-      ],
-      "claimant": "z.ai",
-      "evidence": "lib/sync.ts: backfill 12mo pages of 50, budget persists per page, hard stop 240/day/token (sync.test.ts), resumes across cron ticks via cursor; auth callback kicks backfill via waitUntil"
-    },
-    {
-      "id": "T10",
-      "phase": 2,
-      "title": "Aggregates (YearStats) + fixtures A/B/C + property test",
-      "status": "done",
-      "spec_ref": "docs/specs/03-YEARIZE-PIPELINE.md#3",
-      "acceptance": [
-        "fixtures pass",
-        "sum(monthly)==totals.posts property holds"
-      ],
-      "claimant": "z.ai",
-      "evidence": "lib/yearize.ts computeYearStats pure + fixtures A(141-day streak)/B(80-15-5 sum 100\u00b10.1)/C(empty null-safe); 40-seed property test sum(monthly)==totals.posts; upsert idempotent (ON CONFLICT DO UPDATE restores deleted posts)"
-    },
-    {
-      "id": "T11",
-      "phase": 2,
-      "title": "Satori+resvg PNG pipeline with fonts + KV cache",
-      "status": "done",
-      "spec_ref": "docs/specs/04-DECK-CARDS.md#2",
-      "acceptance": [
-        "card render <50ms CPU",
-        "KV hit <15ms",
-        "statsHash8 invalidates"
-      ],
-      "claimant": "z.ai",
-      "evidence": "lib/render.ts+fonts.ts+gradients.ts: satori\u2192resvg-wasm 1080\u00d71350 + 1200\u00d7630 OG; fonts staged via copy-fonts.mjs; KV card:{userId}:{year}:card{n}-{hash8} TTL 30d + Cache-Control 3600; render.test.ts PIL-verifies PNG dims; live workerd render verified (23.7KB og.png)"
-    },
-    {
-      "id": "T12",
-      "phase": 2,
-      "title": "Deck assembly + /api/deck + 7 card layouts",
-      "status": "done",
-      "spec_ref": "docs/specs/04-DECK-CARDS.md",
-      "acceptance": [
-        "7 PNGs legible for demo account",
-        "gradients fixed per spec"
-      ],
-      "claimant": "z.ai",
-      "evidence": "routes/deck.ts buildDeckFromStats closed-union 7 cards + empty state + persona injection at index 5; gradients token-annotated; share links /api/cards/:n.png"
-    },
-    {
-      "id": "T13",
-      "phase": 2,
-      "title": "Deck UI (grid, loading, empty state, share links)",
-      "status": "done",
-      "spec_ref": "docs/specs/04-DECK-CARDS.md",
-      "acceptance": [
-        "dark-first tokens",
-        "empty account shows 'not enough year yet'"
-      ],
-      "claimant": "z.ai",
-      "evidence": "client SPA (5-d): Connect/Deck/Persona/Recap/GreatestHits + 14 components; backfill polling, empty 'not enough year yet', per-card copy/download share, editable recap preview with live counter, per-channel results + retry, GH absent-by-default; var() tokens only"
-    },
-    {
-      "id": "T14",
-      "phase": 3,
-      "title": "Persona naming (70b JSON out, guardrails, deterministic fallback)",
-      "status": "done",
-      "spec_ref": "docs/specs/05-AI-PERSONA.md",
-      "acceptance": [
-        "origin references card stats",
-        "repair retry + fallback never fail"
-      ],
-      "claimant": "z.ai",
-      "evidence": "lib/persona.ts: spec 05 \u00a73 system prompt verbatim, JSON guard + 1 repair retry + deterministic fallback ('the {hour}o\\'clock regular'), guardrails (\u226428 lowercase name, origin cites real stat, traits \u226418), \u226440 excerpts \u226480 chars sentinel-tested"
-    },
-    {
-      "id": "T15",
-      "phase": 3,
-      "title": "Persona cache + regenerate (3/user-year, debounced)",
-      "status": "done",
-      "spec_ref": "docs/specs/05-AI-PERSONA.md#4",
-      "acceptance": [
-        "cache hit <50ms",
-        "429 after 3 regenerations"
-      ],
-      "claimant": "z.ai",
-      "evidence": "routes/persona.ts: ai_cache (user,'persona',year) hit path zero AI calls (spy-tested); regenerate 3\u00d7/year then 429 regen_limit, debounced 60s; year-keyed"
-    },
-    {
-      "id": "T16",
-      "phase": 3,
-      "title": "Recap compose (deterministic from YearStats) + preview API",
-      "status": "done",
-      "spec_ref": "docs/specs/06-RECAP-QUEUE.md#1",
-      "acceptance": [
-        "numbers verbatim from YearStats",
-        "no AI in critical path"
-      ],
-      "claimant": "z.ai",
-      "evidence": "lib/recap.ts composeRecap deterministic from YearStats verbatim numbers, \u2264500, persona line conditional, zero AI in critical path; preview API returns RecapPreview"
-    },
-    {
-      "id": "T17",
-      "phase": 3,
-      "title": "Write-scope upgrade consent flow",
-      "status": "done",
-      "spec_ref": "docs/specs/06-RECAP-QUEUE.md#2",
-      "acceptance": [
-        "403 + upgrade hint when missing",
-        "edited text preserved through upgrade"
-      ],
-      "claimant": "z.ai",
-      "evidence": "write-scope upgrade consent: 403 upgrade_required + upgradeUrl /api/auth/buffer/upgrade (write-scope-only PKCE, returnTo=/app/recap, edited text preserved client-side, open-redirect sanitized); critic r1 fix: scope gate precedes rate limit"
-    },
-    {
-      "id": "T18",
-      "phase": 3,
-      "title": "Queue endpoint with idempotency + per-channel results",
-      "status": "done",
-      "spec_ref": "docs/specs/06-RECAP-QUEUE.md#3",
-      "acceptance": [
-        "double-submit safe via queueId",
-        "visible in Buffer dashboard"
-      ],
-      "claimant": "z.ai",
-      "evidence": "routes/recap.ts queue: queueId KV idempotency first (replay returns first result, createPost called once \u2014 tested), 5/day limit 429, per-channel results no all-or-nothing, audit log ids/counts only (sentinel)"
-    },
-    {
-      "id": "T19",
-      "phase": 4,
-      "title": "Greatest Hits enable/refresh/revoke (PAT, AES-GCM)",
-      "status": "done",
-      "spec_ref": "docs/specs/07-GREATEST-HITS.md",
-      "acceptance": [
-        "PAT never in logs (sentinel test)",
-        "revoke purges row+cache"
-      ],
-      "claimant": "z.ai",
-      "evidence": "routes/greatestHits.ts: enable validates via cheap read first, PAT sealed AAD=userId never in KV/logs/responses/D1-params (4-surface sentinel), refresh top-9 metric labeled verbatim, revoke purges row+KV (auth revoke too), expired\u2192410"
-    },
-    {
-      "id": "T20",
-      "phase": 4,
-      "title": "A11y pass (focus rings, contrast, reduced motion, labels)",
-      "status": "done",
-      "spec_ref": "BRAND-GUIDELINES.md#9",
-      "acceptance": [
-        "axe clean",
-        "reduced-motion verified on all animations"
-      ],
-      "claimant": "z.ai",
-      "evidence": "a11y pass (6-a): nav landmark + heading order fixed, AA contrast (card scrim panels: white70 4.95:1 worst-case on lime), focus-visible everywhere, reduced-motion JS+CSS, labels/roles/aria-describedby, route titles; 242/242 green"
-    },
-    {
-      "id": "T21",
-      "phase": 4,
-      "title": "Landing page final copy + OG wiring + deploy",
-      "status": "done",
-      "claimant": "z.ai",
-      "spec_ref": "docs/ANIMATIONS.md#4 + docs/specs/09-LANDING.md",
-      "acceptance": [
-        "<2s load",
-        "no banned word",
-        "BRAND_NAME injection works"
-      ],
-      "evidence": "commit 07899f3: OG/Twitter cards + canonical + JSON-LD live, banned-word grep clean, BRAND_NAME injection smoke-tested 7/7 console-clean; live at https://codedbytahir.github.io/fizzyfeed/ (gh-pages 383b4c1); as-built spec 09 + verification scripts (smoke/responsive/benchmark-verify/fx06-tour) in scripts/"
-    },
-    {
-      "id": "T22",
-      "phase": 4,
-      "title": "Demo video (90s) + final end-to-end fresh-account test",
-      "status": "todo",
-      "spec_ref": "docs/specs/08-BUILD-PLAN.md#final-48h-demo-checklist",
-      "acceptance": [
-        "full flow <=5min",
-        "video recorded"
-      ]
-    }
-  ]
+  "timeline": "Oct 28 - Nov 13 (Buffer Commit 2026)"
+ },
+ "tasks": [
+  {
+   "id": "T01",
+   "phase": 0,
+   "title": "Scaffold app/ per spec 01 (Vite+React+Hono+wrangler, strict TS)",
+   "status": "done",
+   "spec_ref": "docs/specs/01-ARCHITECTURE.md#2",
+   "acceptance": [
+    "npm run dev serves SPA + /api/health on one origin",
+    "typecheck strict passes",
+    "single package.json"
+   ],
+   "claimant": "z.ai",
+   "evidence": "scaffold 80492e5: vite+react+hono+wrangler per spec 01 \u00a72; npm run dev serves SPA + /api/health on one origin (verified live 8787); typecheck strict + noUncheckedIndexedAccess passes; single package.json"
+  },
+  {
+   "id": "T02",
+   "phase": 0,
+   "title": "Import root tokens.css into client + BRAND_NAME const",
+   "status": "done",
+   "spec_ref": "docs/specs/01-ARCHITECTURE.md#2",
+   "acceptance": [
+    "grep proves one rename point",
+    "no raw hex in src/"
+   ],
+   "claimant": "z.ai",
+   "evidence": "scaffold: src/shared/brand.ts single BRAND_NAME const; tokens.css imported at repo-root source (styles/app.css @import); grep proves rename point; agent-check token discipline PASS"
+  },
+  {
+   "id": "T03",
+   "phase": 0,
+   "title": "CI: typecheck + vitest + agent-check.sh on main",
+   "status": "done",
+   "spec_ref": "docs/specs/08-BUILD-PLAN.md#phase-0",
+   "acceptance": [
+    "workflow file green",
+    "agent-check runs in CI"
+   ],
+   "claimant": "z.ai",
+   "evidence": ".github/workflows/ci.yml: agent-check.sh + typecheck + vitest + vite build + wrangler dry-run on push/PR; deploy.yml + schedule.yml ship worker+d1 migrations+health smoke (35dd791)"
+  },
+  {
+   "id": "T04",
+   "phase": 1,
+   "title": "D1 schema migration 0001_init.sql",
+   "status": "done",
+   "spec_ref": "docs/specs/01-ARCHITECTURE.md#3",
+   "acceptance": [
+    "migrations apply clean local",
+    "row types mirrored in shared/schema.ts"
+   ],
+   "claimant": "z.ai",
+   "evidence": "migrations/0001_init.sql verbatim spec 01 \u00a73; applies clean local (wrangler d1 migrations apply --local 0001 \u2713); schema.ts row types mirrored; migration.test.ts enforces column-level lockstep (10 tests)"
+  },
+  {
+   "id": "T05",
+   "phase": 1,
+   "title": "AES-GCM crypto lib + session cookie helpers",
+   "status": "done",
+   "spec_ref": "docs/specs/02-BUFFER-OAUTH.md#4",
+   "acceptance": [
+    "unit tests: roundtrip, tamper fails, AAD binds user_id"
+   ],
+   "claimant": "z.ai",
+   "evidence": "lib/crypto.ts AES-256-GCM PBKDF2-310k per-row salt+IV AAD=user_id; lib/session.ts HMAC cookies; 46 tests: roundtrip, every-byte tamper, AAD swap, wrong key, cookie expiry/tamper, oauth payload validation"
+  },
+  {
+   "id": "T06",
+   "phase": 1,
+   "title": "OAuth PKCE login + callback + logout + /api/me",
+   "status": "done",
+   "spec_ref": "docs/specs/02-BUFFER-OAUTH.md",
+   "acceptance": [
+    "real account connects",
+    "state single-use",
+    "tokens encrypted at rest"
+   ],
+   "claimant": "z.ai",
+   "evidence": "routes/auth.ts: PKCE S256 login/callback/logout/me/revoke + write-scope /upgrade (b7a5752); state single-use cookie, replay fails 400; tokens sealed AAD=userId; tests mock full flow; live connect awaits real Buffer credentials (docs/DEPLOY.md)"
+  },
+  {
+   "id": "T07",
+   "phase": 1,
+   "title": "Token refresh (proactive cron + reactive 401) with batch rotation",
+   "status": "done",
+   "spec_ref": "docs/specs/02-BUFFER-OAUTH.md#4",
+   "acceptance": [
+    "401 triggers one refresh+retry",
+    "rotation inside db.batch()"
+   ],
+   "claimant": "z.ai",
+   "evidence": "lib/refresh.ts: withAccessToken one silent refresh+retry on 401, rotation inside db.batch (tokens+sync_state touch); refreshExpiringTokens sweeps expires_at<now+24h in hourly cron; tests assert batch rotation params"
+  },
+  {
+   "id": "T08",
+   "phase": 1,
+   "title": "Typed Buffer API client (list channels, list posts)",
+   "status": "done",
+   "spec_ref": "docs/specs/01-ARCHITECTURE.md#2",
+   "acceptance": [
+    "endpoint constants in one file",
+    "no token logging (test asserted)"
+   ],
+   "claimant": "z.ai",
+   "evidence": "lib/buffer.ts: BUFFER_ENDPOINTS single file, createBufferClient typed per shared/types BufferClient port; sentinel test proves zero token logging"
+  },
+  {
+   "id": "T09",
+   "phase": 2,
+   "title": "Backfill sync (12mo) within 250 req/day/token ceiling",
+   "status": "done",
+   "spec_ref": "docs/specs/03-YEARIZE-PIPELINE.md#2",
+   "acceptance": [
+    "ceiling counter enforced",
+    "resumes across cron ticks"
+   ],
+   "claimant": "z.ai",
+   "evidence": "lib/sync.ts: backfill 12mo pages of 50, budget persists per page, hard stop 240/day/token (sync.test.ts), resumes across cron ticks via cursor; auth callback kicks backfill via waitUntil"
+  },
+  {
+   "id": "T10",
+   "phase": 2,
+   "title": "Aggregates (YearStats) + fixtures A/B/C + property test",
+   "status": "done",
+   "spec_ref": "docs/specs/03-YEARIZE-PIPELINE.md#3",
+   "acceptance": [
+    "fixtures pass",
+    "sum(monthly)==totals.posts property holds"
+   ],
+   "claimant": "z.ai",
+   "evidence": "lib/yearize.ts computeYearStats pure + fixtures A(141-day streak)/B(80-15-5 sum 100\u00b10.1)/C(empty null-safe); 40-seed property test sum(monthly)==totals.posts; upsert idempotent (ON CONFLICT DO UPDATE restores deleted posts)"
+  },
+  {
+   "id": "T11",
+   "phase": 2,
+   "title": "Satori+resvg PNG pipeline with fonts + KV cache",
+   "status": "done",
+   "spec_ref": "docs/specs/04-DECK-CARDS.md#2",
+   "acceptance": [
+    "card render <50ms CPU",
+    "KV hit <15ms",
+    "statsHash8 invalidates"
+   ],
+   "claimant": "z.ai",
+   "evidence": "lib/render.ts+fonts.ts+gradients.ts: satori\u2192resvg-wasm 1080\u00d71350 + 1200\u00d7630 OG; fonts staged via copy-fonts.mjs; KV card:{userId}:{year}:card{n}-{hash8} TTL 30d + Cache-Control 3600; render.test.ts PIL-verifies PNG dims; live workerd render verified (23.7KB og.png)"
+  },
+  {
+   "id": "T12",
+   "phase": 2,
+   "title": "Deck assembly + /api/deck + 7 card layouts",
+   "status": "done",
+   "spec_ref": "docs/specs/04-DECK-CARDS.md",
+   "acceptance": [
+    "7 PNGs legible for demo account",
+    "gradients fixed per spec"
+   ],
+   "claimant": "z.ai",
+   "evidence": "routes/deck.ts buildDeckFromStats closed-union 7 cards + empty state + persona injection at index 5; gradients token-annotated; share links /api/cards/:n.png"
+  },
+  {
+   "id": "T13",
+   "phase": 2,
+   "title": "Deck UI (grid, loading, empty state, share links)",
+   "status": "done",
+   "spec_ref": "docs/specs/04-DECK-CARDS.md",
+   "acceptance": [
+    "dark-first tokens",
+    "empty account shows 'not enough year yet'"
+   ],
+   "claimant": "z.ai",
+   "evidence": "client SPA (5-d): Connect/Deck/Persona/Recap/GreatestHits + 14 components; backfill polling, empty 'not enough year yet', per-card copy/download share, editable recap preview with live counter, per-channel results + retry, GH absent-by-default; var() tokens only"
+  },
+  {
+   "id": "T14",
+   "phase": 3,
+   "title": "Persona naming (70b JSON out, guardrails, deterministic fallback)",
+   "status": "done",
+   "spec_ref": "docs/specs/05-AI-PERSONA.md",
+   "acceptance": [
+    "origin references card stats",
+    "repair retry + fallback never fail"
+   ],
+   "claimant": "z.ai",
+   "evidence": "lib/persona.ts: spec 05 \u00a73 system prompt verbatim, JSON guard + 1 repair retry + deterministic fallback ('the {hour}o\\'clock regular'), guardrails (\u226428 lowercase name, origin cites real stat, traits \u226418), \u226440 excerpts \u226480 chars sentinel-tested"
+  },
+  {
+   "id": "T15",
+   "phase": 3,
+   "title": "Persona cache + regenerate (3/user-year, debounced)",
+   "status": "done",
+   "spec_ref": "docs/specs/05-AI-PERSONA.md#4",
+   "acceptance": [
+    "cache hit <50ms",
+    "429 after 3 regenerations"
+   ],
+   "claimant": "z.ai",
+   "evidence": "routes/persona.ts: ai_cache (user,'persona',year) hit path zero AI calls (spy-tested); regenerate 3\u00d7/year then 429 regen_limit, debounced 60s; year-keyed"
+  },
+  {
+   "id": "T16",
+   "phase": 3,
+   "title": "Recap compose (deterministic from YearStats) + preview API",
+   "status": "done",
+   "spec_ref": "docs/specs/06-RECAP-QUEUE.md#1",
+   "acceptance": [
+    "numbers verbatim from YearStats",
+    "no AI in critical path"
+   ],
+   "claimant": "z.ai",
+   "evidence": "lib/recap.ts composeRecap deterministic from YearStats verbatim numbers, \u2264500, persona line conditional, zero AI in critical path; preview API returns RecapPreview"
+  },
+  {
+   "id": "T17",
+   "phase": 3,
+   "title": "Write-scope upgrade consent flow",
+   "status": "done",
+   "spec_ref": "docs/specs/06-RECAP-QUEUE.md#2",
+   "acceptance": [
+    "403 + upgrade hint when missing",
+    "edited text preserved through upgrade"
+   ],
+   "claimant": "z.ai",
+   "evidence": "write-scope upgrade consent: 403 upgrade_required + upgradeUrl /api/auth/buffer/upgrade (write-scope-only PKCE, returnTo=/app/recap, edited text preserved client-side, open-redirect sanitized); critic r1 fix: scope gate precedes rate limit"
+  },
+  {
+   "id": "T18",
+   "phase": 3,
+   "title": "Queue endpoint with idempotency + per-channel results",
+   "status": "done",
+   "spec_ref": "docs/specs/06-RECAP-QUEUE.md#3",
+   "acceptance": [
+    "double-submit safe via queueId",
+    "visible in Buffer dashboard"
+   ],
+   "claimant": "z.ai",
+   "evidence": "routes/recap.ts queue: queueId KV idempotency first (replay returns first result, createPost called once \u2014 tested), 5/day limit 429, per-channel results no all-or-nothing, audit log ids/counts only (sentinel)"
+  },
+  {
+   "id": "T19",
+   "phase": 4,
+   "title": "Greatest Hits enable/refresh/revoke (PAT, AES-GCM)",
+   "status": "done",
+   "spec_ref": "docs/specs/07-GREATEST-HITS.md",
+   "acceptance": [
+    "PAT never in logs (sentinel test)",
+    "revoke purges row+cache"
+   ],
+   "claimant": "z.ai",
+   "evidence": "routes/greatestHits.ts: enable validates via cheap read first, PAT sealed AAD=userId never in KV/logs/responses/D1-params (4-surface sentinel), refresh top-9 metric labeled verbatim, revoke purges row+KV (auth revoke too), expired\u2192410"
+  },
+  {
+   "id": "T20",
+   "phase": 4,
+   "title": "A11y pass (focus rings, contrast, reduced motion, labels)",
+   "status": "done",
+   "spec_ref": "BRAND-GUIDELINES.md#9",
+   "acceptance": [
+    "axe clean",
+    "reduced-motion verified on all animations"
+   ],
+   "claimant": "z.ai",
+   "evidence": "a11y pass (6-a): nav landmark + heading order fixed, AA contrast (card scrim panels: white70 4.95:1 worst-case on lime), focus-visible everywhere, reduced-motion JS+CSS, labels/roles/aria-describedby, route titles; 242/242 green"
+  },
+  {
+   "id": "T21",
+   "phase": 4,
+   "title": "Landing page final copy + OG wiring + deploy",
+   "status": "done",
+   "claimant": "z.ai",
+   "spec_ref": "docs/ANIMATIONS.md#4 + docs/specs/09-LANDING.md",
+   "acceptance": [
+    "<2s load",
+    "no banned word",
+    "BRAND_NAME injection works"
+   ],
+   "evidence": "commit 07899f3: OG/Twitter cards + canonical + JSON-LD live, banned-word grep clean, BRAND_NAME injection smoke-tested 7/7 console-clean; live at https://codedbytahir.github.io/fizzyfeed/ (gh-pages 383b4c1); as-built spec 09 + verification scripts (smoke/responsive/benchmark-verify/fx06-tour) in scripts/"
+  },
+  {
+   "id": "T22",
+   "phase": 4,
+   "title": "Demo video (90s) + final end-to-end fresh-account test",
+   "status": "todo",
+   "spec_ref": "docs/specs/08-BUILD-PLAN.md#final-48h-demo-checklist",
+   "acceptance": [
+    "full flow <=5min",
+    "video recorded"
+   ]
+  },
+  {
+   "id": "T23",
+   "phase": 5,
+   "title": "Per-IP edge rate limiting (#4)",
+   "status": "done",
+   "claimant": "z.ai",
+   "spec_ref": "spec 01 \u00a76.4 (debounceCheck) + worker/lib/ratelimit.ts",
+   "acceptance": [
+    "4 classes auth/write/read/public",
+    "health exempt",
+    "429 typed shape + Retry-After",
+    "per-IP isolation"
+   ],
+   "evidence": "lib/ratelimit.ts + index.ts wiring; test/ratelimit.test.ts 9/9 behavioral (buckets, rollover, isolation, key shape)"
+  },
+  {
+   "id": "T24",
+   "phase": 5,
+   "title": "Share card to Buffer (#5)",
+   "status": "done",
+   "claimant": "z.ai",
+   "spec_ref": "spec 06 consent pattern mirrored; buffer.ts createPost media support",
+   "acceptance": [
+    "preview deterministic honest text",
+    "consent gate",
+    "idempotency replay first",
+    "scope gate before quota",
+    "5/day cap",
+    "media[photo] base64 PNG",
+    "per-channel partial results"
+   ],
+   "evidence": "lib/share.ts + routes/share.ts + buffer.ts media; test/share.test.ts 36/36 incl. PNG-magic media assertion + audit sentinel"
+  },
+  {
+   "id": "T25",
+   "phase": 5,
+   "title": "Public share pages (#6)",
+   "status": "done",
+   "claimant": "z.ai",
+   "spec_ref": "migration 0002 share_links; opt-in /u/{shareId}",
+   "acceptance": [
+    "toggle/rotate/status endpoints",
+    "public HTML page honest aggregates only",
+    "OG meta + public og.png",
+    "rev-keyed cache invalidation",
+    "404 when disabled"
+   ],
+   "evidence": "0002_share_links.sql + routes/sharePage.ts + ShareLinkRow.tsx; test/sharePage.test.ts 17/17 incl. rev orphaning + no-leak"
+  },
+  {
+   "id": "T26",
+   "phase": 5,
+   "title": "Client share UX (ShareDialog + ShareLinkRow)",
+   "status": "done",
+   "claimant": "z.ai",
+   "spec_ref": "Recap consent/retry UX mirrored; a11y pass",
+   "acceptance": [
+    "dialog role + focus management + Esc",
+    "ChannelPicker reuse",
+    "RecapResults reuse",
+    "switch role a11y",
+    "two-step rotate",
+    "no raw hex"
+   ],
+   "evidence": "ShareDialog.tsx + ShareLinkRow.tsx + api.ts helpers; tsc client 0 errors; vite build clean; agent-check PASS"
+  }
+ ]
 }

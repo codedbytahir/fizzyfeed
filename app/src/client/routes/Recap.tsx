@@ -34,7 +34,6 @@ export default function Recap() {
   const [pending, setPending] = useState(false);
   const [results, setResults] = useState<RecapChannelResult[] | null>(null);
   const [failure, setFailure] = useState<ApiFailure | null>(null);
-  const queueIdRef = useRef<string | null>(null);
   const hydratedRef = useRef(false);
 
   // hydrate once from the server-composed draft; edits then live in state only
@@ -55,21 +54,22 @@ export default function Recap() {
     );
   };
 
+  // every submit is a distinct intent → fresh idempotency key (critic r1,
+  // major-2): a retry after partial failure targets only the failed channels,
+  // so re-execution can't double-post, and the fresh key never replays a
+  // stored failure. The key still guards network-level retries of this attempt.
   const submit = async (channelIds: string[]) => {
     if (text === null || channelIds.length === 0 || pending) return;
     setPending(true);
     setFailure(null);
-    if (!queueIdRef.current) queueIdRef.current = newQueueId();
     try {
       const res = await postJson<RecapQueueResult>("/api/recap/queue", {
         text,
         channelIds,
         consent: true,
-        queueId: queueIdRef.current,
+        queueId: newQueueId(),
       });
-      const merged = merge(res.results);
-      setResults(merged);
-      if (merged.every((r) => r.ok)) queueIdRef.current = null; // fresh id for any future re-queue
+      setResults(merge(res.results));
     } catch (err: unknown) {
       setFailure(toFailure(err));
     } finally {

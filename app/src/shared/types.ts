@@ -33,6 +33,7 @@ export interface CreatePostInput {
   text: string;
   scheduledAt?: number; // unix seconds; omit → Buffer picks next free slot
   now?: boolean;
+  media?: { photoBase64: string }; // base64 PNG attached as media[photo] (card share)
 }
 
 export interface BufferProfile {
@@ -160,6 +161,20 @@ export interface RecapQueueResult {
   results: RecapChannelResult[];
 }
 
+// ── Card share (deck card → Buffer post with media) ──────────────────────────
+
+export interface SharePreview {
+  cardN: number;
+  text: string; // ≤ 500 chars, deterministic per card kind
+  channels: BufferChannel[];
+  needsWriteScope: boolean;
+}
+
+export interface ShareQueueResult {
+  queueId: string;
+  results: RecapChannelResult[];
+}
+
 // ── Greatest Hits (spec 07) ─────────────────────────────────────────────────
 
 export interface GreatestHit {
@@ -192,4 +207,12 @@ export interface YearizeStatus {
   backfillDone: boolean;
   lastPolledAt: number;
   postsIndexed: number;
+}
+
+// ── Public share page (feature 6) ───────────────────────────────────────────
+
+export interface ShareStatus {
+  enabled: boolean;
+  shareId: string | null;
+  url: string | null;
 }

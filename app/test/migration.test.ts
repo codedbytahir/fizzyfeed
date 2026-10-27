@@ -27,6 +27,7 @@ const fs = loadFs();
 // workers-types' ImportMeta has no `url`, but vite-node always provides it at runtime
 const hereUrl = (import.meta as unknown as { url: string }).url;
 const sql = fs.readFileSync(new URL("../migrations/0001_init.sql", hereUrl).pathname, "utf8");
+const sql2 = fs.readFileSync(new URL("../migrations/0002_share_links.sql", hereUrl).pathname, "utf8");
 const schemaSrc = fs.readFileSync(new URL("../src/shared/schema.ts", hereUrl).pathname, "utf8");
 
 interface TableDef {
@@ -45,6 +46,7 @@ const TABLE_TO_ROW: Record<string, string> = {
   sync_state: "SyncStateRow",
   metrics_tokens: "MetricsTokenRow",
   ai_cache: "AiCacheRow",
+  share_links: "ShareLinkRow",
 };
 
 function parseCreateTables(source: string): Map<string, TableDef> {
@@ -85,12 +87,12 @@ function interfaceProps(body: string): string[] {
   return props;
 }
 
-const tables = parseCreateTables(sql);
+const tables = parseCreateTables(`${sql}\n${sql2}`);
 
 describe("0001_init.sql (spec 01 §3)", () => {
   it("declares exactly the 6 tables of the spec", () => {
     expect((sql.match(/CREATE TABLE /g) ?? []).length).toBe(6);
-    expect([...tables.keys()].sort()).toEqual(
+    expect([...parseCreateTables(sql).keys()].sort()).toEqual(
       ["ai_cache", "buffer_tokens", "metrics_tokens", "posts", "sync_state", "users"]
     );
   });
@@ -116,6 +118,21 @@ describe("0001_init.sql (spec 01 §3)", () => {
     if (metrics) {
       expect(new RegExp("\\bpat_enc\\s+BLOB\\b").test(metrics.body)).toBe(true);
     }
+  });
+});
+
+describe("0002_share_links.sql (feature 6)", () => {
+  it("declares exactly the share_links table", () => {
+    expect([...parseCreateTables(sql2).keys()]).toEqual(["share_links"]);
+  });
+
+  it("makes share_id a unique capability slug and enabled a strict 0/1", () => {
+    const def = tables.get("share_links");
+    expect(def, "0002 must declare share_links").toBeDefined();
+    if (!def) return;
+    expect(def.body).toMatch(/\bshare_id\s+TEXT\s+NOT\s+NULL\s+UNIQUE\b/);
+    expect(def.body).toMatch(/\benabled\s+INTEGER[\s\S]*CHECK\s*\(enabled\s+IN\s*\(0,1\)\)/);
+    expect(def.body).toMatch(/\brev\s+INTEGER\s+NOT\s+NULL\s+DEFAULT\s+0\b/);
   });
 });
 

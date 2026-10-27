@@ -669,6 +669,214 @@ body {
   margin-top: 12px;
 }
 
+/* ── share: per-card trigger + dialog + public link row ─────────────────── */
+
+/* per-card share trigger sits on the existing card actions line (right end) */
+.deck-cell {
+  position: relative;
+}
+
+.deck-cell__share {
+  position: absolute;
+  right: 4px;
+  bottom: 0; /* same box as the .card__actions linkbtns → one visual row */
+}
+
+.share-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: color-mix(in srgb, var(--ink-950) 74%, transparent);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+}
+
+.share-dialog {
+  width: min(560px, 100%);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  background: var(--ink-900);
+  /* dialog boundary ≥3:1 vs ink-900 (WCAG 1.4.11) — same mix as .btn--ghost */
+  border: 1px solid color-mix(in srgb, var(--ink-400) 50%, var(--ink-700));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.share-dialog__head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.share-dialog__img {
+  display: block;
+  align-self: flex-start;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 280px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--ink-800);
+  margin: 4px 0 8px;
+}
+
+.share-dialog .textarea {
+  min-height: 120px;
+}
+
+.share-dialog__consent {
+  margin-top: 2px;
+}
+
+.share-dialog__actions {
+  width: 100%;
+}
+
+.share-dialog .recap-done {
+  align-self: stretch;
+}
+
+/* public link row */
+
+.share-link-row {
+  margin-top: 24px;
+  border: 1px solid var(--ink-800);
+  background: var(--ink-900);
+  border-radius: var(--radius-lg);
+  padding: 14px 20px 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.share-link-row__info {
+  flex: 1 1 280px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.share-link-row__label {
+  margin: 6px 0 4px;
+}
+
+.share-link-row__bar {
+  width: 140px;
+  margin: 4px 0 8px;
+}
+
+.share-link-row__note {
+  margin: 6px 0 4px;
+}
+
+.share-link-row__hint {
+  margin: 0 0 4px;
+  font-size: 13.5px;
+  color: var(--ink-300);
+  max-width: 56ch;
+}
+
+.share-link-row__linkline {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.share-link-row__url {
+  font: 500 13px var(--font-mono);
+  color: var(--electric-300);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.share-link-row__url:hover,
+.share-link-row__url:focus-visible {
+  color: var(--electric-200);
+  text-decoration: underline;
+}
+
+.share-link-row__confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.share-link-row__q {
+  font: 500 13px var(--font-mono);
+  color: var(--warning);
+}
+
+.share-link-row__status {
+  margin: 0;
+  flex: 1 1 100%;
+  font: 500 12.5px/1.6 var(--font-mono);
+  color: var(--volt-400);
+}
+
+.share-link-row__status--err {
+  color: var(--danger);
+}
+
+/* a11y switch — track ≥3:1 vs ink-900 via ink-400 border (same law as .channel__box) */
+.switch {
+  position: relative;
+  flex: none;
+  width: 46px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--ink-400);
+  background: var(--ink-950);
+  cursor: pointer;
+  padding: 0;
+  transition:
+    background var(--dur-hover) var(--ease-out-quart),
+    border-color var(--dur-hover) var(--ease-out-quart);
+}
+
+.switch[aria-checked="true"] {
+  background: var(--electric-500);
+  border-color: var(--electric-400);
+}
+
+.switch:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.switch__knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ink-50);
+  transition: transform var(--dur-hover) var(--ease-out-quart);
+}
+
+.switch[aria-checked="true"] .switch__knob {
+  transform: translateX(20px);
+}
+
 /* ── connect ────────────────────────────────────────────────────────────── */
 
 .connect {
@@ -865,4 +1073,17 @@ body {
   .btn--primary:active {
     transform: none;
   }
+}
+
+/* visually-hidden (screen-reader only) utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

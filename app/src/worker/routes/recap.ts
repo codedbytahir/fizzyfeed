@@ -1,8 +1,8 @@
 /**
  * One-click recap (spec 06): GET /preview composes the deterministic recap
- * text, lists channels, and reports write-scope state; POST /queue is the
- * product's SINGLE Buffer write — grep-proof: the only createPost call site
- * in the entire codebase lives in this file (spec 06 §5).
+ * text, lists channels, and reports write-scope state; POST /queue is a
+ * consent-gated Buffer write — invariant: the consent-gated createPost call
+ * sites are recap.ts (recap queue) + share.ts (card share).
  *
  * Queue semantics (spec 06 §3): client-generated queueId + 24h KV
  * idempotency so a double-submit replays the first result instead of

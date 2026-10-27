@@ -1,16 +1,29 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import type { Deck as DeckData, YearizeStatus } from "@shared/types";
+import type { CardData, Deck as DeckData, YearizeStatus } from "@shared/types";
 import { apiFetch, formatCount, useApi } from "../lib/api";
 import { useMe } from "../lib/me";
 import { BRAND_NAME } from "@shared/brand";
-import CardSurface from "../components/CardSurface";
+import CardSurface, { pad2 } from "../components/CardSurface";
 import EmptyState from "../components/EmptyState";
 import ErrorState from "../components/ErrorState";
 import Loading from "../components/Loading";
+import ShareDialog from "../components/ShareDialog";
+import ShareLinkRow from "../components/ShareLinkRow";
 import StatCounter from "../components/StatCounter";
 import StatusLine from "../components/StatusLine";
 import Yearline from "../components/Yearline";
+
+/** Mirrors the private map in CardSurface (not exported there). */
+const KIND_LABELS = {
+  kickoff: "kickoff",
+  rhythm: "rhythm",
+  streaks: "streaks",
+  mix: "the mix",
+  peaks: "peaks",
+  persona: "alter ego",
+  recap: "the recap",
+} as const satisfies Record<CardData["kind"], string>;
 
 /** Chapter slot 6 while the alter ego is missing (spec 04 §1). */
 function PersonaPlaceholder() {
@@ -49,7 +62,21 @@ export default function Deck() {
 
   const [status, setStatus] = useState<YearizeStatus | null>(null);
   const [note, setNote] = useState<string | null>(null);
+  const [shareCard, setShareCard] = useState<number | null>(null);
   const noteTimer = useRef<number | undefined>(undefined);
+  const shareTriggerRef = useRef<HTMLButtonElement | null>(null);
+
+  const openShare = useCallback((n: number, trigger: HTMLButtonElement) => {
+    shareTriggerRef.current = trigger;
+    setShareCard(n);
+  }, []);
+
+  // the dialog closes → focus returns to the trigger that opened it (modal law)
+  const closeShare = useCallback(() => {
+    setShareCard(null);
+    shareTriggerRef.current?.focus();
+    shareTriggerRef.current = null;
+  }, []);
 
   // 401 → back to the connect screen
   useEffect(() => {
@@ -128,10 +155,21 @@ export default function Deck() {
         <StatusLine message={note} />
         <div className="deck-grid">
           {deck.data.cards.map((card) => (
-            <CardSurface key={card.n} card={card} onNote={showNote} />
+            <div className="deck-cell" key={card.n}>
+              <CardSurface card={card} onNote={showNote} />
+              <button
+                type="button"
+                className="linkbtn deck-cell__share"
+                aria-label={`share card ${pad2(card.n)} — ${KIND_LABELS[card.kind]}`}
+                onClick={(e) => openShare(card.n, e.currentTarget)}
+              >
+                share
+              </button>
+            </div>
           ))}
           {!deck.data.persona && <PersonaPlaceholder />}
         </div>
+        <ShareLinkRow />
         <div className="deck-foot">
           <Link className="linkbtn" to="/app/greatest-hits">
             greatest hits — your real top posts, opt-in
@@ -175,6 +213,7 @@ export default function Deck() {
         )}
       </header>
       {body}
+      {shareCard !== null && <ShareDialog cardN={shareCard} onClose={closeShare} />}
     </div>
   );
 }

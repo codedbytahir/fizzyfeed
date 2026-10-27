@@ -65,3 +65,11 @@ export interface AiCacheRow {
   payload_json: string;
   created_at: number;
 }
+
+export interface ShareLinkRow {
+  user_id: string;
+  share_id: string;
+  enabled: number; // 0 | 1 (CHECK constraint in 0002_share_links.sql)
+  rev: number; // bumped on every toggle/rotate — public PNG cache keys include it
+  created_at: number; // unix seconds
+}

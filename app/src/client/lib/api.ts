@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import type { ShareQueueResult, ShareStatus } from "@shared/types";
 
 /**
  * Tiny typed fetch layer (spec 01 §5): every /api failure is
@@ -68,6 +69,36 @@ export function postJson<T>(url: string, body: unknown): Promise<T> {
 export function newQueueId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
   return `q-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+}
+
+// ── share endpoints (card share dialog + public link row) ───────────────────
+
+export interface QueueShareInput {
+  card: number;
+  text: string;
+  channelIds: string[];
+  consent: boolean;
+  queueId: string;
+}
+
+/** POST /api/share/queue — per-channel queueing, idempotent on queueId. */
+export function queueShareCard(input: QueueShareInput): Promise<ShareQueueResult> {
+  return postJson<ShareQueueResult>("/api/share/queue", input);
+}
+
+/** GET /api/share-link/status — public mirror-link state for the deck row. */
+export function getShareStatus(): Promise<ShareStatus> {
+  return apiFetch<ShareStatus>("/api/share-link/status");
+}
+
+/** POST /api/share-link/toggle — enable or disable the public link. */
+export function toggleShareLink(enabled: boolean): Promise<ShareStatus> {
+  return postJson<ShareStatus>("/api/share-link/toggle", { enabled });
+}
+
+/** POST /api/share-link/rotate — mint a fresh shareId; the old link dies. */
+export function rotateShareLink(): Promise<ShareStatus> {
+  return postJson<ShareStatus>("/api/share-link/rotate", {});
 }
 
 // ── useApi: get-once hook with manual reload ────────────────────────────────

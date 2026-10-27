@@ -3,8 +3,11 @@
  *
  * Endpoint constants live HERE and only here (spec 02 §1). The client is a
  * factory: auth.ts and refresh.ts build it per-request from env, so no client
- * id/secret ever appears in code. This module never logs — tokens and post
- * text must never reach the console (spec 01 §5).
+ * id/secret ever appears in code. createPost accepts an optional
+ * input.media.photoBase64 and forwards it as the `media[photo]` form field
+ * (card share path — routes/share.ts attaches the rendered card PNG). This
+ * module never logs — tokens and post text must never reach the console
+ * (spec 01 §5).
  *
  * Error mapping: any upstream non-2xx or network failure throws BufferApiError.
  * A Buffer 401 keeps status 401 (refresh.ts keys the reactive refresh off it);
@@ -269,6 +272,8 @@ export function createBufferClient(opts: BufferClientOpts): BufferClient {
       form.append("profile_ids[]", input.channelId);
       if (input.scheduledAt !== undefined) form.set("scheduled_at", String(input.scheduledAt));
       if (input.now) form.set("now", "true");
+      // card share: the rendered card PNG travels as base64 in media[photo]
+      if (input.media) form.set("media[photo]", input.media.photoBase64);
       const res = await bufferFetch(url.toString(), { method: "POST", headers: FORM_HEADERS, body: form.toString() }, "post create");
       const body = asRecord(await bufferJson(res, "post create"));
       const id = extractCreatedPostId(body);
