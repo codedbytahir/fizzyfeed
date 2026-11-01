@@ -30,103 +30,105 @@ import { readSessionUserId } from "../lib/session";
 import { getCardPng } from "./cards";
 import { buildDeck } from "./deck";
 
-// ── brand palette for the inline page CSS ────────────────────────────────────
+// ── theme palette for the inline page CSS (Hallmark theme "Hum") ─────────────
 //
 // The share page ships zero external CSS (it must render anywhere the link is
 // pasted), so the palette is re-declared from tokens.css into the template's
 // custom properties. Same documented exception as lib/gradients.ts
-// (AGENTS.md §1.3): every hex literal carries its token provenance comment.
+// (AGENTS.md §1.3): every hex literal carries its token provenance comment;
+// scripts/oklch2hex.py regenerates the values.
 
-const TOKEN_INK_950 = "#05070E"; /* token: ink-950 */
-const TOKEN_INK_800 = "#131A2B"; /* token: ink-800 */
-const TOKEN_INK_700 = "#1F2940"; /* token: ink-700 */
-const TOKEN_ELECTRIC_500 = "#0A5CFF"; /* token: electric-500 */
-const TOKEN_VOLT_500 = "#00D5FF"; /* token: volt-500 */
-const TOKEN_VIOLET_500 = "#6333FF"; /* token: violet-500 */
+const TOKEN_PAPER = "#F7F5EC"; /* token: --color-paper */
+const TOKEN_PAPER_2 = "#F0EDE0"; /* token: --color-paper-2 */
+const TOKEN_CARD = "#FCFBF6"; /* token: --color-card */
+const TOKEN_INK = "#12161C"; /* token: --color-ink */
+const TOKEN_INK_2 = "#272C32"; /* token: --color-ink-2 */
+const TOKEN_MUTED = "#565B63"; /* token: --color-muted */
+const TOKEN_RULE = "#D7D4C9"; /* token: --color-rule */
+const TOKEN_EDGE = "#D2C6AA"; /* token: --color-edge */
+const TOKEN_PEAR = "#F7D21A"; /* token: --color-accent */
+const TOKEN_PEAR_DEEP = "#C9A000"; /* token: --color-accent-deep */
+const TOKEN_BLUE = "#0064BE"; /* token: --color-accent-2 */
 
 const PAGE_CSS = `
 :root {
-  --ink-950: ${TOKEN_INK_950};
-  --ink-800: ${TOKEN_INK_800};
-  --ink-700: ${TOKEN_INK_700};
-  --electric-500: ${TOKEN_ELECTRIC_500};
-  --volt-500: ${TOKEN_VOLT_500};
-  --violet-500: ${TOKEN_VIOLET_500};
-  --text-hi: rgba(255,255,255,0.92);
-  --text-body: rgba(255,255,255,0.85);
-  --text-dim: rgba(255,255,255,0.7);
-  --grad-brand: linear-gradient(135deg, var(--violet-500) 0%, var(--electric-500) 45%, var(--volt-500) 100%);
+  --paper: ${TOKEN_PAPER};
+  --paper-2: ${TOKEN_PAPER_2};
+  --card: ${TOKEN_CARD};
+  --ink: ${TOKEN_INK};
+  --ink-2: ${TOKEN_INK_2};
+  --muted: ${TOKEN_MUTED};
+  --rule: ${TOKEN_RULE};
+  --edge: ${TOKEN_EDGE};
+  --pear: ${TOKEN_PEAR};
+  --pear-deep: ${TOKEN_PEAR_DEEP};
+  --blue: ${TOKEN_BLUE};
 }
 * { box-sizing: border-box; }
-html { background: var(--ink-950); }
+html { background: var(--paper); }
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--ink-950);
-  color: var(--text-body);
-  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--paper);
+  color: var(--ink-2);
+  font-family: "Chillax", ui-rounded, system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 @font-face {
-  font-family: "Space Grotesk";
-  src: url("/fonts/space-grotesk-latin-700-normal.woff") format("woff");
-  font-weight: 700; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: "Inter";
-  src: url("/fonts/inter-latin-400-normal.woff") format("woff");
-  font-weight: 400; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: "Inter";
-  src: url("/fonts/inter-latin-600-normal.woff") format("woff");
-  font-weight: 600; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: "JetBrains Mono";
-  src: url("/fonts/jetbrains-mono-latin-500-normal.woff") format("woff");
+  font-family: "Chillax";
+  src: url("/fonts/chillax-500.woff2") format("woff2");
   font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Chillax";
+  src: url("/fonts/chillax-600.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
 }
 .page { max-width: 960px; margin: 0 auto; padding: 56px 24px 80px; }
 .head { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
-.dot { width: 12px; height: 12px; border-radius: 999px; flex: none; background: var(--grad-brand); }
+.dot { width: 12px; height: 12px; border-radius: 999px; flex: none; background: var(--pear); box-shadow: inset -1px -2px 0 var(--pear-deep); }
 .brand {
-  font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
-  font-weight: 700; font-size: 18px; letter-spacing: -0.01em; color: var(--text-hi);
+  font-weight: 600; font-size: 18px; letter-spacing: -0.01em; color: var(--ink);
 }
 h1 {
   margin: 0;
-  font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
-  font-weight: 700;
+  font-weight: 600;
   font-size: clamp(2.375rem, 6vw, 4.75rem);
   line-height: 1.04;
   letter-spacing: -0.03em;
-  color: var(--text-hi);
+  color: var(--ink);
 }
 .lede { max-width: 34em; margin: 20px 0 0; font-size: 17px; line-height: 1.6; }
 .stats {
-  display: grid; gap: 12px;
+  display: grid; gap: 14px;
   grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
   margin: 40px 0 56px;
 }
-.stat { background: var(--ink-800); border: 1px solid var(--ink-700); border-radius: 22px; padding: 18px 20px; }
-.stat .v {
-  font-family: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
-  font-weight: 500; font-size: 26px; font-variant-numeric: tabular-nums; color: var(--text-hi);
+.stat {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: inset 0 0 0 1px var(--rule), inset 0 1.5px 0 #FEFCF8, 0 5px 0 0 var(--edge);
 }
-.stat .l { margin-top: 6px; font-size: 13px; color: var(--text-dim); }
+.stat .v {
+  font-weight: 600; font-size: 26px; font-variant-numeric: tabular-nums; color: var(--ink);
+}
+.stat .l { margin-top: 6px; font-size: 13px; color: var(--muted); }
 .cards { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-.cards img { display: block; width: 100%; height: auto; border-radius: 28px; background: var(--ink-800); }
+.cards img { display: block; width: 100%; height: auto; border-radius: 28px; background: var(--paper-2); }
 .cta-row { margin: 56px 0 0; }
 .cta {
   display: inline-block;
-  padding: 14px 28px;
-  border-radius: 999px;
-  background: var(--grad-brand);
-  color: var(--ink-950);
+  padding: 16px 30px;
+  border-radius: 16px;
+  background: var(--pear);
+  color: var(--ink);
   font-weight: 600; font-size: 15px; text-decoration: none;
+  box-shadow: inset 0 1.5px 0 #FEFCF8, 0 5px 0 0 var(--pear-deep);
 }
-.cta:hover, .cta:focus-visible { filter: brightness(1.08); }
+.cta:hover { translate: 0 -2px; box-shadow: inset 0 1.5px 0 #FEFCF8, 0 7px 0 0 var(--pear-deep); }
+.cta:active { translate: 0 3px; box-shadow: inset 0 1.5px 0 #FEFCF8, 0 1px 0 0 var(--pear-deep); }
+.cta:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 @media (prefers-reduced-motion: no-preference) {
   .cards img { transition: transform 160ms ease; }
   .cards img:hover { transform: translateY(-4px); }

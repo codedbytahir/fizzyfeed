@@ -4,7 +4,7 @@ import type { Deck as DeckData, YearizeStatus } from "@shared/types";
 import { apiFetch, formatCount, useApi } from "../lib/api";
 import { useMe } from "../lib/me";
 import { BRAND_NAME } from "@shared/brand";
-import CardSurface from "../components/CardSurface";
+import CardSurface, { chapterOverline } from "../components/CardSurface";
 import EmptyState from "../components/EmptyState";
 import ErrorState from "../components/ErrorState";
 import Loading from "../components/Loading";
@@ -19,11 +19,11 @@ function PersonaPlaceholder() {
   return (
     <article className="card">
       <div className="card__face card__face--ghost">
-        <p className="card__overline">chapter 06 — alter ego</p>
+        <p className="card__overline">{chapterOverline({ n: 6, kind: "persona" })}</p>
         <div className="card__body">
           <h2 className="card__headline">naming you…</h2>
           <p className="card__caption">
-            this slot waits for your alter ego — the deck is complete either way.
+            this slot waits for your alter ego. the deck is complete either way.
           </p>
           <Link className="linkbtn" to="/app/persona">
             name my alter ego

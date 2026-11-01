@@ -4,19 +4,21 @@ import { BRAND_NAME } from "@shared/brand";
 import CardBody from "./CardBody";
 
 /**
- * The seven fixed card gradients (T13 mapping) — referenced straight from
- * tokens.css so client drift is impossible (AGENTS.md §1.3). Text stays white
- * on every face, including fizz, per brand law; the --card-scrim carries AA.
- * The PNG renderer mirrors the same stops in worker/lib/gradients.ts.
+ * One solid card-stock sheet per chapter (theme: Hum) — fills reference the
+ * deck sheet tokens in tokens.css so client drift is impossible (AGENTS.md
+ * §1.3). Sheets never blend: no gradient anywhere on a face. Ink text sits on
+ * every sheet except the blue one (fringe/paper text, set in cards.css from
+ * data-gradient). The PNG renderer mirrors the same fills in
+ * worker/lib/gradients.ts.
  */
-const GRADIENTS = {
-  bolt: "var(--grad-bolt)",
-  aurora: "var(--grad-aurora)",
-  fizz: "var(--grad-fizz)",
-  grape: "var(--grad-grape)",
-  sunset: "var(--grad-sunset)",
-  nebula: "var(--grad-nebula)",
-  coral: "var(--grad-coral)",
+const SHEETS = {
+  bolt: "var(--sheet-pear)",
+  aurora: "var(--sheet-sugar)",
+  fizz: "var(--sheet-mint)",
+  grape: "var(--sheet-sand)",
+  sunset: "var(--sheet-blue)",
+  nebula: "var(--sheet-kraft)",
+  coral: "var(--sheet-coral)",
 } as const satisfies Record<CardGradient, string>;
 
 const KIND_LABELS = {
@@ -62,7 +64,7 @@ function ShareRow({ n, onNote }: { n: number; onNote?: (message: string) => void
   );
 }
 
-/** One story card: fixed gradient face + honest share row (spec 04 §3). */
+/** One story card: a solid card-stock sheet + honest share row (spec 04 §3). */
 export default function CardSurface({
   card,
   onNote,
@@ -78,7 +80,7 @@ export default function CardSurface({
       <div
         className="card__face"
         data-gradient={card.gradient}
-        style={{ background: GRADIENTS[card.gradient] }}
+        style={{ background: SHEETS[card.gradient] }}
       >
         <p className="card__overline">{chapterOverline(card)}</p>
         <span className="card__index" aria-hidden="true">

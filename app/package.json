@@ -11,8 +11,7 @@
     "deploy": "npm run build && wrangler deploy",
     "typecheck": "tsc -p tsconfig.client.json --noEmit && tsc -p tsconfig.worker.json --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "prebuild:client": "node scripts/copy-fonts.mjs"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@fontsource/inter": "^5.1.0",

@@ -519,7 +519,7 @@ describe("public page GET /u/:shareId", () => {
     // closing CTA to the app origin
     expect(html).toContain('<a class="cta" href="https://app.test">build yours</a>');
     // dark-first tokens in the inline CSS
-    expect(html).toContain("--ink-950: #05070E");
+    expect(html).toContain("--paper: #F7F5EC"); // Hum paper canvas (theme restyle)
   });
 
   it("excerpt-free: no post text, no first-post excerpt, no topics leak", async () => {

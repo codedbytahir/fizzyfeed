@@ -1,8 +1,10 @@
 /**
- * satori → SVG → resvg-wasm → PNG renderer (spec 04 §2).
+ * satori → SVG → resvg-wasm → PNG renderer (spec 04 §2, theme: Hum).
  *
- * Portrait story cards: 1080×1350 (4:5). ink-950 canvas, gradient card face
- * inset 24px with radius 28, white text only. Landscape OG variant: 1200×630.
+ * Portrait story cards: 1080×1350 (4:5). Cream paper canvas, one solid
+ * card-stock sheet inset 24px with radius 28; ink sits on every sheet except
+ * the blue one (fringe text). No scrim panels, no gradients — the sheet is
+ * the card. Landscape OG variant: 1200×630 (paper, pear spine, ink text).
  * The brand wordmark comes from BRAND_NAME only (AGENTS.md §1.1).
  *
  * wasm init: in workers the CompiledWasm rule bundles the literal specifier
@@ -15,12 +17,11 @@ import { Resvg, initWasm } from "@resvg/resvg-wasm";
 import type { CardData, CardGradient, YearStats } from "../../shared/types";
 import { BRAND_NAME } from "../../shared/brand";
 import {
-  BAR_WHITE,
-  CARD_GRADIENTS,
-  CHIP_BORDER,
-  DOT_WHITE,
-  INK_950,
-  SEGMENT_WHITE,
+  BAR_INK,
+  CARD_SHEETS,
+  DOT_INK,
+  PAPER,
+  RULE_PAPER,
   TEXT_BODY,
   TEXT_DIM,
   TEXT_SOLID,
@@ -34,13 +35,12 @@ export const CARD_HEIGHT = 1350;
 export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
 
-const INSET = 24; // ink frame around the gradient face
-const MARGIN = 72; // content margin inside the face
-const RADIUS_CARD = 28; /* token: radius-card */
+const INSET = 24; // paper margin around the sheet
+const MARGIN = 72; // content margin inside the sheet
+const RADIUS_CARD = 28; /* token: --radius-card */
 
-const MONO = "JetBrains Mono";
-const DISPLAY = "Space Grotesk";
-const BODY = "Inter";
+const FACE = "Chillax"; /* token: --font-display, weight 600 */
+const BODY = "Chillax"; /* token: --font-body, weight 500 */
 
 // ── satori element tree (object form — no JSX in the worker) ─────────────────
 
@@ -92,25 +92,24 @@ function fmtNum(n: number): string {
 // ── shared style blocks ──────────────────────────────────────────────────────
 
 const OVERLINE: SatoriStyle = {
-  fontFamily: MONO,
+  fontFamily: BODY,
   fontWeight: 500,
   fontSize: 26,
   color: TEXT_DIM,
-  letterSpacing: "0.04em",
 };
 
 const HEADLINE: SatoriStyle = {
-  fontFamily: DISPLAY,
-  fontWeight: 700,
+  fontFamily: FACE,
+  fontWeight: 600,
   fontSize: 64,
   color: TEXT_SOLID,
-  letterSpacing: "-0.02em",
+  letterSpacing: "-0.03em" /* token: --tracking-display */,
 };
 
 function statStyle(fontSize: number): SatoriStyle {
   return {
-    fontFamily: MONO,
-    fontWeight: 500,
+    fontFamily: FACE,
+    fontWeight: 600,
     fontSize,
     color: TEXT_SOLID,
     // satori 0.10.x accepts only the string form of font-feature-settings here
@@ -123,7 +122,7 @@ function statStyle(fontSize: number): SatoriStyle {
 
 const CAPTION: SatoriStyle = {
   fontFamily: BODY,
-  fontWeight: 400,
+  fontWeight: 500,
   fontSize: 30,
   color: TEXT_BODY,
   lineHeight: 1.45,
@@ -133,66 +132,54 @@ const CAPTION: SatoriStyle = {
 
 const LABEL: SatoriStyle = {
   fontFamily: BODY,
-  fontWeight: 600,
+  fontWeight: 500,
   fontSize: 26,
   color: TEXT_DIM,
   marginTop: 14,
 };
 
-/**
- * AA text panel (ink-950 @ 70%) — the fixed gradients are brand law, but white
- * text on their bright stops fails hard (worst: white70 on spark-500 = 1.06:1).
- * A 70% ink-950 panel restores AA without touching the gradients; worst case
- * (spark-500): white70 4.95:1, white85 6.42:1, solid white 8.14:1. Mirrors the
- * --card-scrim panel in client/styles/cards.css.
- */
-const TEXT_PANEL = "rgba(5,7,14,0.7)"; /* token: ink-950 @ 70% */
-const PANEL_RADIUS = 14;
-const PANEL_PADDING = "14px 22px";
-
-function footer(): SatoriTree {
+/** The sheet signs itself: one ink bead + the wordmark. */
+function footer(on: string): SatoriTree {
   return el(
     "div",
     {
       display: "flex",
       alignItems: "center",
-      backgroundColor: TEXT_PANEL,
-      borderRadius: PANEL_RADIUS,
-      padding: PANEL_PADDING,
       alignSelf: "flex-start",
     },
     [
-      el("div", { width: 24, height: 24, borderRadius: 24, backgroundColor: DOT_WHITE }),
+      el("div", { width: 22, height: 22, borderRadius: 22, backgroundColor: on, opacity: 0.85 }),
       txt(
-        { fontFamily: DISPLAY, fontWeight: 700, fontSize: 26, color: TEXT_SOLID, marginLeft: 12 },
+        { fontFamily: FACE, fontWeight: 600, fontSize: 28, color: on, marginLeft: 12 },
         BRAND_NAME
       ),
     ]
   );
 }
 
+/** Content column directly on the sheet — no inset panel (no card-in-card). */
 function midColumn(nodes: SatoriTree[]): SatoriTree {
   return el(
     "div",
     {
       display: "flex",
       flexDirection: "column",
-      backgroundColor: TEXT_PANEL,
-      borderRadius: RADIUS_CARD,
-      padding: 28,
+      flexGrow: 1,
+      justifyContent: "center",
+      padding: "28px 0",
     },
     nodes
   );
 }
 
-/** Minimal-height white bars, bottom-aligned (rhythm spark / peaks microbars). */
+/** Minimal-height ink bars, bottom-aligned (rhythm spark / peaks microbars). */
 function barStrip(values: number[], barWidth: number, gapPx: number, maxHeight: number): SatoriTree {
   const max = values.reduce((m, v) => Math.max(m, v), 0);
   const bars = values.map((v, i) =>
     el("div", {
       width: barWidth,
       height: max > 0 ? Math.max(8, Math.round((v / max) * maxHeight)) : 8,
-      backgroundColor: BAR_WHITE,
+      backgroundColor: BAR_INK,
       borderRadius: 6,
       marginRight: i < values.length - 1 ? gapPx : 0,
     })
@@ -201,10 +188,10 @@ function barStrip(values: number[], barWidth: number, gapPx: number, maxHeight: 
 }
 
 function cardShell(gradient: CardGradient, overlineText: string, mid: SatoriTree): SatoriTree {
-  const [c1, c2] = CARD_GRADIENTS[gradient];
+  const sheet = CARD_SHEETS[gradient];
   return el(
     "div",
-    { width: CARD_WIDTH, height: CARD_HEIGHT, display: "flex", backgroundColor: INK_950 },
+    { width: CARD_WIDTH, height: CARD_HEIGHT, display: "flex", backgroundColor: PAPER },
     [
       el(
         "div",
@@ -212,7 +199,8 @@ function cardShell(gradient: CardGradient, overlineText: string, mid: SatoriTree
           width: CARD_WIDTH - INSET * 2,
           height: CARD_HEIGHT - INSET * 2,
           borderRadius: RADIUS_CARD,
-          backgroundImage: `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`,
+          backgroundColor: sheet.fill,
+          color: sheet.on,
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -220,18 +208,9 @@ function cardShell(gradient: CardGradient, overlineText: string, mid: SatoriTree
           overflow: "hidden",
         },
         [
-          txt(
-            {
-              ...OVERLINE,
-              backgroundColor: TEXT_PANEL,
-              borderRadius: PANEL_RADIUS,
-              padding: PANEL_PADDING,
-              alignSelf: "flex-start",
-            },
-            overlineText
-          ),
+          txt({ ...OVERLINE, color: sheet.onDim }, overlineText),
           mid,
-          footer(),
+          footer(sheet.on),
         ]
       ),
     ]
@@ -285,16 +264,16 @@ function mixTree(card: Extract<CardData, { kind: "mix" }>): SatoriTree {
   const channels = card.channels.slice(0, 4);
   const nodes: SatoriTree[] = [txt(HEADLINE, "the mix")];
   if (channels.length > 0) {
-    // proportional single bar: pct-width segments separated by 4px ink-950 gaps
+    // proportional single bar: pct-width segments separated by paper gaps
     nodes.push(
       el("div", { display: "flex", height: 56, marginTop: 48 }, [
         ...channels.flatMap((ch, i) => {
           const segment = el("div", {
             width: `${Math.max(0, Math.round(ch.pct))}%`,
-            backgroundColor: SEGMENT_WHITE,
+            backgroundColor: BAR_INK,
           });
           return i < channels.length - 1
-            ? [segment, el("div", { width: 4, height: 56, backgroundColor: INK_950 })]
+            ? [segment, el("div", { width: 4, height: 56, backgroundColor: PAPER })]
             : [segment];
         }),
       ])
@@ -303,7 +282,7 @@ function mixTree(card: Extract<CardData, { kind: "mix" }>): SatoriTree {
       el("div", { display: "flex", marginTop: 20 }, [
         ...channels.map((ch, i) =>
           txt(
-            { fontFamily: MONO, fontWeight: 500, fontSize: 26, color: TEXT_DIM, marginRight: i < channels.length - 1 ? 32 : 0 },
+            { fontFamily: BODY, fontWeight: 500, fontSize: 26, color: TEXT_BODY, marginRight: i < channels.length - 1 ? 32 : 0 },
             `${lc(ch.service)} ${Math.round(ch.pct)}%`
           )
         ),
@@ -344,12 +323,12 @@ function personaTree(card: Extract<CardData, { kind: "persona" }>, ctx: CardRend
           txt(
             {
               fontFamily: BODY,
-              fontWeight: 400,
+              fontWeight: 500,
               fontSize: 26,
-              color: TEXT_SOLID,
+              color: TEXT_BODY,
               borderWidth: 1,
               borderStyle: "solid",
-              borderColor: CHIP_BORDER,
+              borderColor: RULE_PAPER,
               borderRadius: 999,
               padding: "12px 26px",
               marginRight: i < traits.length - 1 ? 16 : 0,
@@ -376,7 +355,7 @@ function recapTree(card: Extract<CardData, { kind: "recap" }>): SatoriTree {
       ...rowCells.map(([num, label]) =>
         el("div", { display: "flex", flexDirection: "column", width: "50%" }, [
           txt(
-            { fontFamily: MONO, fontWeight: 500, fontSize: 72, color: TEXT_SOLID, fontFeatureSettings: "tnum" },
+            { fontFamily: FACE, fontWeight: 600, fontSize: 72, color: TEXT_SOLID, fontFeatureSettings: "tnum" },
             num
           ),
           txt(LABEL, label),
@@ -417,12 +396,11 @@ function buildCardTree(card: CardData, ctx: CardRenderContext): SatoriTree {
 // ── OG variant (spec 04 §3) ──────────────────────────────────────────────────
 
 function buildOgTree(opts: { title: string; statLine: string }): SatoriTree {
-  const [c1, c2] = CARD_GRADIENTS.bolt;
-  return el("div", { width: OG_WIDTH, height: OG_HEIGHT, display: "flex", backgroundColor: INK_950 }, [
+  return el("div", { width: OG_WIDTH, height: OG_HEIGHT, display: "flex", backgroundColor: PAPER }, [
     el("div", {
-      width: 8,
+      width: 14,
       height: "100%",
-      backgroundImage: `linear-gradient(180deg, ${c1} 0%, ${c2} 100%)`,
+      backgroundColor: CARD_SHEETS.bolt.fill, /* --sheet-pear spine */
     }),
     el(
       "div",
@@ -435,8 +413,8 @@ function buildOgTree(opts: { title: string; statLine: string }): SatoriTree {
       },
       [
         txt({ ...HEADLINE, fontSize: 72 }, clamp(lc(opts.title), 40)),
-        txt({ fontFamily: MONO, fontWeight: 500, fontSize: 32, color: TEXT_DIM }, clamp(opts.statLine, 80)),
-        footer(),
+        txt({ fontFamily: BODY, fontWeight: 500, fontSize: 32, color: TEXT_DIM }, clamp(opts.statLine, 80)),
+        footer(TEXT_SOLID),
       ]
     ),
   ]);
@@ -507,8 +485,8 @@ function satoriFonts(fonts: SatoriFont[]): SatoriFontOption[] {
   return fonts.map((f) => ({
     name: f.name,
     data: f.data,
-    // SatoriFont.weight is `number` by contract; our specs (400/500/600/700)
-    // are all valid satori Weight members.
+    // SatoriFont.weight is `number` by contract; our specs (500/600)
+    // are valid satori Weight members.
     weight: f.weight as SatoriFontOption["weight"],
     style: f.style,
   }));

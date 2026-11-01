@@ -37,3 +37,4 @@ scripts/_responsive/
 
 # hallmark redesign working dir (before/after captures, linter records)
 .hallmark/
+.agents/

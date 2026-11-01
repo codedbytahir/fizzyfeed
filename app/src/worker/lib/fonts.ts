@@ -1,8 +1,10 @@
 /**
- * Font loader for the satori → PNG pipeline (spec 04 §2): subset woffs staged
- * under public/fonts are served from the ASSETS binding at /fonts/… and loaded
- * once per isolate (module-level promise cache — rendering is CPU-bound, so
- * the first card of an isolate pays the fetch, the rest reuse it).
+ * Font loader for the satori → PNG pipeline (theme: Hum): Chillax 500/600
+ * staged as ttf under public/fonts, served from the ASSETS binding at
+ * /fonts/… and loaded once per isolate (module-level promise cache —
+ * rendering is CPU-bound, so the first card of an isolate pays the fetch,
+ * the rest reuse it). One face carries the whole card; satori gets ttf
+ * (it cannot parse woff2).
  */
 
 export interface SatoriFont {
@@ -19,11 +21,8 @@ interface FontSpec {
 }
 
 const FONT_SPECS: FontSpec[] = [
-  { name: "Space Grotesk", file: "space-grotesk-latin-500-normal.woff", weight: 500 },
-  { name: "Space Grotesk", file: "space-grotesk-latin-700-normal.woff", weight: 700 },
-  { name: "Inter", file: "inter-latin-400-normal.woff", weight: 400 },
-  { name: "Inter", file: "inter-latin-600-normal.woff", weight: 600 },
-  { name: "JetBrains Mono", file: "jetbrains-mono-latin-500-normal.woff", weight: 500 },
+  { name: "Chillax", file: "chillax-500.ttf", weight: 500 },
+  { name: "Chillax", file: "chillax-600.ttf", weight: 600 },
 ];
 
 let fontsPromise: Promise<SatoriFont[]> | null = null;
@@ -40,7 +39,7 @@ async function loadAll(assets: Fetcher): Promise<SatoriFont[]> {
   return Promise.all(FONT_SPECS.map((spec) => fetchFont(assets, spec)));
 }
 
-/** Load (and memoize) the brand font set: Space Grotesk 500/700, Inter 400/600, JetBrains Mono 500. */
+/** Load (and memoize) the theme font set: Chillax 500 + 600. */
 export function loadFonts(assets: Fetcher): Promise<SatoriFont[]> {
   if (!fontsPromise) {
     fontsPromise = loadAll(assets).catch((err: unknown) => {

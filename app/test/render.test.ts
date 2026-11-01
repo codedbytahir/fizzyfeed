@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { loadFonts, hash8, type SatoriFont } from "../src/worker/lib/fonts";
 import { renderCardPng, renderOgPng, svgCard } from "../src/worker/lib/render";
-import { CARD_GRADIENTS } from "../src/worker/lib/gradients";
+import { CARD_SHEETS } from "../src/worker/lib/gradients";
 import type { CardData, CardGradient } from "../src/shared/types";
 import { BRAND_NAME } from "../src/shared/brand";
 
@@ -97,17 +97,19 @@ function expectPng(png: Uint8Array, width: number, height: number): void {
   expect(view.getUint32(20)).toBe(height);
 }
 
-describe("gradients", () => {
-  it("defines all 7 fixed card gradients as two-stop pairs", () => {
+describe("sheets", () => {
+  it("defines all 7 card-stock sheets as solid fill + on-sheet ink", () => {
     const kinds: CardGradient[] = ["bolt", "aurora", "fizz", "grape", "sunset", "nebula", "coral"];
-    expect(Object.keys(CARD_GRADIENTS).sort()).toEqual([...kinds].sort());
+    expect(Object.keys(CARD_SHEETS).sort()).toEqual([...kinds].sort());
     for (const kind of kinds) {
-      const pair = CARD_GRADIENTS[kind];
-      expect(pair).toHaveLength(2);
-      for (const stop of pair) {
-        expect(stop).toMatch(/^#[0-9a-f]{6}$/i);
-      }
+      const sheet = CARD_SHEETS[kind];
+      expect(sheet.fill).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(sheet.on).toMatch(/^#[0-9a-f]{6}$/i);
+      // every sheet carries ink except the blue one, which carries paper
+      expect(sheet.on === "#12161C" || sheet.on === "#FEFCF8").toBe(true);
     }
+    // fills never repeat — one stock per chapter
+    expect(new Set(kinds.map((k) => CARD_SHEETS[k].fill)).size).toBe(7);
   });
 });
 

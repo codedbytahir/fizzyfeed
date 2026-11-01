@@ -12,15 +12,15 @@ import Chip from "../components/Chip";
  * story cards fanned on the lit wall. The demo is the hero.
  */
 
-/** The seven chapters in deck order — gradients are the fixed brand mapping. */
+/** The seven chapters in deck order — each fan card is a real deck sheet. */
 const FAN_CARDS = [
-  { idx: "01", gradient: "var(--grad-bolt)" },
-  { idx: "02", gradient: "var(--grad-aurora)" },
-  { idx: "03", gradient: "var(--grad-fizz)" },
-  { idx: "04", gradient: "var(--grad-grape)" },
-  { idx: "05", gradient: "var(--grad-sunset)" },
-  { idx: "06", gradient: "var(--grad-nebula)" },
-  { idx: "07", gradient: "var(--grad-coral)" },
+  { idx: "01", fill: "var(--sheet-pear)" },
+  { idx: "02", fill: "var(--sheet-sugar)" },
+  { idx: "03", fill: "var(--sheet-mint)" },
+  { idx: "04", fill: "var(--sheet-sand)" },
+  { idx: "05", fill: "var(--sheet-blue)" },
+  { idx: "06", fill: "var(--sheet-kraft)" },
+  { idx: "07", fill: "var(--sheet-coral)" },
 ] as const;
 
 export default function Connect() {
@@ -44,7 +44,7 @@ export default function Connect() {
     <section className="connect">
       <div className="connect__copy">
         <h1 className="headline headline--xl">
-          your year in <span className="grad-text">posts.</span>
+          your year in <span className="hl">posts.</span>
         </h1>
         <p className="sub connect__sub">
           connect buffer, and 12 months of publishing becomes 7 story cards, an alter ego, and a
@@ -110,7 +110,7 @@ export default function Connect() {
       <figure className="connect__stage">
         <div aria-hidden="true" className="deck-fan">
           {FAN_CARDS.map((card) => (
-            <span key={card.idx} className="fan-card" style={{ background: card.gradient }}>
+            <span key={card.idx} className="fan-card" style={{ background: card.fill }}>
               <span className="fan-card__idx">{card.idx}</span>
               <span className="fan-card__spark" />
             </span>

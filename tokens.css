@@ -1,122 +1,127 @@
-/* ============================================================
-   fizzyfeed — brand tokens v0.1
-   Electric Blue identity · dev codename: kroma
-   Final name pending (fizzyfeed / feezyfeed) — tokens are name-agnostic.
-   ============================================================ */
+/* ── fizzyfeed design tokens · Hallmark theme "Hum" (playful genre) ──────────
+ * v3 · 2026-11-01 · redesign: restyle (app scope) · deal 1/3, seed
+ * fizzyfeed-playful-year-in-review-app-e6a2·4027bc8b·2026-11-01·r0
+ *
+ * The material: grained cream paper, card stock you can press, blue-black
+ * ink, three accents that never blend (pear = action, blue = links, coral =
+ * one loud moment) and mint for growth. No gradients between accents, no
+ * rainbow ground, no square corner. Single source for the client stylesheet;
+ * the PNG renderer and share page re-declare these values as hex with
+ * provenance comments (satori/inlining cannot read var()).
+ * Hex table: scripts/oklch2hex.py regenerates every value below. */
+
+@font-face {
+  font-family: "Chillax";
+  src: url("/fonts/chillax-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Chillax";
+  src: url("/fonts/chillax-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
-  /* ---- brand core: Electric Blue scale (primary = 500) ---- */
-  --electric-50:  #EAF1FF;
-  --electric-100: #D0E1FF;
-  --electric-200: #A3C4FF;
-  --electric-300: #6FA1FF;
-  --electric-400: #3B7DFF;
-  --electric-500: #0A5CFF;  /* PRIMARY — electric blue */
-  --electric-600: #0047E0;  /* use for small text on white (AA) */
-  --electric-700: #0037B0;
-  --electric-800: #002B85;
-  --electric-900: #001F5C;
-  --electric-950: #001438;
+  color-scheme: light;
 
-  /* ---- Volt: cyan companion (gradient tail, live accents) ---- */
-  --volt-300: #7BE9FF;
-  --volt-400: #2FDDFF;
-  --volt-500: #00D5FF;
-  --volt-600: #00B2D6;
-  --volt-700: #008CAD;
+  /* ── shared scale (scaffold) ─────────────────────────────────────────── */
+  --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 16px;
+  --space-lg: 24px; --space-xl: 40px; --space-2xl: 64px; --space-3xl: 96px; --space-4xl: 144px;
+  --text-xs: 0.75rem; --text-sm: 0.875rem; --text-md: 1rem; --text-lg: 1.2rem;
+  --text-xl: 1.44rem; --text-2xl: 1.728rem; --text-3xl: 2.074rem;
+  --text-display-s: 1.44rem; --text-display: 1.728rem; --text-section: 1.2rem;
+  --text-title: 1rem; --text-lead: 1rem;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms; --dur-short: 220ms; --dur-long: 420ms;
+  --color-error: oklch(52% 0.19 27);   /* ≈ #d3243c */
+  --color-success: oklch(50% 0.12 150); /* ≈ #0f7a4d */
+  --container: 1440px; --gutter: 64px; --gap-columns: 32px;
+  --section-gap-s: 120px; --section-gap: 144px; --section-gap-l: 176px;
+  --z-base: 1; --z-raised: 10; --z-dropdown: 100; --z-sticky: 200;
+  --z-sticky-nav: 300; --z-modal: 400; --z-toast: 500; --z-tooltip: 600;
 
-  /* ---- Chroma Violet: gradient head (the "kroma" note) ---- */
-  --violet-400: #9A6BFF;
-  --violet-500: #6333FF;
-  --violet-600: #4A1FD9;
+  /* ── Hum: paper + ink ─────────────────────────────────────────────────── */
+  --color-paper: oklch(97% 0.012 95);    /* #F7F5EC grained cream */
+  --color-paper-2: oklch(94.5% 0.018 95); /* #F0EDE0 */
+  --color-paper-3: oklch(91% 0.022 95);  /* #E6E1D1 */
+  --color-ink: oklch(20% 0.014 255);     /* #12161C blue-black */
+  --color-ink-2: oklch(29% 0.014 255);   /* #272C32 */
+  --color-muted: oklch(47% 0.014 255);   /* #565B63 */
+  --color-rule: oklch(87% 0.016 95);     /* #D7D4C9 hairline on paper */
 
-  /* ---- Spark lime: delight accent, sparingly ---- */
-  --spark-500: #C8FF4D;
+  /* ── Hum: the three accents (they never blend) + mint ────────────────── */
+  --color-accent: oklch(87% 0.175 96);      /* #F7D21A pear — the action */
+  --color-accent-deep: oklch(72% 0.16 92);  /* #C9A000 pear edge/underline */
+  --color-accent-ink: oklch(20% 0.014 255); /* ink on pear */
+  --color-accent-2: oklch(50% 0.17 250);    /* #0064BE blue — links, focus */
+  --color-accent-3: oklch(70% 0.2 22);      /* #FF5E63 coral — one loud moment */
+  --color-mint: oklch(82% 0.15 152);        /* #70E093 mint — growth */
+  --color-mint-deep: oklch(48% 0.12 155);   /* #00713E */
+  --color-focus: oklch(50% 0.17 250);       /* blue ring */
 
-  /* ---- Ink: blue-tinted neutrals (dark-mode first) ---- */
-  --ink-50:  #F5F8FE;
-  --ink-100: #E7EDF8;
-  --ink-200: #C6D0E4;
-  --ink-300: #9AA8C4;
-  --ink-400: #6B7A99;
-  --ink-500: #4A5774;
-  --ink-600: #33405C;
-  --ink-700: #1F2940;
-  --ink-800: #131A2B;
-  --ink-900: #0A0E1A;
-  --ink-950: #05070E;  /* app background */
+  /* ── Hum: card stock + cut-sheet materials ───────────────────────────── */
+  --color-card: oklch(98.8% 0.007 95);   /* #FCFBF6 white card stock */
+  --color-edge: oklch(83% 0.04 88);      /* #D2C6AA pressed-card edge */
+  --color-fringe: oklch(99.2% 0.006 95); /* #FEFCF8 pale fibre core */
+  --color-kraft: oklch(63% 0.085 62);    /* #AE7D52 kraft strip */
+  --color-sand: oklch(77% 0.1 76);       /* #D9AC69 */
+  --color-sugar: oklch(89% 0.035 236);   /* #C6DFEF blue sugar-paper mat */
+  --color-hill-1: oklch(94.5% 0.03 118); /* #EBF0DA */
+  --color-hill-2: oklch(91.5% 0.045 135);/* #D6EACC */
+  --color-leaf: oklch(64% 0.15 150);     /* #36A558 */
 
-  /* ---- semantic ---- */
-  --success: #00C853;
-  --warning: #FFB020;
-  --danger:  #FF4757;
-  --info:    var(--electric-500);
+  /* ── deck sheets: one solid stock per chapter, never a gradient ────────
+   * 01 bolt→pear · 02 aurora→sugar · 03 fizz→mint · 04 grape→sand
+   * 05 sunset→blue (fringe text) · 06 nebula→kraft · 07 coral→coral     */
+  --sheet-pear: var(--color-accent);
+  --sheet-sugar: var(--color-sugar);
+  --sheet-mint: var(--color-mint);
+  --sheet-sand: var(--color-sand);
+  --sheet-blue: var(--color-accent-2);
+  --sheet-kraft: var(--color-kraft);
+  --sheet-coral: var(--color-accent-3);
 
-  /* ---- brand gradient (the chroma sweep used in the mark) ---- */
-  --grad-brand: linear-gradient(135deg, #6333FF 0%, #0A5CFF 45%, #00D5FF 100%);
+  /* ── ink washes (shadows/hairlines lift these, never inline oklch) ───── */
+  --shade-6: oklch(20% 0.014 255 / 0.06);
+  --shade-7: oklch(20% 0.014 255 / 0.07);
+  --shade-28: oklch(20% 0.014 255 / 0.28);
+  --shade-30: oklch(20% 0.014 255 / 0.3);
+  --shade-32: oklch(20% 0.014 255 / 0.32);
+  --shade-35: oklch(20% 0.014 255 / 0.35);
 
-  /* ---- recap card palette (one gradient per story card) ---- */
-  --grad-bolt:   linear-gradient(135deg, #0A5CFF 0%, #00D5FF 100%);  /* Bolt      — brand */
-  --grad-nebula: linear-gradient(135deg, #6333FF 0%, #0A5CFF 100%);  /* Nebula    — brand */
-  --grad-aurora: linear-gradient(135deg, #00D5FF 0%, #00FFA3 100%);  /* Aurora    */
-  --grad-fizz:   linear-gradient(135deg, #C8FF4D 0%, #00E5A0 100%);  /* Lime Fizz */
-  --grad-sunset: linear-gradient(135deg, #FF8A00 0%, #FF3D77 100%);  /* Sunset    */
-  --grad-coral:  linear-gradient(135deg, #FF5C5C 0%, #FF9E2C 100%);  /* Coral Pop */
-  --grad-grape:  linear-gradient(135deg, #A855F7 0%, #6366FA 100%);  /* Grape Soda */
+  /* ── paper grain + fibre (generated, never a picture) ────────────────── */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 0 0.04 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  --fibre: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.012 0.004' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.38 0 0 0 0 0.3 0 0 0 0 0.16 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='900' height='900' filter='url(%23f)'/%3E%3C/svg%3E");
 
-  /* ---- typography ---- */
-  --font-display: "Space Grotesk", "Inter", system-ui, -apple-system, sans-serif;
-  --font-sans:    "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  /* ── type ─────────────────────────────────────────────────────────────── */
+  --font-display: "Chillax", ui-rounded, ui-sans-serif, sans-serif;
+  --font-body: var(--font-display);
+  --tracking-display: -0.03em;
+  --display-weight: 600;
 
-  /* ---- radii ---- */
-  --radius-sm:   8px;
-  --radius-md:   14px;
-  --radius-lg:   22px;
-  --radius-xl:   32px;
-  --radius-card: 28px;   /* recap story cards */
-  --radius-full: 999px;
+  /* ── shape + light (top-left; shadows fall down-right) ───────────────── */
+  --radius-card: 24px; --radius-stock: 16px; --radius-input: 14px;
+  --radius-pill: 999px; --rule-hair: 1px;
+  --shadow-card: 0 1px 2px oklch(20% 0.014 255 / 0.06), 0 12px 28px -14px oklch(20% 0.014 255 / 0.22);
+  --shadow-paper: drop-shadow(0 0 0.6px oklch(20% 0.014 255 / 0.32))
+    drop-shadow(1.5px 2.5px 1.5px oklch(20% 0.014 255 / 0.1))
+    drop-shadow(6px 14px 16px oklch(20% 0.014 255 / 0.13));
 
-  /* ---- elevation ---- */
-  --glow-electric: 0 0 0 1px rgb(10 92 255 / 0.25), 0 12px 48px rgb(10 92 255 / 0.35);
-  --shadow-card:   0 8px 30px rgb(5 7 14 / 0.35);
-  --shadow-pop:    0 2px 8px rgb(5 7 14 / 0.25), 0 16px 56px rgb(10 92 255 / 0.22);
-  --shadow-nav:    0 12px 40px rgb(5 7 14 / 0.45);
-  --shadow-fan:    0 18px 44px rgb(5 7 14 / 0.5);
+  /* ── motion: spring on the primary control only, snap elsewhere ──────── */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-snap: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-hover: 180ms;
+  --dur-entrance: 500ms;
+  --stagger: 64ms;
 
-  /* ---- fluid display scale (min → max) ---- */
-  --text-xs:   0.75rem;   /* 12 */
-  --text-sm:   0.875rem;  /* 14 */
-  --text-base: 1rem;      /* 16 */
-  --text-lg:   1.125rem;  /* 18 */
-  --text-xl:   1.25rem;   /* 20 */
-  --text-2xl:  1.5rem;    /* 24 */
-  --text-3xl:  1.875rem;  /* 30 */
-  --text-4xl:  2.375rem;  /* 38 */
-  --text-5xl:  3rem;      /* 48 */
-  --text-6xl:  3.75rem;   /* 60 */
-  --text-7xl:  4.75rem;   /* 76 */
-
-  /* ---- app surface kit ("the electric lab") — added for the SPA restyle ----
-     All derived tones from the core scales above; no new hues.
-     Glass surfaces, aurora ambience, hairlines, and one AA-safe gradient for
-     SMALL gradient text (electric-300 → volt-400 both clear 4.5:1 on ink-950;
-     --grad-brand's violet head only clears 3:1, so it stays on large type). */
-  --line:            color-mix(in srgb, var(--ink-50) 7%, transparent);
-  --line-strong:     color-mix(in srgb, var(--ink-50) 14%, transparent);
-  --glass-bg:        color-mix(in srgb, var(--ink-800) 62%, transparent);
-  --glass-bg-soft:   color-mix(in srgb, var(--ink-800) 38%, transparent);
-  --glass-bg-deep:   color-mix(in srgb, var(--ink-900) 72%, transparent);
-  --glass-highlight: color-mix(in srgb, var(--ink-50) 7%, transparent);
-  --aurora-electric: color-mix(in srgb, var(--electric-500) 20%, transparent);
-  --aurora-violet:   color-mix(in srgb, var(--violet-500) 16%, transparent);
-  --aurora-volt:     color-mix(in srgb, var(--volt-500) 12%, transparent);
-  --grad-safe:       linear-gradient(120deg, var(--electric-300) 0%, var(--volt-400) 100%);
-
-  /* gallery-hang kit (composition pass) — derived from the core scales only */
-  --plate-bg:        color-mix(in srgb, var(--ink-950) 58%, transparent);
-  --spot-electric:   color-mix(in srgb, var(--electric-500) 26%, transparent);
-  --spot-volt:       color-mix(in srgb, var(--volt-500) 16%, transparent);
-  --scroll-thumb:    color-mix(in srgb, var(--ink-400) 55%, var(--ink-600));
-  --scroll-track:    transparent;
+  /* ── app chrome ───────────────────────────────────────────────────────── */
+  --wrap: 1120px;
+  --nav-h: 68px;
+  --edge-press: 5px; /* card-stock button edge depth */
 }
