@@ -33,7 +33,7 @@
     "binding": "AI"
   },
   "vars": {
-    "BUFFER_CLIENT_ID": "replace-me",
+    "BUFFER_CLIENT_ID": "5WJXbtmJUS16xXQD7UnX2w-HJkKgjSE_V4eL2tni83T",
     "BUFFER_REDIRECT_URI": "https://fizzyfeed.developerfirr1.workers.dev/api/auth/buffer/callback",
     "APP_ORIGIN": "https://fizzyfeed.developerfirr1.workers.dev"
   },
