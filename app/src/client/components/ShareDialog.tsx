@@ -181,7 +181,7 @@ export default function ShareDialog({ cardN, onClose }: { cardN: number; onClose
             {channels.length === 0 ? (
               <EmptyState
                 title="no channels connected"
-                body="this card queues everywhere you publish — connect a channel on buffer first."
+                body="this card queues everywhere you publish; connect a channel on buffer first."
               />
             ) : (
               <>
@@ -223,7 +223,7 @@ export default function ShareDialog({ cardN, onClose }: { cardN: number; onClose
                 {needsUpgrade && (
                   <div className="notice">
                     <p>
-                      this needs write access — you'll approve it on buffer's screen. your edited
+                      this needs write access: you’ll approve it on buffer’s screen. your edited
                       text is kept right here, nothing is lost.
                     </p>
                   </div>
@@ -252,14 +252,14 @@ export default function ShareDialog({ cardN, onClose }: { cardN: number; onClose
                     </button>
                   )}
                   <span className="recap-consent">
-                    the box above is the consent — this click sends it.
+                    the box above is the consent: this click sends it.
                   </span>
                 </div>
 
                 {results && (
                   <div className="recap-done">
                     {allQueued && (
-                      <h2 className="headline headline--sm">queued — check your buffer dashboard.</h2>
+                      <h2 className="headline headline--sm">queued: check your buffer dashboard.</h2>
                     )}
                     <RecapResults
                       results={results}

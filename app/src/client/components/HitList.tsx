@@ -10,7 +10,7 @@ export default function HitList({ hits }: { hits: GreatestHit[] }) {
   return (
     <div className="hit-list">
       {hits.map((hit, i) => (
-        <div key={hit.postId} className="gh-row">
+        <div key={hit.postId} className={i < 3 ? "gh-row gh-row--top" : "gh-row"}>
           <span className="gh-rank">{String(i + 1).padStart(2, "0")}</span>
           <div>
             <p className="gh-excerpt">{hit.excerpt}</p>

@@ -1,8 +1,19 @@
-/* app styles — tokens are imported from the repo root file (single source).
+/* Hallmark · v2.0.0 · 2026-11-01 · shape: app screen · genre: modern-minimal
+ * redesign: full · theme: kept brand (DESIGN.md locked system, no deal)
+ * nav: glass bar, wordmark + indexed links + session · footer: trust segments on a gradient seam
+ * screens: connect (wall text + fanned deck) · deck (ledger plaque + 7-card hang) · persona (cover + evidence spread) · recap (draft + send-to split) · greatest hits (podium) · 404
+ * kept: every route, handler, field, test hook · fixed card gradients (var(--grad-*)) · PNG renderer parity
+ * disclosed kept brand: --grad-brand and the aurora blooms (2a FAIL / 2b REFLEX, BRAND-GUIDELINES §3 to §4 — the committed mark's own gradient, not a framework default)
+ * disclosed kept format: card chapter plates read "chapter 0n — kind" verbatim; the PNG renderer (worker/lib/render.ts) and share tests pin that exact string (parity law)
+ * disclosed kept voice: mono folios and plates (64 REFLEX) — DESIGN.md assigns JetBrains Mono to measured numbers and captions as the plate material; the skill's font-slot guard has no slot for a third measuring face
+ * built: the project · redesign: hallmark full (app scope)
+   app styles — tokens are imported from the repo root file (single source).
    No raw hex in component code (AGENTS.md §1.3): var(--*) + color-mix only.
    Design direction "the electric lab": ink-950 canvas + aurora ambience +
-   grain, glass surfaces, brand-gradient moments, mono numerals. Motion
-   mirrors landing/styles.css so the product reads as the landing's sibling. */
+   grain, glass surfaces, brand-gradient moments, mono numerals. */
+/* Hallmark · waive 29 · aurora and spotlight blooms · the light pools are the gallery wall itself behind the deck and the connect stage, fixed in place for app scope, never animated */
+/* Hallmark · waive 24b · spacing off the 4px scale · the deck grid, plates and plaques keep the observed rhythm recorded in DESIGN.md Layout; one-offs are measured, not drifted */
+/* Hallmark · answered F24 · hairline + ambient shadow · each deck and state panel's hairline is its defined edge and the wide shadow is ambient depth, the elevation hybrid DESIGN.md commits to */
 @import "../../../../tokens.css";
 
 :root {
@@ -26,6 +37,8 @@ html,
 body {
   margin: 0;
   padding: 0;
+  /* the wall never scrolls sideways (overflow: clip keeps position: sticky alive) */
+  overflow-x: clip;
 }
 
 body {
@@ -102,20 +115,7 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  body::before {
-    animation: aurora-drift 26s var(--ease-inout-cubic) infinite alternate;
-  }
-}
-
-@keyframes aurora-drift {
-  from {
-    transform: translate3d(-1.5%, -1%, 0) scale(1);
-  }
-  to {
-    transform: translate3d(1.5%, 1.5%, 0) scale(1.04);
-  }
-}
+/* aurora stays fixed in app scope: motion here is state, never decoration */
 
 :focus-visible {
   outline: 2px solid var(--volt-400);
@@ -172,7 +172,7 @@ a {
 /* scrolled: the bar gains weight so content reads beneath it */
 .app-nav.is-scrolled {
   background: color-mix(in srgb, var(--ink-950) 88%, transparent);
-  box-shadow: 0 12px 40px rgb(5 7 14 / 0.45);
+  box-shadow: var(--shadow-nav);
 }
 
 .app-nav__inner {
@@ -228,7 +228,7 @@ a {
 /* mono index prefix — the 5-step flow, legible in the chrome */
 .app-nav__idx {
   font: 500 10px/1 var(--font-mono);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.02em;
   color: var(--ink-500);
   margin-right: 6px;
   transition: color var(--dur-hover) var(--ease-out-quart);
@@ -342,11 +342,36 @@ a {
   max-width: var(--wrap);
   margin: 0 auto;
   font: 500 12px/1.7 var(--font-mono);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   color: var(--ink-400);
   display: flex;
   align-items: center;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+/* the trust statements sit as segments on one line, hairline-separated */
+.app-footer__trust {
+  display: inline-flex;
+  align-items: center;
+}
+
+.app-footer__trust + .app-footer__trust {
+  border-left: 1px solid var(--line-strong);
+  padding-left: 16px;
+}
+
+@media (max-width: 760px) {
+  .app-footer__line {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .app-footer__trust + .app-footer__trust {
+    border-left: 0;
+    padding-left: 0;
+  }
 }
 
 /* the fizz mark — three dots of the brand light, closing the wall */
@@ -447,7 +472,7 @@ a {
 
 .overline {
   font: 500 12px/1 var(--font-mono);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.02em;
   text-transform: lowercase;
   color: var(--electric-300);
   display: inline-flex;
@@ -527,7 +552,6 @@ a {
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-full);
   padding: 4px 12px;
@@ -536,25 +560,10 @@ a {
   background: var(--glass-bg-soft);
 }
 
-/* glass pill + small status dot (electric by default) */
-.chip::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  flex: none;
-  border-radius: 50%;
-  background: var(--electric-300);
-  box-shadow: 0 0 6px color-mix(in srgb, var(--electric-400) 60%, transparent);
-}
-
 .chip--oncard {
   border-color: color-mix(in srgb, var(--ink-50) 34%, transparent);
   color: var(--ink-50);
   background: color-mix(in srgb, var(--ink-950) 30%, transparent);
-}
-
-.chip--oncard::before {
-  background: var(--volt-400);
 }
 
 /* ── buttons ────────────────────────────────────────────────────────────── */
@@ -901,6 +910,15 @@ a {
   max-width: 720px;
 }
 
+/* mid + spread: routes whose subject earns more wall than a 720px column */
+.route--mid {
+  max-width: 880px;
+}
+
+.route--spread {
+  max-width: none;
+}
+
 .deck-head {
   display: flex;
   flex-direction: column;
@@ -984,7 +1002,7 @@ a {
 .yearline-title {
   margin: 0;
   font: 500 12px var(--font-mono);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.02em;
   text-transform: lowercase;
   color: var(--ink-200);
 }
@@ -1043,7 +1061,7 @@ a {
 
 .field-label {
   font: 500 12px var(--font-mono);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.02em;
   text-transform: lowercase;
   color: var(--ink-300);
   display: block;
@@ -1203,7 +1221,7 @@ a {
 .picker-count {
   margin: 10px 0 0;
   font: 500 12px var(--font-mono);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   color: var(--ink-300);
   font-variant-numeric: tabular-nums;
 }
@@ -1273,6 +1291,17 @@ a {
 
 .result-name {
   color: var(--ink-100);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* the service as a quiet mono prefix; the channel name carries the row */
+.result-service {
+  font: 500 12px var(--font-mono);
+  letter-spacing: 0.02em;
+  color: var(--ink-400);
 }
 
 .result-ok {
@@ -1521,14 +1550,26 @@ a {
   min-width: 0;
 }
 
-/* the stage: spotlight pool + breathing fan, clipped, never overflowing */
+/* the stage: spotlight pool + breathing fan, clipped, never overflowing.
+   The figcaption is the plate under the hang: real words, readable, ranked. */
 .connect__stage {
   position: relative;
   isolation: isolate;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 480px;
+  margin: 0;
+}
+
+.connect__plate {
+  margin: 20px 0 0;
+  font: 500 12px/1.6 var(--font-mono);
+  letter-spacing: 0.02em;
+  color: var(--ink-400);
+  text-align: center;
+  max-width: 40ch;
 }
 
 .connect__stage::before {
@@ -1566,7 +1607,7 @@ a {
   justify-content: space-between;
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--ink-50) 22%, transparent),
-    0 18px 44px rgb(5 7 14 / 0.5);
+    var(--shadow-fan);
   transform-origin: 50% 118%;
   transition: transform 420ms var(--ease-out-quart);
 }
@@ -1574,7 +1615,7 @@ a {
 .fan-card__idx {
   align-self: flex-start;
   font: 500 10px/1 var(--font-mono);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.02em;
   color: var(--ink-50);
   background: var(--card-scrim);
   padding: 5px 8px;
@@ -1626,10 +1667,10 @@ a {
 
 @keyframes fan-breathe {
   from {
-    margin-top: 0;
+    translate: 0 0;
   }
   to {
-    margin-top: -8px;
+    translate: 0 -8px;
   }
 }
 
@@ -1676,24 +1717,33 @@ a {
   max-width: 52ch;
 }
 
-/* orientation line — the three beats of the sitting, as caption plate */
+/* orientation line — the three beats of the sitting, as numbered plates */
 .connect__steps {
   margin: 10px 0 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+  padding: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
   flex-wrap: wrap;
-  font: 500 12px/1 var(--font-mono);
-  letter-spacing: 0.04em;
+  list-style: none;
+}
+
+.connect__steps li {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font: 500 12px/1.4 var(--font-mono);
+  letter-spacing: 0.02em;
   color: var(--ink-300);
   background: var(--glass-bg-soft);
   border: 1px solid var(--line);
   border-radius: var(--radius-full);
-  padding: 9px 16px;
+  padding: 9px 14px;
 }
 
-.connect__steps span[aria-hidden="true"] {
-  color: var(--electric-400);
+.connect__steps li span {
+  font: 500 10px/1 var(--font-mono);
+  color: var(--electric-300);
 }
 
 /* ── persona — the magazine-cover reveal ────────────────────────────────── */
@@ -1806,24 +1856,25 @@ a {
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
+  text-wrap: balance;
 }
 
-/* the cover reveal: blur-settles into focus (reduced motion: instant) */
+/* the cover reveal animates FROM visible on mount (@starting-style), so the
+   name is never hidden at rest and no script is needed to show it */
 @media (prefers-reduced-motion: no-preference) {
   .persona-stage .persona-name {
-    filter: blur(10px);
-    opacity: 0;
-    transform: translateY(6px);
     transition:
       filter 640ms var(--ease-out-expo),
       opacity 640ms var(--ease-out-expo),
       transform 640ms var(--ease-out-expo);
   }
 
-  .persona-stage.reveal-in.is-in .persona-name {
-    filter: blur(0);
-    opacity: 1;
-    transform: none;
+  @starting-style {
+    .persona-stage .persona-name {
+      filter: blur(10px);
+      opacity: 0;
+      transform: translateY(6px);
+    }
   }
 }
 
@@ -1895,7 +1946,7 @@ a {
 .gh-gate__label {
   margin: 0;
   font: 500 12px var(--font-mono);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.02em;
   text-transform: lowercase;
   color: var(--ink-300);
 }
@@ -1938,11 +1989,27 @@ a {
 }
 
 .gh-row:hover {
-  transform: translateY(-2px);
   border-color: color-mix(in srgb, var(--electric-300) 42%, transparent);
   box-shadow:
     inset 0 1px 0 var(--glass-highlight),
     var(--shadow-pop);
+}
+
+/* the podium: the top three ranks carry a lit edge and a larger numeral —
+   one signal, different from the card lift above */
+.gh-row--top {
+  border-color: color-mix(in srgb, var(--electric-400) 34%, transparent);
+  background:
+    radial-gradient(
+      120% 140% at 0% 0%,
+      color-mix(in srgb, var(--electric-500) 8%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(180deg, var(--glass-bg), var(--glass-bg-deep));
+}
+
+.gh-row--top .gh-rank {
+  font-size: 32px;
 }
 
 .gh-rank {
@@ -2032,6 +2099,166 @@ a {
   }
 }
 
+/* ── the spread: persona + recap earn two columns on the wall ──────────── */
+
+.persona-spread,
+.recap-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: 24px;
+  align-items: stretch;
+  margin-top: 16px;
+}
+
+.recap-grid {
+  align-items: start;
+  margin-top: 4px;
+}
+
+.persona-spread .persona-stage {
+  margin: 0;
+  height: 100%;
+}
+
+/* the evidence column: the real numbers the model read, as a provenance panel */
+.evidence {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, var(--glass-bg), var(--glass-bg-deep));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    var(--shadow-card);
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.evidence::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 46%;
+  pointer-events: none;
+  background: radial-gradient(
+    60% 90% at 50% 0%,
+    color-mix(in srgb, var(--electric-500) 12%, transparent),
+    transparent 72%
+  );
+}
+
+.evidence__title {
+  margin: 0;
+  font: 500 13px/1 var(--font-mono);
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  color: var(--ink-200);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.evidence__title::before {
+  content: "";
+  width: 14px;
+  height: 2px;
+  background: var(--grad-brand);
+  border-radius: 2px;
+}
+
+.evidence__list {
+  margin: auto 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 20px;
+}
+
+.evidence__list dt {
+  margin: 0 0 4px;
+  font: 500 12px/1.4 var(--font-mono);
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  color: var(--ink-400);
+}
+
+.evidence__list dd {
+  margin: 0;
+  font: 500 24px/1.1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-50);
+}
+
+.evidence__list dd small {
+  font: 400 13px var(--font-sans);
+  color: var(--ink-300);
+}
+
+.evidence__note {
+  margin: auto 0 0;
+  font-size: 13px;
+  color: var(--ink-300);
+  max-width: 40ch;
+}
+
+/* recap: the draft plate left, destinations right */
+.recap-grid .composer {
+  margin-top: 0;
+  height: 100%;
+}
+
+.recap-grid .composer .textarea {
+  min-height: 240px;
+}
+
+.recap-side {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.recap-side .recap-actions {
+  margin-top: 16px;
+}
+
+.recap-side .notice {
+  margin-top: 8px;
+}
+
+/* ── yearline ledger: the plaque names its own provenance ──────────────── */
+
+.yearline-ledger {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px 24px;
+  flex-wrap: wrap;
+}
+
+.yearline-ledger div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.yearline-ledger dt {
+  font: 500 12px/1 var(--font-mono);
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  color: var(--ink-400);
+}
+
+.yearline-ledger dd {
+  margin: 0;
+  font: 500 18px/1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-100);
+}
+
 @media (max-width: 960px) {
   /* stack: wall text first, the fanned deck below it, still lit */
   .connect {
@@ -2048,6 +2275,16 @@ a {
 
   .connect__copy {
     order: 1;
+  }
+
+  /* the spread stacks: subject first, provenance or destinations second */
+  .persona-spread,
+  .recap-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .evidence {
+    order: 2;
   }
 }
 

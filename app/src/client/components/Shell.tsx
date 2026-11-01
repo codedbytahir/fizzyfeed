@@ -113,8 +113,9 @@ export default function Shell() {
             <span />
             <span />
           </span>
-          read-only by default · tokens encrypted at rest · you approve before anything
-          publishes
+          <span className="app-footer__trust">read-only by default</span>
+          <span className="app-footer__trust">tokens encrypted at rest</span>
+          <span className="app-footer__trust">you approve before anything publishes</span>
         </p>
       </footer>
     </div>

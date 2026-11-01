@@ -53,7 +53,7 @@ export default function ShareLinkRow() {
       await toggleShareLink(turningOn);
       status.reload();
       setConfirming(false);
-      say(turningOn ? "public link on — anyone with it can see your cards" : "public link off");
+      say(turningOn ? "public link on: anyone with it can see your cards" : "public link off");
     } catch (err: unknown) {
       const failure = toFailure(err);
       say(failure.message, true);
@@ -88,7 +88,7 @@ export default function ShareLinkRow() {
       window.clearTimeout(copiedTimer.current);
       copiedTimer.current = window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      say("copy blocked by the browser — open the link instead", true);
+      say("copy blocked by the browser: open the link instead", true);
     }
   };
 
@@ -98,9 +98,9 @@ export default function ShareLinkRow() {
   return (
     <section className="share-link-row" aria-labelledby="share-link-label">
       <div className="share-link-row__info">
-        <p className="field-label share-link-row__label" id="share-link-label">
+        <h2 className="field-label share-link-row__label" id="share-link-label">
           public link
-        </p>
+        </h2>
 
         {status.loading && (
           <div className="share-link-row__bar loading__bar" aria-hidden="true">
@@ -157,7 +157,7 @@ export default function ShareLinkRow() {
             </div>
           ) : (
             <p className="share-link-row__hint">
-              anyone with the link can see your year — no post text, just the cards.
+              anyone with the link can see your year: no post text, just the cards.
             </p>
           ))}
       </div>

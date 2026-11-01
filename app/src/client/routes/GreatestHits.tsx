@@ -24,7 +24,6 @@ function formatDate(unixSeconds: number): string {
     ? ""
     : d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 }
-
 /** Optional chapter (spec 07 §2): absent is a fine state; deck is complete without it. */
 export default function GreatestHits() {
   const status = useApi<GhStatus>("/api/greatest-hits/status");
@@ -40,14 +39,6 @@ export default function GreatestHits() {
   const [refreshBusy, setRefreshBusy] = useState(false);
   const [revokeBusy, setRevokeBusy] = useState(false);
   const [note, setNote] = useState<string | null>(null);
-  const [revealed, setRevealed] = useState(false);
-
-  useEffect(() => {
-    if (hits === null) return;
-    setRevealed(false);
-    const t = window.setTimeout(() => setRevealed(true), 30);
-    return () => window.clearTimeout(t);
-  }, [hits]);
 
   const refresh = async () => {
     setRefreshBusy(true);
@@ -59,7 +50,7 @@ export default function GreatestHits() {
       const f = toFailure(err);
       if (isGone(f)) {
         setHits(null);
-        setNote("your token expired — enable it again anytime.");
+        setNote("your token expired: enable it again anytime.");
         status.reload();
       } else {
         setNote(f.message);
@@ -81,7 +72,7 @@ export default function GreatestHits() {
     try {
       await postJson<void>("/api/greatest-hits/enable", { token: trimmed });
       setToken("");
-      setNote("token active — pulling your top posts.");
+      setNote("token active: pulling your top posts.");
       status.reload();
       await refresh();
     } catch (err: unknown) {
@@ -96,10 +87,10 @@ export default function GreatestHits() {
     try {
       await apiFetch<void>("/api/greatest-hits/revoke", { method: "POST" });
       setHits(null);
-      setNote("token revoked — your deck carries on without it.");
+      setNote("token revoked: your deck carries on without it.");
       status.reload();
     } catch {
-      setNote("revoke didn't confirm — try once more.");
+      setNote("revoke didn’t confirm: try once more.");
     } finally {
       setRevokeBusy(false);
     }
@@ -107,14 +98,14 @@ export default function GreatestHits() {
 
   if (status.loading) {
     return (
-      <div className="route route--narrow">
+      <div className="route route--mid">
         <Loading label="checking the optional chapter…" />
       </div>
     );
   }
   if (status.error) {
     return (
-      <div className="route route--narrow">
+      <div className="route route--mid">
         <ErrorState error={status.error} onRetry={status.reload} />
         <p>
           <Link className="linkbtn" to="/app">
@@ -128,18 +119,18 @@ export default function GreatestHits() {
   const enabled = status.data?.enabled === true ? status.data : null;
 
   return (
-    <div className="route route--narrow">
+    <div className="route route--mid">
       <header className="deck-head">
-        <p className="overline">optional chapter</p>
+        <p className="overline">chapter 08 · opt-in</p>
         <h1 className="headline headline--lg">greatest hits</h1>
         {enabled ? (
           <p className="sub">
-            token active since {formatDate(enabled.since)} — used only to read metrics, encrypted,
+            token active since {formatDate(enabled.since)}: used only to read metrics, encrypted,
             one-click revoke. labels are exactly what buffer calls them.
           </p>
         ) : (
           <p className="sub">
-            want your real top posts? paste a buffer personal access token — used only to read
+            want your real top posts? paste a buffer personal access token: used only to read
             metrics, encrypted, one-click revoke.
           </p>
         )}
@@ -158,18 +149,14 @@ export default function GreatestHits() {
             </Button>
           </div>
           {hits === null && (
-            <p className="sub">no pull yet — one click and your nine best posts line up.</p>
+            <p className="sub">no pull yet: one click and your nine best posts line up.</p>
           )}
-          {hits && (
-            <div className={revealed ? "reveal-in is-in" : "reveal-in"}>
-              <HitList hits={hits} />
-            </div>
-          )}
+          {hits && <HitList hits={hits} />}
         </>
       ) : (
         <>
           <p className="sub">
-            optional — your deck is complete without this chapter. it's here for the curious.
+            optional: your deck is complete without this chapter. it’s here for the curious.
           </p>
           <div className="gh-gate">
             <div className="gh-gate__head">
@@ -192,7 +179,7 @@ export default function GreatestHits() {
                   />
                 </svg>
               </span>
-              <p className="gh-gate__label">opt-in — encrypted, revocable</p>
+              <p className="gh-gate__label">opt-in: encrypted, revocable</p>
             </div>
             <form className="gh-form" onSubmit={(e) => void enable(e)}>
               <input
@@ -217,7 +204,7 @@ export default function GreatestHits() {
           <p className="charcount-hint">
             grab a token from{" "}
             <a href={TOKEN_PAGE} target="_blank" rel="noopener noreferrer">
-              buffer's developer settings
+              buffer’s developer settings
             </a>
             . it never leaves the server unencrypted.
           </p>

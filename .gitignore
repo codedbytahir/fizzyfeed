@@ -34,3 +34,6 @@ scripts/_responsive/
 
 # impeccable review captures (design-verification evidence, not source)
 .impeccable/review/
+
+# hallmark redesign working dir (before/after captures, linter records)
+.hallmark/

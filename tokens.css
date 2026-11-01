@@ -81,6 +81,8 @@
   --glow-electric: 0 0 0 1px rgb(10 92 255 / 0.25), 0 12px 48px rgb(10 92 255 / 0.35);
   --shadow-card:   0 8px 30px rgb(5 7 14 / 0.35);
   --shadow-pop:    0 2px 8px rgb(5 7 14 / 0.25), 0 16px 56px rgb(10 92 255 / 0.22);
+  --shadow-nav:    0 12px 40px rgb(5 7 14 / 0.45);
+  --shadow-fan:    0 18px 44px rgb(5 7 14 / 0.5);
 
   /* ---- fluid display scale (min → max) ---- */
   --text-xs:   0.75rem;   /* 12 */

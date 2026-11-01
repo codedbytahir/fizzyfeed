@@ -28,7 +28,8 @@ export default function RecapResults({
                   ✓
                 </span>
                 <span className="result-name">
-                  {r.service} · {name}
+                  <span className="result-service">{r.service}</span>
+                  {name}
                 </span>
                 <span className="result-ok">queued</span>
               </>
@@ -38,9 +39,10 @@ export default function RecapResults({
                   ✗
                 </span>
                 <span className="result-name">
-                  {r.service} · {name}
+                  <span className="result-service">{r.service}</span>
+                  {name}
                 </span>
-                <span className="result-err">{r.error?.message ?? "failed — try again"}</span>
+                <span className="result-err">{r.error?.message ?? "failed, try again"}</span>
                 <button
                   type="button"
                   className="linkbtn"

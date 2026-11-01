@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Deck as DeckData, Persona as PersonaData } from "@shared/types";
-import { apiFetch, toFailure, useApi } from "../lib/api";
+import { apiFetch, formatCount, toFailure, useApi } from "../lib/api";
 import { BRAND_NAME } from "@shared/brand";
 import Chip from "../components/Chip";
 import EmptyState from "../components/EmptyState";
@@ -9,6 +9,49 @@ import ErrorState from "../components/ErrorState";
 import Loading from "../components/Loading";
 
 const MAX_REGENERATIONS = 3;
+
+const MONTHS = [
+  "january", "february", "march", "april", "may", "june",
+  "july", "august", "september", "october", "november", "december",
+] as const;
+
+/** The real figures behind the name, from the same YearStats the model reads. */
+function Evidence({ deck }: { deck: DeckData }) {
+  const { stats } = deck;
+  const hour = String(stats.rhythm.favoriteHour).padStart(2, "0");
+  return (
+    <aside className="evidence">
+      <p className="evidence__title">the evidence</p>
+      <dl className="evidence__list">
+        <div>
+          <dt>longest streak</dt>
+          <dd>
+            {formatCount(stats.streaks.longest)} <small>days</small>
+          </dd>
+        </div>
+        <div>
+          <dt>posts a week</dt>
+          <dd>{formatCount(stats.rhythm.postsPerWeek)}</dd>
+        </div>
+        <div>
+          <dt>favorite hour</dt>
+          <dd>
+            {hour}:00 <small>utc</small>
+          </dd>
+        </div>
+        <div>
+          <dt>best month</dt>
+          <dd>
+            {formatCount(stats.peaks.bestMonthPosts)} <small>in {MONTHS[stats.peaks.bestMonth]}</small>
+          </dd>
+        </div>
+      </dl>
+      <p className="evidence__note">
+        the real numbers the model read. nothing invented, nothing inflated.
+      </p>
+    </aside>
+  );
+}
 
 /** Step 4 — the alter ego (spec 05 §4): cached first name, ≤3 regenerations. */
 export default function Persona() {
@@ -19,24 +62,16 @@ export default function Persona() {
   }, []);
 
   const [persona, setPersona] = useState<PersonaData | null>(null);
-  const [revealed, setRevealed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
   const [left, setLeft] = useState(MAX_REGENERATIONS);
   const [exhausted, setExhausted] = useState(false);
 
-  // adopt an existing persona from the deck, then reveal gently
+  // adopt an existing persona from the deck
   useEffect(() => {
     const existing = deck.data?.persona;
     if (existing) setPersona(existing);
   }, [deck.data]);
-
-  useEffect(() => {
-    if (!persona) return;
-    setRevealed(false);
-    const t = window.setTimeout(() => setRevealed(true), 30);
-    return () => window.clearTimeout(t);
-  }, [persona]);
 
   const generate = async (regen: boolean) => {
     setBusy(true);
@@ -95,64 +130,73 @@ export default function Persona() {
   }
 
   return (
-    <div className="route route--narrow">
+    <div className="route route--spread">
       <header className="deck-head">
-        <p className="overline">step 04 — the alter ego</p>
+        <p className="overline">step 04 · the alter ego</p>
         <h1 className="headline headline--lg">your alter ego</h1>
         <p className="sub">
-          the model reads your real stats — rhythm, streaks, topics — and names the poster behind
+          the model reads your real stats (rhythm, streaks, topics) and names the poster behind
           them. no flattery, just a mirror.
         </p>
       </header>
 
       {persona ? (
-        <div className={revealed ? "persona-stage reveal-in is-in" : "persona-stage reveal-in"}>
-          <span className="persona-stage__marks" aria-hidden="true">
-            <span />
-          </span>
-          <p className="persona-name">{persona.name}</p>
-          <p className="persona-origin">{persona.origin}</p>
-          <div className="traits">
-            {persona.traits.map((trait) => (
-              <Chip key={trait}>{trait}</Chip>
-            ))}
-          </div>
-          <div className="persona-actions">
-            <button
-              type="button"
-              className="btn btn--ghost"
-              onClick={() => void generate(true)}
-              disabled={busy || exhausted || left === 0}
-            >
-              {busy ? "rethinking…" : "regenerate"}
-            </button>
-            <span className="persona-left" role="status" aria-live="polite">
-              {exhausted
-                ? "no regenerations left — the name stands."
-                : `${left} of ${MAX_REGENERATIONS} regenerations left`}
+        <div className="persona-spread">
+          <section className="persona-stage">
+            <span className="persona-stage__marks" aria-hidden="true">
+              <span />
             </span>
-          </div>
+            {/* key remounts the cover per persona so @starting-style replays */}
+            <p className="persona-name" key={persona.name}>
+              {persona.name}
+            </p>
+            <p className="persona-origin">{persona.origin}</p>
+            <div className="traits">
+              {persona.traits.map((trait) => (
+                <Chip key={trait}>{trait}</Chip>
+              ))}
+            </div>
+            <div className="persona-actions">
+              <button
+                type="button"
+                className="btn btn--ghost"
+                onClick={() => void generate(true)}
+                disabled={busy || exhausted || left === 0}
+              >
+                {busy ? "rethinking…" : "regenerate"}
+              </button>
+              <span className="persona-left" role="status" aria-live="polite">
+                {exhausted
+                  ? "no regenerations left: the name stands."
+                  : `${left} of ${MAX_REGENERATIONS} regenerations left`}
+              </span>
+            </div>
+          </section>
+          {deck.data && <Evidence deck={deck.data} />}
         </div>
       ) : (
-        <div className="persona-stage persona-stage--await">
-          <span className="persona-stage__marks" aria-hidden="true">
-            <span />
-          </span>
-          <h2 className="headline headline--lg">the name is waiting</h2>
-          <p className="sub">
-            seven chapters hang on the wall; the sixth carries a name the model will read out of
-            your real rhythm. no flattery — just a mirror.
-          </p>
-          <div className="persona-actions">
-            <button
-              type="button"
-              className="btn btn--primary"
-              onClick={() => void generate(false)}
-              disabled={busy}
-            >
-              {busy ? "reading your year…" : "name my year"}
-            </button>
-          </div>
+        <div className="persona-spread">
+          <section className="persona-stage persona-stage--await">
+            <span className="persona-stage__marks" aria-hidden="true">
+              <span />
+            </span>
+            <h2 className="headline headline--lg">the name is waiting</h2>
+            <p className="sub">
+              seven chapters hang on the wall; the sixth carries a name the model will read out of
+              your real rhythm. no flattery, just a mirror.
+            </p>
+            <div className="persona-actions">
+              <button
+                type="button"
+                className="btn btn--primary"
+                onClick={() => void generate(false)}
+                disabled={busy}
+              >
+                {busy ? "reading your year…" : "name my year"}
+              </button>
+            </div>
+          </section>
+          {deck.data && <Evidence deck={deck.data} />}
         </div>
       )}
 

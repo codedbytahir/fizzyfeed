@@ -47,7 +47,7 @@ function ShareRow({ n, onNote }: { n: number; onNote?: (message: string) => void
       onNote?.(`card ${pad2(n)} link copied`);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      onNote?.(`copy blocked by the browser — the link is ${url}`);
+      onNote?.(`copy blocked by the browser; the link is ${url}`);
     }
   };
   return (
@@ -74,7 +74,7 @@ export default function CardSurface({
   onShare?: (n: number, trigger: HTMLButtonElement) => void;
 }) {
   return (
-    <article className="card">
+    <article className={card.kind === "recap" ? "card card--wide" : "card"}>
       <div
         className="card__face"
         data-gradient={card.gradient}
@@ -95,7 +95,7 @@ export default function CardSurface({
           <button
             type="button"
             className="linkbtn"
-            aria-label={`share card ${pad2(card.n)} — ${KIND_LABELS[card.kind]}`}
+            aria-label={`share card ${pad2(card.n)}: ${KIND_LABELS[card.kind]}`}
             onClick={(e) => onShare(card.n, e.currentTarget)}
           >
             share…

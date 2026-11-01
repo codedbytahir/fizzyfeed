@@ -38,7 +38,7 @@ function PersonaPlaceholder() {
   );
 }
 
-/** The deck forming — seven ghost slots on the wall while the year renders. */
+/** The deck forming: seven ghost slots on the wall while the year renders. */
 function DeckSkeleton() {
   return (
     <div className="deck-skeleton" aria-hidden="true">
@@ -137,7 +137,7 @@ export default function Deck() {
               <StatCounter value={status.postsIndexed} /> posts indexed
             </>
           }
-          hint="we page through 12 months of buffer history — the deck opens the moment it's done."
+          hint="we page through 12 months of buffer history; the deck opens the moment it’s done."
         />
         <DeckSkeleton />
       </>
@@ -177,11 +177,9 @@ export default function Deck() {
         <ShareLinkRow />
         <div className="deck-foot">
           <Link className="linkbtn" to="/app/greatest-hits">
-            greatest hits — your real top posts, opt-in
+            greatest hits: your real top posts, opt-in
           </Link>
-          <span className="deck-foot__mono">
-            {formatCount(deck.data.stats.totals.posts)} posts · {deck.data.stats.year}
-          </span>
+          <span className="deck-foot__mono">{deck.data.stats.year}</span>
         </div>
       </>
     );
@@ -190,13 +188,13 @@ export default function Deck() {
   return (
     <div className="route">
       <header className="deck-head">
-        <p className="overline">step 03 — the deck</p>
+        <p className="overline">step 03 · the deck</p>
         <div className="deck-head__row">
           <div>
             <h1 className="headline headline--lg">
               {deck.data && !deck.data.empty ? `${deck.data.year}, drawn` : "your deck"}
             </h1>
-            <p className="sub">no fake numbers — every card comes from your posts.</p>
+            <p className="sub">no fake numbers: every card comes from your posts.</p>
           </div>
           <div className="deck-actions">
             <Link className="btn btn--ghost" to="/app/persona">
@@ -210,12 +208,31 @@ export default function Deck() {
         {deck.data && !deck.data.empty && (
           <div className="yearline-wrap">
             <div className="yearline-head">
-              <p className="yearline-title">posting rhythm — the year, daily</p>
+              <p className="yearline-title">the year, daily</p>
+              <dl className="yearline-ledger">
+                <div>
+                  <dt>posts</dt>
+                  <dd>
+                    <StatCounter value={deck.data.stats.totals.posts} />
+                  </dd>
+                </div>
+                <div>
+                  <dt>words</dt>
+                  <dd>{formatCount(deck.data.stats.totals.words)}</dd>
+                </div>
+                <div>
+                  <dt>active days</dt>
+                  <dd>{formatCount(deck.data.stats.totals.activeDays)}</dd>
+                </div>
+                <div>
+                  <dt>channels</dt>
+                  <dd>{deck.data.stats.totals.channels}</dd>
+                </div>
+              </dl>
             </div>
             <Yearline daily={deck.data.stats.daily} year={deck.data.stats.year} />
             <p className="yearline-caption">
-              {formatCount(deck.data.stats.totals.activeDays)} active days · every one real ·
-              hours are UTC (your channels are global)
+              drawn from every timestamp of the year, hours are utc (your channels are global)
             </p>
           </div>
         )}

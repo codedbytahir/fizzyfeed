@@ -114,100 +114,104 @@ export default function Recap() {
   const allQueued = results !== null && results.every((r) => r.ok);
 
   return (
-    <div className="route route--narrow">
+    <div className="route route--spread">
       <header className="deck-head">
-        <p className="overline">step 05 — the recap</p>
+        <p className="overline">step 05 · the recap</p>
         <h1 className="headline headline--lg">queue the recap</h1>
         <p className="sub">
-          one post, every channel. edit the text if you like — your words go out as written.
+          one post, every channel. edit the text if you like; your words go out as written.
         </p>
       </header>
 
-      {/* the draft hangs as a framed piece — edits stay local until the click */}
-      <div className="composer">
-        <div className="composer__head">
-          <p className="composer__title">the draft</p>
-          <span
-            id="recap-charcount"
-            className={text.length > LIMIT - 20 ? "charcount charcount--warn" : "charcount"}
-          >
-            {text.length} / {LIMIT}
-          </span>
-        </div>
-        <label className="sr-only" htmlFor="recap-text">
-          recap text
-        </label>
-        <textarea
-          id="recap-text"
-          className="textarea"
-          value={text}
-          maxLength={LIMIT}
-          rows={7}
-          aria-label="recap text"
-          aria-describedby="recap-charcount"
-          onChange={(e) => setText(e.target.value.slice(0, LIMIT))}
-        />
-        <div className="charcount-row">
-          <span className="charcount-hint">enforced here and again on the server.</span>
-        </div>
-      </div>
+      <div className="recap-grid">
+        {/* the draft hangs as a framed piece; edits stay local until the click */}
+        <section className="composer" aria-label="the draft">
+          <div className="composer__head">
+            <p className="composer__title">the draft</p>
+            <span
+              id="recap-charcount"
+              className={text.length > LIMIT - 20 ? "charcount charcount--warn" : "charcount"}
+            >
+              {text.length} / {LIMIT}
+            </span>
+          </div>
+          <label className="sr-only" htmlFor="recap-text">
+            recap text
+          </label>
+          <textarea
+            id="recap-text"
+            className="textarea"
+            value={text}
+            maxLength={LIMIT}
+            rows={7}
+            aria-label="recap text"
+            aria-describedby="recap-charcount"
+            onChange={(e) => setText(e.target.value.slice(0, LIMIT))}
+          />
+          <div className="charcount-row">
+            <span className="charcount-hint">enforced here and again on the server.</span>
+          </div>
+        </section>
 
-      {data.channels.length === 0 ? (
-        <EmptyState
-          title="no channels connected"
-          body="the recap queues everywhere you publish — connect a channel on buffer first."
-          action={
-            <Link className="btn btn--ghost" to="/app">
-              ← your deck
-            </Link>
-          }
-        />
-      ) : (
-        <>
-          <ChannelPicker channels={data.channels} checked={checked} onChange={toggle} />
-          <p className="picker-count" role="status">
-            {checked.size} of {data.channels.length} channels will carry it
-          </p>
-        </>
-      )}
+        <aside className="recap-side">
+          {data.channels.length === 0 ? (
+            <EmptyState
+              title="no channels connected"
+              body="the recap queues everywhere you publish; connect a channel on buffer first."
+              action={
+                <Link className="btn btn--ghost" to="/app">
+                  ← your deck
+                </Link>
+              }
+            />
+          ) : (
+            <>
+              <ChannelPicker channels={data.channels} checked={checked} onChange={toggle} />
+              <p className="picker-count" role="status">
+                {checked.size} of {data.channels.length} channels will carry it
+              </p>
+            </>
+          )}
 
-      {needsUpgrade && (
-        <div className="notice">
-          <p>
-            this needs write access — you'll approve it on buffer's screen. your edited text is
-            kept right here, nothing is lost.
-          </p>
-        </div>
-      )}
-      {failure && failure.code !== "upgrade_required" && (
-        <p className="inline-note" role="alert">
-          {failure.message}
-        </p>
-      )}
+          {needsUpgrade && (
+            <div className="notice">
+              <p>
+                this needs write access: you’ll approve it on buffer’s screen. your edited text is
+                kept right here, nothing is lost.
+              </p>
+            </div>
+          )}
+          {failure && failure.code !== "upgrade_required" && (
+            <p className="inline-note" role="alert">
+              {failure.message}
+            </p>
+          )}
 
-      <div className="recap-actions">
-        {needsUpgrade ? (
-          <a className="btn btn--primary" href={upgradeHref}>
-            upgrade on buffer
-          </a>
-        ) : (
-          <button
-            type="button"
-            className="btn btn--primary"
-            disabled={pending || checked.size === 0 || text.length === 0 || text.length > LIMIT}
-            onClick={() => void submit([...checked])}
-          >
-            {pending ? "queuing…" : "queue the recap"}
-          </button>
-        )}
-        <span className="recap-consent">
-          the click is the consent — nothing publishes without it.
-        </span>
+          <div className="recap-actions">
+            {needsUpgrade ? (
+              <a className="btn btn--primary" href={upgradeHref}>
+                upgrade on buffer
+              </a>
+            ) : (
+              <button
+                type="button"
+                className="btn btn--primary"
+                disabled={pending || checked.size === 0 || text.length === 0 || text.length > LIMIT}
+                onClick={() => void submit([...checked])}
+              >
+                {pending ? "queuing…" : "queue the recap"}
+              </button>
+            )}
+            <span className="recap-consent">
+              the click is the consent: nothing publishes without it.
+            </span>
+          </div>
+        </aside>
       </div>
 
       {results && (
         <div className="recap-done">
-          {allQueued && <h2 className="headline headline--sm">queued — check your buffer dashboard.</h2>}
+          {allQueued && <h2 className="headline headline--sm">queued: check your buffer dashboard.</h2>}
           <RecapResults
             results={results}
             channels={data.channels}

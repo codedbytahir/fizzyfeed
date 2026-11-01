@@ -5,7 +5,7 @@ function DeckGlyph() {
   const rawId = useId();
   const gradId = `g${rawId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
   return (
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" focusable="false">
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" focusable="false" aria-hidden="true">
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" className="state-grad-a" />

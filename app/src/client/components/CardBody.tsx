@@ -50,7 +50,7 @@ export default function CardBody({ card }: { card: CardData }) {
             <span className="card__moment-unit">days in a row</span>
           </p>
           <p className="card__caption">
-            with a busiest week of {formatCount(card.busiestWeekPosts)} posts — momentum you can
+            with a busiest week of {formatCount(card.busiestWeekPosts)} posts: momentum you can
             point at.
           </p>
         </div>
@@ -84,7 +84,7 @@ export default function CardBody({ card }: { card: CardData }) {
             {formatCount(card.bestMonthPosts)}
             <span className="card__moment-unit">posts in {card.bestMonth}</span>
           </p>
-          <p className="card__caption">your biggest month — the year crested here.</p>
+          <p className="card__caption">your biggest month. the year crested here.</p>
         </div>
       );
     case "persona":
@@ -112,7 +112,7 @@ export default function CardBody({ card }: { card: CardData }) {
               </div>
             ))}
           </dl>
-          <p className="card__caption">queue your recap post — one click, every channel.</p>
+          <p className="card__caption">queue your recap post: one click, every channel.</p>
         </div>
       );
     }

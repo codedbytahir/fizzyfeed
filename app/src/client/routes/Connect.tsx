@@ -8,7 +8,7 @@ import Chip from "../components/Chip";
  * Step 1 — connect (T13). Full navigation to the oauth endpoint, never a
  * client route. Already-connected visitors auto-resume into the deck.
  *
- * Gallery entrance: wall text left, the mechanism itself right — seven real
+ * Gallery entrance: wall text left, the mechanism itself right: seven real
  * story cards fanned on the lit wall. The demo is the hero.
  */
 
@@ -48,7 +48,7 @@ export default function Connect() {
         </h1>
         <p className="sub connect__sub">
           connect buffer, and 12 months of publishing becomes 7 story cards, an alter ego, and a
-          recap queued everywhere — your numbers, honestly drawn.
+          recap queued everywhere. your numbers, honestly drawn.
         </p>
         <div className="connect__chips">
           <Chip>read-only</Chip>
@@ -86,19 +86,29 @@ export default function Connect() {
                 </span>
               </a>
               <p className="connect__micro">
-                read-only access — you approve every step on buffer's screen.
+                read-only access: you approve every step on buffer’s screen.
               </p>
             </>
           )}
         </div>
-        <p className="connect__steps">
-          connect <span aria-hidden="true">→</span> we draw the year{" "}
-          <span aria-hidden="true">→</span> you queue the recap
-        </p>
+        <ol className="connect__steps">
+          <li>
+            <span aria-hidden="true">01</span>
+            connect buffer
+          </li>
+          <li>
+            <span aria-hidden="true">02</span>
+            we draw the year
+          </li>
+          <li>
+            <span aria-hidden="true">03</span>
+            you queue the recap
+          </li>
+        </ol>
       </div>
 
-      <div className="connect__stage" aria-hidden="true">
-        <div className="deck-fan">
+      <figure className="connect__stage">
+        <div aria-hidden="true" className="deck-fan">
           {FAN_CARDS.map((card) => (
             <span key={card.idx} className="fan-card" style={{ background: card.gradient }}>
               <span className="fan-card__idx">{card.idx}</span>
@@ -106,7 +116,10 @@ export default function Connect() {
             </span>
           ))}
         </div>
-      </div>
+        <figcaption className="connect__plate">
+          the deck your year becomes: one card per chapter, hung in the order you lived it
+        </figcaption>
+      </figure>
     </section>
   );
 }

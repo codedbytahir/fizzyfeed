@@ -16,6 +16,54 @@
   margin-top: 8px;
 }
 
+/* the finale: chapter 07 spans the full row and closes the wall (no orphan) */
+.deck-grid .card--wide {
+  grid-column: 1 / -1;
+}
+
+.card--wide .card__face {
+  aspect-ratio: auto;
+  min-height: 300px;
+  padding: 32px 36px;
+}
+
+.card--wide .card__body {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 16px 40px;
+  align-items: center;
+  padding: 24px 28px;
+}
+
+.card--wide .card__headline {
+  font-size: clamp(28px, 3vw, 38px);
+}
+
+.card--wide .totals-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px 24px;
+}
+
+.card--wide .card__caption {
+  grid-column: 1 / -1;
+  max-width: 52ch;
+}
+
+@media (max-width: 760px) {
+  .card--wide .card__face {
+    padding: 24px;
+  }
+
+  .card--wide .card__body {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 20px;
+  }
+
+  .card--wide .totals-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 /* ── deck skeleton: the deck forming — ghost cards where cards will hang ── */
 
 .deck-skeleton {
@@ -69,7 +117,7 @@
   top: 22px;
   right: 22px;
   font: 500 12px/1 var(--font-mono);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.02em;
   color: var(--ink-500);
   font-variant-numeric: tabular-nums;
 }
@@ -255,7 +303,7 @@
   top: 24px;
   right: 24px;
   font: 500 13px/1 var(--font-mono);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.02em;
   color: color-mix(in srgb, var(--ink-50) 80%, transparent);
   font-variant-numeric: tabular-nums;
   background: var(--card-scrim);
@@ -266,7 +314,7 @@
 .card__overline {
   margin: 0;
   font: 500 12px/1 var(--font-mono);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.02em;
   text-transform: lowercase;
   color: color-mix(in srgb, var(--ink-50) 70%, transparent);
   align-self: flex-start;
@@ -294,10 +342,12 @@
   letter-spacing: -0.02em;
   line-height: 1.05;
   font-size: clamp(25px, 2.7vw, 33px);
+  text-wrap: balance;
 }
 
 .card__headline--name {
   font-size: clamp(28px, 3.2vw, 40px);
+  text-wrap: balance;
 }
 
 .card__moment {
@@ -426,7 +476,7 @@
 .totals-cell dt {
   margin: 0 0 2px;
   font: 500 11px var(--font-mono);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.02em;
   text-transform: lowercase;
   color: color-mix(in srgb, var(--ink-50) 65%, transparent);
 }
@@ -483,7 +533,8 @@
 }
 
 .card__dot--ghost {
-  background: var(--ink-500);
+  background: transparent;
+  border: 1px solid var(--ink-500);
   box-shadow: none;
 }
 
@@ -491,12 +542,21 @@
   color: var(--ink-300);
 }
 
-/* share row under each card */
+/* share row under each card — quieter than the face, one signal on hover */
 .card__actions {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   padding: 0 4px;
+}
+
+.card__actions .linkbtn {
+  font-size: 13px;
+  color: var(--ink-400);
+}
+
+.card__actions .linkbtn:hover {
+  color: var(--ink-200);
 }
 
 /* ── yearline spark (BRAND-GUIDELINES §3: the recap moment) ─────────────── */
@@ -548,24 +608,28 @@
 .yearline-caption {
   margin: 10px 0 0;
   font: 500 12px var(--font-mono);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.02em;
   color: var(--ink-300); /* 8.04:1 on ink-900 (ink-400 was 4.46) */
   font-variant-numeric: tabular-nums;
 }
 
 /* ── gentle reveal (persona, greatest hits) ─────────────────────────────── */
 
-.reveal-in {
-  opacity: 0;
-  transform: translateY(14px) scale(0.985);
-}
+/* visible at rest (gate law: no script-dependent blank); the entrance runs
+   once from @starting-style when the element mounts, reduced-motion stills it */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-in {
+    transition:
+      opacity 500ms var(--ease-out-expo),
+      transform 500ms var(--ease-out-expo);
+  }
 
-.reveal-in.is-in {
-  opacity: 1;
-  transform: none;
-  transition:
-    opacity 500ms var(--ease-out-expo),
-    transform 500ms var(--ease-out-expo);
+  @starting-style {
+    .reveal-in {
+      opacity: 0;
+      transform: translateY(14px) scale(0.985);
+    }
+  }
 }
 
 /* reduced motion: the hover lift and entrance go still (this file loads after
