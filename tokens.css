@@ -110,4 +110,11 @@
   --aurora-violet:   color-mix(in srgb, var(--violet-500) 16%, transparent);
   --aurora-volt:     color-mix(in srgb, var(--volt-500) 12%, transparent);
   --grad-safe:       linear-gradient(120deg, var(--electric-300) 0%, var(--volt-400) 100%);
+
+  /* gallery-hang kit (composition pass) — derived from the core scales only */
+  --plate-bg:        color-mix(in srgb, var(--ink-950) 58%, transparent);
+  --spot-electric:   color-mix(in srgb, var(--electric-500) 26%, transparent);
+  --spot-volt:       color-mix(in srgb, var(--volt-500) 16%, transparent);
+  --scroll-thumb:    color-mix(in srgb, var(--ink-400) 55%, var(--ink-600));
+  --scroll-track:    transparent;
 }

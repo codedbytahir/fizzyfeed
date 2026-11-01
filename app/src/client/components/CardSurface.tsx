@@ -4,18 +4,19 @@ import { BRAND_NAME } from "@shared/brand";
 import CardBody from "./CardBody";
 
 /**
- * The seven fixed card gradients (T13 mapping) — token references only,
- * never raw hex (AGENTS.md §1.3). Text stays white on every face,
- * including fizz, per brand law.
+ * The seven fixed card gradients (T13 mapping) — referenced straight from
+ * tokens.css so client drift is impossible (AGENTS.md §1.3). Text stays white
+ * on every face, including fizz, per brand law; the --card-scrim carries AA.
+ * The PNG renderer mirrors the same stops in worker/lib/gradients.ts.
  */
 const GRADIENTS = {
-  bolt: "linear-gradient(135deg, var(--electric-500) 0%, var(--volt-500) 100%)",
-  aurora: "linear-gradient(135deg, var(--violet-500) 0%, var(--electric-500) 100%)",
-  fizz: "linear-gradient(135deg, var(--spark-500) 0%, var(--volt-500) 100%)",
-  grape: "linear-gradient(135deg, var(--violet-600) 0%, var(--electric-700) 100%)",
-  sunset: "linear-gradient(135deg, var(--violet-400) 0%, var(--spark-500) 100%)",
-  nebula: "linear-gradient(135deg, var(--electric-700) 0%, var(--violet-500) 100%)",
-  coral: "linear-gradient(135deg, var(--electric-500) 0%, var(--spark-500) 100%)",
+  bolt: "var(--grad-bolt)",
+  aurora: "var(--grad-aurora)",
+  fizz: "var(--grad-fizz)",
+  grape: "var(--grad-grape)",
+  sunset: "var(--grad-sunset)",
+  nebula: "var(--grad-nebula)",
+  coral: "var(--grad-coral)",
 } as const satisfies Record<CardGradient, string>;
 
 const KIND_LABELS = {
@@ -50,14 +51,14 @@ function ShareRow({ n, onNote }: { n: number; onNote?: (message: string) => void
     }
   };
   return (
-    <div className="card__actions">
+    <>
       <button type="button" className="linkbtn" onClick={() => void copy()}>
         {copied ? "copied" : "copy link"}
       </button>
       <a className="linkbtn" href={`/api/cards/${n}.png`} download={`card-${pad2(n)}.png`}>
         download
       </a>
-    </div>
+    </>
   );
 }
 
@@ -65,13 +66,20 @@ function ShareRow({ n, onNote }: { n: number; onNote?: (message: string) => void
 export default function CardSurface({
   card,
   onNote,
+  onShare,
 }: {
   card: CardData;
   onNote?: (message: string) => void;
+  /** present → a "share…" action joins the row and hands focus back on close */
+  onShare?: (n: number, trigger: HTMLButtonElement) => void;
 }) {
   return (
     <article className="card">
-      <div className="card__face" data-gradient={card.gradient} style={{ background: GRADIENTS[card.gradient] }}>
+      <div
+        className="card__face"
+        data-gradient={card.gradient}
+        style={{ background: GRADIENTS[card.gradient] }}
+      >
         <p className="card__overline">{chapterOverline(card)}</p>
         <span className="card__index" aria-hidden="true">
           {pad2(card.n)}
@@ -82,7 +90,19 @@ export default function CardSurface({
           <span className="card__brand">{BRAND_NAME}</span>
         </footer>
       </div>
-      <ShareRow n={card.n} onNote={onNote} />
+      <div className="card__actions">
+        {onShare && (
+          <button
+            type="button"
+            className="linkbtn"
+            aria-label={`share card ${pad2(card.n)} — ${KIND_LABELS[card.kind]}`}
+            onClick={(e) => onShare(card.n, e.currentTarget)}
+          >
+            share…
+          </button>
+        )}
+        <ShareRow n={card.n} onNote={onNote} />
+      </div>
     </article>
   );
 }

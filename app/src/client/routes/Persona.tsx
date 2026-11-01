@@ -107,6 +107,9 @@ export default function Persona() {
 
       {persona ? (
         <div className={revealed ? "persona-stage reveal-in is-in" : "persona-stage reveal-in"}>
+          <span className="persona-stage__marks" aria-hidden="true">
+            <span />
+          </span>
           <p className="persona-name">{persona.name}</p>
           <p className="persona-origin">{persona.origin}</p>
           <div className="traits">
@@ -131,15 +134,25 @@ export default function Persona() {
           </div>
         </div>
       ) : (
-        <div className="persona-stage">
-          <button
-            type="button"
-            className="btn btn--primary"
-            onClick={() => void generate(false)}
-            disabled={busy}
-          >
-            {busy ? "reading your year…" : "name my year"}
-          </button>
+        <div className="persona-stage persona-stage--await">
+          <span className="persona-stage__marks" aria-hidden="true">
+            <span />
+          </span>
+          <h2 className="headline headline--lg">the name is waiting</h2>
+          <p className="sub">
+            seven chapters hang on the wall; the sixth carries a name the model will read out of
+            your real rhythm. no flattery — just a mirror.
+          </p>
+          <div className="persona-actions">
+            <button
+              type="button"
+              className="btn btn--primary"
+              onClick={() => void generate(false)}
+              disabled={busy}
+            >
+              {busy ? "reading your year…" : "name my year"}
+            </button>
+          </div>
         </div>
       )}
 

@@ -4,12 +4,13 @@ import { apiFetch } from "../lib/api";
 import { useMe } from "../lib/me";
 import { BRAND_NAME } from "@shared/brand";
 
-/** Section nav shown once a session is connected — NavLink drives the active state. */
+/** Section nav shown once a session is connected — NavLink drives the active state.
+ *  The mono index is the product's 5-step flow, carried in the chrome. */
 const NAV_LINKS = [
-  { to: "/app", label: "deck", end: true },
-  { to: "/app/persona", label: "persona", end: false },
-  { to: "/app/recap", label: "recap", end: false },
-  { to: "/app/greatest-hits", label: "greatest hits", end: false },
+  { to: "/app", label: "deck", idx: "01", end: true },
+  { to: "/app/persona", label: "persona", idx: "04", end: false },
+  { to: "/app/recap", label: "recap", idx: "05", end: false },
+  { to: "/app/greatest-hits", label: "greatest hits", idx: "+", end: false },
 ] as const;
 
 /**
@@ -20,8 +21,17 @@ export default function Shell() {
   const me = useMe();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => () => setBusy(false), []);
+
+  // the nav gains weight once the wall scrolls under it
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const disconnect = async () => {
     setBusy(true);
@@ -41,7 +51,7 @@ export default function Shell() {
       <a className="skip-link" href="#main">
         skip to content
       </a>
-      <nav className="app-nav" aria-label="primary">
+      <nav className={scrolled ? "app-nav is-scrolled" : "app-nav"} aria-label="primary">
         <div className="app-nav__inner">
           <Link to="/" className="wordmark" aria-label={`${BRAND_NAME} — home`}>
             {BRAND_NAME}
@@ -59,6 +69,9 @@ export default function Shell() {
                       .join(" ")
                   }
                 >
+                  <span className="app-nav__idx" aria-hidden="true">
+                    {item.idx}
+                  </span>
                   {item.label}
                 </NavLink>
               ))}
@@ -95,7 +108,13 @@ export default function Shell() {
       </main>
       <footer className="app-footer">
         <p className="app-footer__line">
-          read-only by default · tokens encrypted at rest · you approve before anything publishes
+          <span className="app-footer__fizz" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+          read-only by default · tokens encrypted at rest · you approve before anything
+          publishes
         </p>
       </footer>
     </div>

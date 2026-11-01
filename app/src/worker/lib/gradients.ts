@@ -8,15 +8,19 @@
  */
 import type { CardGradient } from "../../shared/types";
 
-/** [head, tail] stops for `linear-gradient(135deg, head 0%, tail 100%)`. */
+/** [head, tail] stops for `linear-gradient(135deg, head 0%, tail 100%)`.
+ *  Restored 2026-11 to the committed palette — tokens.css `--grad-*`,
+ *  BRAND-GUIDELINES §4 and spec 00 §4 agree on these stops; the previous
+ *  six off-palette pairs were a drift the connect fan's token-true colors
+ *  exposed (finish review, rebuild directive 1). */
 export const CARD_GRADIENTS: Record<CardGradient, [string, string]> = {
-  bolt: ["#0A5CFF", "#00D5FF"], /* token: electric-500 → volt-500 */
-  aurora: ["#6333FF", "#0A5CFF"], /* token: violet-500 → electric-500 */
-  fizz: ["#C8FF4D", "#00D5FF"], /* token: spark-500 → volt-500 */
-  grape: ["#4A1FD9", "#0037B0"], /* token: violet-600 → electric-700 */
-  sunset: ["#9A6BFF", "#C8FF4D"], /* token: violet-400 → spark-500 */
-  nebula: ["#0037B0", "#6333FF"], /* token: electric-700 → violet-500 */
-  coral: ["#0A5CFF", "#C8FF4D"], /* token: electric-500 → spark-500 */
+  bolt: ["#0A5CFF", "#00D5FF"], /* token: --grad-bolt (electric-500 → volt-500) */
+  aurora: ["#00D5FF", "#00FFA3"], /* token: --grad-aurora (volt-500 → #00FFA3) */
+  fizz: ["#C8FF4D", "#00E5A0"], /* token: --grad-fizz (spark-500 → #00E5A0) */
+  grape: ["#A855F7", "#6366FA"], /* token: --grad-grape (#A855F7 → #6366FA) */
+  sunset: ["#FF8A00", "#FF3D77"], /* token: --grad-sunset (#FF8A00 → #FF3D77) */
+  nebula: ["#6333FF", "#0A5CFF"], /* token: --grad-nebula (violet-500 → electric-500) */
+  coral: ["#FF5C5C", "#FF9E2C"], /* token: --grad-coral (#FF5C5C → #FF9E2C) */
 };
 
 /** App background ink (dark-first canvas, AGENTS.md §1.4). */

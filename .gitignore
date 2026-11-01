@@ -31,3 +31,6 @@ scripts/_benchmark/
 scripts/_fx06tour/
 scripts/_look/
 scripts/_responsive/
+
+# impeccable review captures (design-verification evidence, not source)
+.impeccable/review/

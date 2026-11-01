@@ -171,20 +171,44 @@ export default function GreatestHits() {
           <p className="sub">
             optional — your deck is complete without this chapter. it's here for the curious.
           </p>
-          <form className="gh-form" onSubmit={(e) => void enable(e)}>
-            <input
-              type="password"
-              className="input"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              aria-label="buffer personal access token"
-              placeholder="paste your token — it stays server-side"
-              autoComplete="off"
-            />
-            <Button type="submit" disabled={enableBusy}>
-              {enableBusy ? "checking…" : "enable"}
-            </Button>
-          </form>
+          <div className="gh-gate">
+            <div className="gh-gate__head">
+              <span className="gh-gate__glyph" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" focusable="false">
+                  <rect
+                    x="3.2"
+                    y="7"
+                    width="9.6"
+                    height="6.5"
+                    rx="1.6"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                  />
+                  <path
+                    d="M5.4 7V5.2a2.6 2.6 0 0 1 5.2 0V7"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
+              <p className="gh-gate__label">opt-in — encrypted, revocable</p>
+            </div>
+            <form className="gh-form" onSubmit={(e) => void enable(e)}>
+              <input
+                type="password"
+                className="input"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                aria-label="buffer personal access token"
+                placeholder="paste your token — it stays server-side"
+                autoComplete="off"
+              />
+              <Button type="submit" disabled={enableBusy}>
+                {enableBusy ? "checking…" : "enable"}
+              </Button>
+            </form>
+          </div>
           {enableError && (
             <p className="inline-note" role="alert">
               {enableError}

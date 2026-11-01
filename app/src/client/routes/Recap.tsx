@@ -123,27 +123,33 @@ export default function Recap() {
         </p>
       </header>
 
-      <label className="field-label" htmlFor="recap-text">
-        recap text
-      </label>
-      <textarea
-        id="recap-text"
-        className="textarea"
-        value={text}
-        maxLength={LIMIT}
-        rows={7}
-        aria-label="recap text"
-        aria-describedby="recap-charcount"
-        onChange={(e) => setText(e.target.value.slice(0, LIMIT))}
-      />
-      <div className="charcount-row">
-        <span
-          id="recap-charcount"
-          className={text.length > LIMIT - 20 ? "charcount charcount--warn" : "charcount"}
-        >
-          {text.length} / {LIMIT}
-        </span>
-        <span className="charcount-hint">enforced here and again on the server.</span>
+      {/* the draft hangs as a framed piece — edits stay local until the click */}
+      <div className="composer">
+        <div className="composer__head">
+          <p className="composer__title">the draft</p>
+          <span
+            id="recap-charcount"
+            className={text.length > LIMIT - 20 ? "charcount charcount--warn" : "charcount"}
+          >
+            {text.length} / {LIMIT}
+          </span>
+        </div>
+        <label className="sr-only" htmlFor="recap-text">
+          recap text
+        </label>
+        <textarea
+          id="recap-text"
+          className="textarea"
+          value={text}
+          maxLength={LIMIT}
+          rows={7}
+          aria-label="recap text"
+          aria-describedby="recap-charcount"
+          onChange={(e) => setText(e.target.value.slice(0, LIMIT))}
+        />
+        <div className="charcount-row">
+          <span className="charcount-hint">enforced here and again on the server.</span>
+        </div>
       </div>
 
       {data.channels.length === 0 ? (
@@ -157,7 +163,12 @@ export default function Recap() {
           }
         />
       ) : (
-        <ChannelPicker channels={data.channels} checked={checked} onChange={toggle} />
+        <>
+          <ChannelPicker channels={data.channels} checked={checked} onChange={toggle} />
+          <p className="picker-count" role="status">
+            {checked.size} of {data.channels.length} channels will carry it
+          </p>
+        </>
       )}
 
       {needsUpgrade && (

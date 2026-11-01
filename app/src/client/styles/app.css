@@ -12,7 +12,7 @@
   --ease-out-quart: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-inout-cubic: cubic-bezier(0.66, 0, 0.34, 1);
-  --ease-spring-soft: cubic-bezier(0.34, 1.45, 0.64, 1); /* button press/release */
+  --ease-press: cubic-bezier(0.16, 1, 0.3, 1); /* button press/release — expo-out, no bounce */
   --dur-hover: 180ms;
   --dur-entrance: 500ms;
   --stagger: 64ms;
@@ -36,9 +36,44 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* browser chrome belongs to the design (craft floor): themed scrollbars, caret,
+   and selection so no default gray widget survives on the electric canvas */
+html {
+  color-scheme: dark;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 8px;
+  border: 2px solid var(--ink-950);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-500);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+}
+
 ::selection {
   background: color-mix(in srgb, var(--electric-500) 45%, transparent);
   color: var(--ink-50);
+}
+
+.input,
+.textarea {
+  caret-color: var(--volt-400);
 }
 
 /* ── ambient backdrop: fixed aurora mesh + grain (decorative, behind all) ──
@@ -87,6 +122,14 @@ body::after {
   outline-offset: 2px;
 }
 
+/* underlines belong to the design too — offset, weight, and color from the
+   palette, never the browser defaults */
+a {
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--electric-300) 55%, transparent);
+}
+
 /* ── shell ──────────────────────────────────────────────────────────────── */
 
 .app {
@@ -121,6 +164,15 @@ body::after {
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
   border-bottom: 1px solid var(--line);
+  transition:
+    background var(--dur-hover) var(--ease-out-quart),
+    box-shadow var(--dur-hover) var(--ease-out-quart);
+}
+
+/* scrolled: the bar gains weight so content reads beneath it */
+.app-nav.is-scrolled {
+  background: color-mix(in srgb, var(--ink-950) 88%, transparent);
+  box-shadow: 0 12px 40px rgb(5 7 14 / 0.45);
 }
 
 .app-nav__inner {
@@ -171,6 +223,20 @@ body::after {
   gap: 4px;
   min-width: 0;
   margin-left: 8px;
+}
+
+/* mono index prefix — the 5-step flow, legible in the chrome */
+.app-nav__idx {
+  font: 500 10px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  color: var(--ink-500);
+  margin-right: 6px;
+  transition: color var(--dur-hover) var(--ease-out-quart);
+}
+
+.app-nav__link:hover .app-nav__idx,
+.app-nav__link--active .app-nav__idx {
+  color: var(--electric-300);
 }
 
 .app-nav__link {
@@ -278,6 +344,53 @@ body::after {
   font: 500 12px/1.7 var(--font-mono);
   letter-spacing: 0.04em;
   color: var(--ink-400);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* the fizz mark — three dots of the brand light, closing the wall */
+.app-footer__fizz {
+  display: inline-flex;
+  gap: 4px;
+  flex: none;
+}
+
+.app-footer__fizz span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+}
+
+.app-footer__fizz span:nth-child(1) {
+  background: var(--electric-400);
+}
+
+.app-footer__fizz span:nth-child(2) {
+  background: var(--volt-400);
+}
+
+.app-footer__fizz span:nth-child(3) {
+  background: var(--spark-500);
+}
+
+/* one authored entrance per route — the wall hands you the next room */
+@media (prefers-reduced-motion: no-preference) {
+  .route,
+  .page {
+    animation: route-in 520ms var(--ease-out-expo) both;
+  }
+}
+
+@keyframes route-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ── type ───────────────────────────────────────────────────────────────── */
@@ -460,7 +573,7 @@ body::after {
   cursor: pointer;
   border: 1px solid transparent;
   transition:
-    transform var(--dur-hover) var(--ease-spring-soft),
+    transform var(--dur-hover) var(--ease-press),
     background-position var(--dur-hover) var(--ease-out-quart),
     border-color var(--dur-hover) var(--ease-out-quart),
     box-shadow var(--dur-hover) var(--ease-out-quart),
@@ -613,7 +726,7 @@ body::after {
   margin: 12px 0 0;
   color: var(--ink-200);
   font-size: 14px;
-  border-left: 2px solid var(--warning);
+  border-left: 1px solid var(--warning);
   padding: 6px 0 6px 14px;
   max-width: 60ch;
 }
@@ -792,7 +905,40 @@ body::after {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-bottom: 26px;
+  margin-bottom: 30px;
+  padding-top: 18px;
+  position: relative;
+}
+
+/* the hang line — every screen's subject hangs from one shared hairline */
+.deck-head::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--electric-500) 40%, transparent),
+    var(--line-strong) 38%,
+    transparent 82%
+  );
+}
+
+/* the step label as a caption plate on the hang line */
+.deck-head .overline {
+  background: var(--plate-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  padding: 6px 12px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.deck-head .overline::before {
+  width: 14px;
+  height: 2px;
 }
 
 .deck-head__row {
@@ -824,7 +970,76 @@ body::after {
   font-variant-numeric: tabular-nums;
 }
 
+/* ── yearline plaque head — the wall caption above the grid ────────────── */
+
+.yearline-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 0 0 6px;
+}
+
+.yearline-title {
+  margin: 0;
+  font: 500 12px var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  color: var(--ink-200);
+}
+
 /* ── forms ──────────────────────────────────────────────────────────────── */
+
+/* the composer — the draft hangs as its own framed piece, edits live local */
+.composer {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, var(--glass-bg), var(--glass-bg-deep));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    var(--shadow-card);
+  padding: 16px 18px 14px;
+  margin-top: 4px;
+}
+
+.composer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 10px;
+}
+
+.composer__title {
+  margin: 0;
+  font: 500 12px var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  color: var(--ink-300);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.composer__title::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--electric-400);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--electric-500) 60%, transparent);
+}
+
+.composer .textarea {
+  background: color-mix(in srgb, var(--ink-950) 55%, transparent);
+}
+
+.composer .charcount-row {
+  margin-top: 8px;
+}
 
 .field-label {
   font: 500 12px var(--font-mono);
@@ -984,6 +1199,15 @@ body::after {
   margin-left: auto;
 }
 
+/* picker count — how many channels ride, as a mono line */
+.picker-count {
+  margin: 10px 0 0;
+  font: 500 12px var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--ink-300);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ── recap results ──────────────────────────────────────────────────────── */
 
 .recap-actions {
@@ -1068,26 +1292,7 @@ body::after {
   margin-top: 12px;
 }
 
-/* ── share: per-card trigger + dialog + public link row ─────────────────── */
-
-/* per-card share trigger sits on the existing card actions line (right end) */
-.deck-cell {
-  position: relative;
-}
-
-.deck-cell__share {
-  position: absolute;
-  right: 4px;
-  bottom: 0; /* same box as the .card__actions linkbtns → one visual row */
-  border-radius: var(--radius-full);
-  transition:
-    color var(--dur-hover) var(--ease-out-quart),
-    background var(--dur-hover) var(--ease-out-quart);
-}
-
-.deck-cell__share:hover {
-  background: var(--glass-bg-soft);
-}
+/* ── share: dialog + public link row ────────────────────────────────────── */
 
 .share-overlay {
   position: fixed;
@@ -1286,172 +1491,153 @@ body::after {
   height: 20px;
   border-radius: 50%;
   background: var(--ink-50);
-  transition: transform var(--dur-hover) var(--ease-spring-soft);
+  transition: transform var(--dur-hover) var(--ease-press);
 }
 
 .switch[aria-checked="true"] .switch__knob {
   transform: translateX(20px);
 }
 
-/* ── connect — the launch screen ────────────────────────────────────────── */
+/* ── connect — the gallery entrance ───────────────────────────────────────
+   Left: wall text. Right: the mechanism itself — seven real story cards
+   fanned on the wall, chroma light pooled behind them. The demo IS the hero. */
 
 .connect {
   position: relative;
   isolation: isolate;
   flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: 24px 48px;
+  padding: 24px 0 56px;
+}
+
+.connect__copy {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: flex-start;
   gap: 20px;
-  padding: 32px 0 56px;
+  min-width: 0;
 }
 
-/* decorative aurora orbs, clipped inside the hero so they never overflow */
-.connect__orbs {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.connect__orbs::before,
-.connect__orbs::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-}
-
-.connect__orbs::before {
-  width: 34rem;
-  height: 34rem;
-  top: -16%;
-  left: -10%;
-  background: radial-gradient(closest-side, var(--aurora-electric), transparent 72%);
-  filter: blur(30px);
-}
-
-.connect__orbs::after {
-  width: 30rem;
-  height: 30rem;
-  bottom: -22%;
-  right: -12%;
-  background: radial-gradient(closest-side, var(--aurora-violet), transparent 72%);
-  filter: blur(36px);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .connect__orbs::before {
-    animation: orb-drift 18s var(--ease-inout-cubic) infinite alternate;
-  }
-
-  .connect__orbs::after {
-    animation: orb-drift 22s var(--ease-inout-cubic) infinite alternate-reverse;
-  }
-}
-
-@keyframes orb-drift {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  to {
-    transform: translate3d(4%, 6%, 0) scale(1.08);
-  }
-}
-
-.connect__deck {
+/* the stage: spotlight pool + breathing fan, clipped, never overflowing */
+.connect__stage {
+  position: relative;
+  isolation: isolate;
   display: flex;
   align-items: center;
-  height: 96px;
-  margin-bottom: 8px;
+  justify-content: center;
+  min-height: 480px;
 }
 
-.minicard {
-  display: block;
-  width: 52px;
-  height: 68px;
-  border-radius: 12px;
-  box-shadow: var(--shadow-card);
-}
-
-.minicard--left {
-  background: var(--grad-aurora);
-  opacity: 0.9;
-  transform: rotate(-9deg) translateX(12px);
-}
-
-.minicard--center {
-  background: var(--grad-bolt);
-  position: relative;
-  z-index: 1;
-  box-shadow:
-    0 16px 44px color-mix(in srgb, var(--electric-500) 38%, transparent),
-    var(--shadow-card);
-}
-
-/* the yearline spark on the front card stays plain white (brand law) */
-.minicard--center::after {
+.connect__stage::before {
   content: "";
   position: absolute;
-  left: 9px;
-  right: 9px;
-  bottom: 14px;
+  inset: 6% 4%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(58% 52% at 50% 34%, var(--spot-electric), transparent 72%),
+    radial-gradient(44% 40% at 62% 74%, var(--spot-volt), transparent 70%);
+  filter: blur(6px);
+}
+
+.deck-fan {
+  position: relative;
+  width: 384px;
+  height: 420px;
+  transform: rotate(-2deg);
+}
+
+/* one real story card — gradient faces are the fixed brand law, plates carry
+   the chapter number, the spark sits under the bottom light */
+.fan-card {
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  width: 132px;
+  height: 184px;
+  margin-left: -66px;
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--ink-50) 22%, transparent),
+    0 18px 44px rgb(5 7 14 / 0.5);
+  transform-origin: 50% 118%;
+  transition: transform 420ms var(--ease-out-quart);
+}
+
+.fan-card__idx {
+  align-self: flex-start;
+  font: 500 10px/1 var(--font-mono);
+  letter-spacing: 0.1em;
+  color: var(--ink-50);
+  background: var(--card-scrim);
+  padding: 5px 8px;
+  border-radius: var(--radius-full);
+}
+
+.fan-card__spark {
+  display: block;
+  width: 58%;
   height: 2px;
   border-radius: 2px;
   background: var(--ink-50);
   box-shadow: 0 0 8px color-mix(in srgb, var(--ink-50) 55%, transparent);
 }
 
-.minicard--right {
-  background: var(--grad-nebula);
-  opacity: 0.9;
-  transform: rotate(9deg) translateX(-12px);
-}
+/* the hang: seven positions on an arc, alternating stack order */
+.fan-card:nth-child(1) { transform: rotate(-26deg) translateX(-118px); z-index: 1; }
+.fan-card:nth-child(2) { transform: rotate(-17deg) translateX(-78px); z-index: 2; }
+.fan-card:nth-child(3) { transform: rotate(-8deg) translateX(-39px); z-index: 3; }
+.fan-card:nth-child(4) { transform: rotate(0deg) translateY(-6px); z-index: 4; }
+.fan-card:nth-child(5) { transform: rotate(8deg) translateX(39px); z-index: 3; }
+.fan-card:nth-child(6) { transform: rotate(17deg) translateX(78px); z-index: 2; }
+.fan-card:nth-child(7) { transform: rotate(26deg) translateX(118px); z-index: 1; }
+
+/* hover: the fan eases apart — the deck inviting the spread */
+.deck-fan:hover .fan-card:nth-child(1),
+.deck-fan:focus-within .fan-card:nth-child(1) { transform: rotate(-30deg) translateX(-138px) translateY(-6px); }
+.deck-fan:hover .fan-card:nth-child(2),
+.deck-fan:focus-within .fan-card:nth-child(2) { transform: rotate(-20deg) translateX(-92px) translateY(-10px); }
+.deck-fan:hover .fan-card:nth-child(3),
+.deck-fan:focus-within .fan-card:nth-child(3) { transform: rotate(-9deg) translateX(-46px) translateY(-14px); }
+.deck-fan:hover .fan-card:nth-child(4),
+.deck-fan:focus-within .fan-card:nth-child(4) { transform: rotate(0deg) translateY(-18px); }
+.deck-fan:hover .fan-card:nth-child(5),
+.deck-fan:focus-within .fan-card:nth-child(5) { transform: rotate(9deg) translateX(46px) translateY(-14px); }
+.deck-fan:hover .fan-card:nth-child(6),
+.deck-fan:focus-within .fan-card:nth-child(6) { transform: rotate(20deg) translateX(92px) translateY(-10px); }
+.deck-fan:hover .fan-card:nth-child(7),
+.deck-fan:focus-within .fan-card:nth-child(7) { transform: rotate(30deg) translateX(138px) translateY(-6px); }
 
 @media (prefers-reduced-motion: no-preference) {
-  .minicard--left {
-    animation: fan-left 7s var(--ease-inout-cubic) infinite alternate;
+  .fan-card {
+    animation: fan-breathe 7s var(--ease-inout-cubic) infinite alternate;
   }
 
-  .minicard--center {
-    animation: fan-center 9s var(--ease-inout-cubic) infinite alternate;
-  }
-
-  .minicard--right {
-    animation: fan-right 8s var(--ease-inout-cubic) infinite alternate;
-  }
+  .fan-card:nth-child(2n) { animation-duration: 9s; animation-delay: -2.4s; }
+  .fan-card:nth-child(3n) { animation-duration: 8s; animation-delay: -4.2s; }
 }
 
-@keyframes fan-left {
+@keyframes fan-breathe {
   from {
-    transform: rotate(-9deg) translateX(12px) translateY(0);
+    margin-top: 0;
   }
   to {
-    transform: rotate(-12deg) translateX(12px) translateY(-6px);
+    margin-top: -8px;
   }
 }
 
-@keyframes fan-center {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(-8px);
-  }
-}
-
-@keyframes fan-right {
-  from {
-    transform: rotate(9deg) translateX(-12px) translateY(0);
-  }
-  to {
-    transform: rotate(12deg) translateX(-12px) translateY(-5px);
-  }
-}
+/* ── connect copy — wall text ───────────────────────────────────────────── */
 
 .connect__sub {
   font-size: 17px;
+  max-width: 46ch;
 }
 
 .connect__chips {
@@ -1488,6 +1674,26 @@ body::after {
   letter-spacing: 0.03em;
   color: var(--ink-400);
   max-width: 52ch;
+}
+
+/* orientation line — the three beats of the sitting, as caption plate */
+.connect__steps {
+  margin: 10px 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font: 500 12px/1 var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--ink-300);
+  background: var(--glass-bg-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  padding: 9px 16px;
+}
+
+.connect__steps span[aria-hidden="true"] {
+  color: var(--electric-400);
 }
 
 /* ── persona — the magazine-cover reveal ────────────────────────────────── */
@@ -1536,6 +1742,56 @@ body::after {
   user-select: none;
 }
 
+/* registration corner marks — the cover is a printed plate */
+.persona-stage__marks {
+  position: absolute;
+  inset: 14px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.persona-stage__marks::before,
+.persona-stage__marks::after,
+.persona-stage__marks span::before,
+.persona-stage__marks span::after {
+  content: "+";
+  position: absolute;
+  font: 400 14px/1 var(--font-mono);
+  color: color-mix(in srgb, var(--ink-300) 55%, transparent);
+}
+
+.persona-stage__marks::before { top: 0; left: 0; }
+.persona-stage__marks::after { top: 0; right: 0; }
+.persona-stage__marks span::before { bottom: 0; left: 0; }
+.persona-stage__marks span::after { bottom: 0; right: 0; }
+
+/* the await state — a dashed cover silhouette breathing before the naming */
+.persona-stage--await {
+  border-style: dashed;
+  border-color: var(--line-strong);
+  box-shadow: none;
+  background:
+    radial-gradient(52% 70% at 50% 30%, var(--spot-electric), transparent 72%),
+    linear-gradient(180deg, var(--glass-bg-soft), var(--glass-bg-deep));
+  align-items: flex-start;
+}
+
+.persona-stage--await::after {
+  opacity: 0.34;
+  animation: asterisk-pulse 3.2s var(--ease-inout-cubic) infinite alternate;
+}
+
+@keyframes asterisk-pulse {
+  from {
+    opacity: 0.18;
+    transform: rotate(0deg) scale(0.98);
+  }
+  to {
+    opacity: 0.4;
+    transform: rotate(28deg) scale(1.02);
+  }
+}
+
 .persona-name {
   font-family: var(--font-display);
   font-weight: 700;
@@ -1550,6 +1806,25 @@ body::after {
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
+}
+
+/* the cover reveal: blur-settles into focus (reduced motion: instant) */
+@media (prefers-reduced-motion: no-preference) {
+  .persona-stage .persona-name {
+    filter: blur(10px);
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      filter 640ms var(--ease-out-expo),
+      opacity 640ms var(--ease-out-expo),
+      transform 640ms var(--ease-out-expo);
+  }
+
+  .persona-stage.reveal-in.is-in .persona-name {
+    filter: blur(0);
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .persona-origin {
@@ -1578,13 +1853,58 @@ body::after {
   color: var(--ink-400);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .persona-stage--await::after {
+    animation: none;
+  }
+}
+
 /* ── greatest hits — ranked, mono, honest ───────────────────────────────── */
+
+/* the opt-in gate: the token field hangs as a framed, lock-marked piece */
+.gh-gate {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, var(--glass-bg), var(--glass-bg-deep));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    var(--shadow-card);
+  padding: 20px 22px;
+  margin-top: 12px;
+}
+
+.gh-gate__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+}
+
+.gh-gate__glyph {
+  display: inline-flex;
+  color: var(--electric-300);
+}
+
+.gh-gate__glyph svg {
+  display: block;
+}
+
+.gh-gate__label {
+  margin: 0;
+  font: 500 12px var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  color: var(--ink-300);
+}
 
 .gh-form {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  margin-top: 8px;
+  margin-top: 0;
   width: 100%;
 }
 
@@ -1702,12 +2022,32 @@ body::after {
 /* ── responsive ─────────────────────────────────────────────────────────── */
 
 @media (max-width: 1120px) {
-  .connect__orbs::before {
-    left: -18%;
+  .connect {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+    gap: 24px 32px;
   }
 
-  .connect__orbs::after {
-    right: -18%;
+  .deck-fan {
+    transform: rotate(-2deg) scale(0.86);
+  }
+}
+
+@media (max-width: 960px) {
+  /* stack: wall text first, the fanned deck below it, still lit */
+  .connect {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 8px;
+  }
+
+  .connect__stage {
+    min-height: 420px;
+    order: 2;
+    justify-self: center;
+    width: 100%;
+  }
+
+  .connect__copy {
+    order: 1;
   }
 }
 
@@ -1753,6 +2093,15 @@ body::after {
     display: none;
   }
 
+  .connect__stage {
+    min-height: 340px;
+  }
+
+  .deck-fan {
+    transform: rotate(-2deg) scale(0.62);
+    margin: -60px 0;
+  }
+
   .connect__cta,
   .connect__cta .btn--primary {
     align-self: stretch;
@@ -1787,10 +2136,6 @@ body::after {
   .linkbtn {
     padding: 10px 8px;
   }
-
-  .deck-cell__share {
-    padding: 12px 14px;
-  }
 }
 
 /* ── reduced motion: everything goes near-instant (app base law) ────────── */
@@ -1805,10 +2150,13 @@ body::after {
   }
 
   body::before,
-  .connect__orbs::before,
-  .connect__orbs::after,
-  .minicard {
+  .connect__stage::before,
+  .fan-card {
     animation: none;
+  }
+
+  .fan-card {
+    transition: none;
   }
 
   .loading__bar span {

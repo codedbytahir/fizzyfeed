@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import type { CardData, Deck as DeckData, YearizeStatus } from "@shared/types";
+import type { Deck as DeckData, YearizeStatus } from "@shared/types";
 import { apiFetch, formatCount, useApi } from "../lib/api";
 import { useMe } from "../lib/me";
 import { BRAND_NAME } from "@shared/brand";
-import CardSurface, { pad2 } from "../components/CardSurface";
+import CardSurface from "../components/CardSurface";
 import EmptyState from "../components/EmptyState";
 import ErrorState from "../components/ErrorState";
 import Loading from "../components/Loading";
@@ -13,17 +13,6 @@ import ShareLinkRow from "../components/ShareLinkRow";
 import StatCounter from "../components/StatCounter";
 import StatusLine from "../components/StatusLine";
 import Yearline from "../components/Yearline";
-
-/** Mirrors the private map in CardSurface (not exported there). */
-const KIND_LABELS = {
-  kickoff: "kickoff",
-  rhythm: "rhythm",
-  streaks: "streaks",
-  mix: "the mix",
-  peaks: "peaks",
-  persona: "alter ego",
-  recap: "the recap",
-} as const satisfies Record<CardData["kind"], string>;
 
 /** Chapter slot 6 while the alter ego is missing (spec 04 §1). */
 function PersonaPlaceholder() {
@@ -46,6 +35,24 @@ function PersonaPlaceholder() {
         </footer>
       </div>
     </article>
+  );
+}
+
+/** The deck forming — seven ghost slots on the wall while the year renders. */
+function DeckSkeleton() {
+  return (
+    <div className="deck-skeleton" aria-hidden="true">
+      {["01", "02", "03", "04", "05", "06", "07"].map((n) => (
+        <div key={n} className="skel-card">
+          <span className="skel-card__idx">{n}</span>
+          <div className="skel-card__lines">
+            <span />
+            <span />
+            <span />
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -122,18 +129,26 @@ export default function Deck() {
   let body: ReactNode;
   if (backfilling) {
     body = (
-      <Loading
-        label="reading your year…"
-        counter={
-          <>
-            <StatCounter value={status.postsIndexed} /> posts indexed
-          </>
-        }
-        hint="we page through 12 months of buffer history — the deck opens the moment it's done."
-      />
+      <>
+        <Loading
+          label="reading your year…"
+          counter={
+            <>
+              <StatCounter value={status.postsIndexed} /> posts indexed
+            </>
+          }
+          hint="we page through 12 months of buffer history — the deck opens the moment it's done."
+        />
+        <DeckSkeleton />
+      </>
     );
   } else if (deck.loading) {
-    body = <Loading label="laying out your deck…" />;
+    body = (
+      <>
+        <Loading label="laying out your deck…" />
+        <DeckSkeleton />
+      </>
+    );
   } else if (deck.error) {
     // anon visitors are mid-redirect to "/" — don't flash an error panel at them
     body = state.status === "anon" ? null : <ErrorState error={deck.error} onRetry={reload} />;
@@ -155,17 +170,7 @@ export default function Deck() {
         <StatusLine message={note} />
         <div className="deck-grid">
           {deck.data.cards.map((card) => (
-            <div className="deck-cell" key={card.n}>
-              <CardSurface card={card} onNote={showNote} />
-              <button
-                type="button"
-                className="linkbtn deck-cell__share"
-                aria-label={`share card ${pad2(card.n)} — ${KIND_LABELS[card.kind]}`}
-                onClick={(e) => openShare(card.n, e.currentTarget)}
-              >
-                share
-              </button>
-            </div>
+            <CardSurface key={card.n} card={card} onNote={showNote} onShare={openShare} />
           ))}
           {!deck.data.persona && <PersonaPlaceholder />}
         </div>
@@ -204,6 +209,9 @@ export default function Deck() {
         </div>
         {deck.data && !deck.data.empty && (
           <div className="yearline-wrap">
+            <div className="yearline-head">
+              <p className="yearline-title">posting rhythm — the year, daily</p>
+            </div>
             <Yearline daily={deck.data.stats.daily} year={deck.data.stats.year} />
             <p className="yearline-caption">
               {formatCount(deck.data.stats.totals.activeDays)} active days · every one real ·

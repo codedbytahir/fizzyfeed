@@ -16,6 +16,89 @@
   margin-top: 8px;
 }
 
+/* ── deck skeleton: the deck forming — ghost cards where cards will hang ── */
+
+.deck-skeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.skel-card {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-card);
+  background:
+    radial-gradient(58% 70% at 50% 0%, var(--spot-electric), transparent 72%),
+    linear-gradient(180deg, var(--glass-bg), var(--glass-bg-deep));
+  border: 1px dashed var(--line-strong);
+  overflow: hidden;
+}
+
+/* one shimmer sweep per ghost card, staggered like the real deck's entrance */
+.skel-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 32%,
+    color-mix(in srgb, var(--ink-50) 7%, transparent) 50%,
+    transparent 68%
+  );
+  transform: translateX(-100%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .skel-card::after {
+    animation: skel-sweep 2.1s var(--ease-inout-cubic) infinite;
+  }
+
+  .skel-card:nth-child(2n)::after { animation-delay: 180ms; }
+  .skel-card:nth-child(3n)::after { animation-delay: 360ms; }
+}
+
+@keyframes skel-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+.skel-card__idx {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  font: 500 12px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  color: var(--ink-500);
+  font-variant-numeric: tabular-nums;
+}
+
+.skel-card__lines {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 22px;
+  display: grid;
+  gap: 10px;
+}
+
+.skel-card__lines span {
+  display: block;
+  height: 13px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--ink-700) 62%, transparent);
+}
+
+.skel-card__lines span:nth-child(2) {
+  width: 64%;
+  height: 22px;
+}
+
+.skel-card__lines span:nth-child(3) {
+  width: 42%;
+}
+
 /* staggered entrance — one wave, 64ms apart, decorative only */
 @media (prefers-reduced-motion: no-preference) {
   .deck-grid > .deck-cell,
@@ -128,13 +211,15 @@
     );
 }
 
-/* the hover glow uses each card's own gradient family (never recolored) */
+/* hover glows keyed to each face's own gradient family where the token scales
+   reach (bolt/aurora/fizz/grape/nebula); sunset and coral have no warm token
+   scale, so they borrow the nearest chroma blooms — never a recolored face */
 .card__face[data-gradient="bolt"] {
   --face-glow: color-mix(in srgb, var(--electric-500) 42%, transparent);
 }
 
 .card__face[data-gradient="aurora"] {
-  --face-glow: color-mix(in srgb, var(--violet-500) 42%, transparent);
+  --face-glow: color-mix(in srgb, var(--volt-500) 40%, transparent);
 }
 
 .card__face[data-gradient="fizz"] {
@@ -419,6 +504,24 @@
 .yearline-wrap {
   border-radius: var(--radius-lg);
   padding: 18px 20px 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* a single volt thread glints along the plaque's top edge */
+.yearline-wrap::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--volt-500) 55%, transparent),
+    transparent
+  );
 }
 
 .yearline {
