@@ -5,13 +5,25 @@
  *
  * Envelope design:
  *   - master key material: TOKEN_AES_KEY (32-byte base64 secret)
- *   - per-row random 16-byte salt → PBKDF2-SHA256 (310k iters) → AES-256-GCM key
+ *   - per-row random 16-byte salt → PBKDF2-SHA256 → AES-256-GCM key
  *   - per-encryption fresh 12-byte IV
  *   - AAD binds the row owner: encrypt(..., aad = user_id) — ciphertext is
  *     undecryptable under any other AAD (tamper + swap protection)
  */
 
-const PBKDF2_ITERATIONS = 310_000;
+/**
+ * workerd (Cloudflare Workers runtime) hard-caps PBKDF2 at 100k iterations —
+ * requesting more throws "Pbkdf2 failed: iteration counts above 100000 are not
+ * supported" (hit live 2026-11-01: EVERY oauth callback 500'd inside
+ * sealTokenColumns; Node/vitest has no cap, which is why tests never caught it).
+ * 100k is cryptographically sound here: TOKEN_AES_KEY is a random 32-byte value,
+ * not a human password, so KDF stretching is not the load-bearing wall — the
+ * per-row salt, AAD binding and GCM integrity are. NOTE: if this constant ever
+ * changes again, previously sealed rows become unreadable (deriveKey derives a
+ * different key) — rotation re-seals on refresh, so the blast radius is one
+ * forced re-login per user, but keep the value stable.
+ */
+export const PBKDF2_ITERATIONS = 100_000;
 const IV_BYTES = 12;
 const SALT_BYTES = 16;
 
@@ -22,6 +34,7 @@ export function assertBase64Key(keyB64: string, expectedBytes = 32): void {
   }
 }
 
+// (kept adjacent to deriveKey so the cap and its only consumer move together)
 async function deriveKey(keyB64: string, salt: Uint8Array): Promise<CryptoKey> {
   const material = base64Decode(keyB64);
   const base = await crypto.subtle.importKey("raw", material, "PBKDF2", false, ["deriveKey"]);

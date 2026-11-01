@@ -14,6 +14,7 @@ import {
   bytesToBase64Url,
   hmacSign,
   hmacVerify,
+  PBKDF2_ITERATIONS,
   randomToken,
   seal,
   timingSafeEqual,
@@ -230,5 +231,15 @@ describe("assertBase64Key (TOKEN_AES_KEY / SESSION_SECRET shape)", () => {
 
   it("rejects input that is not decodable base64", () => {
     expect(() => assertBase64Key("not base64!!")).toThrow();
+  });
+});
+
+describe("PBKDF2_ITERATIONS runtime cap (workerd)", () => {
+  // workerd hard-caps PBKDF2 at 100k iterations and THROWS on anything above —
+  // hit live 2026-11-01 when 310k 500'd every oauth callback inside
+  // sealTokenColumns (Node/vitest has no cap, so only this sentinel can catch a
+  // regression; see lib/crypto.ts for the full incident note).
+  it("never requests more than the workerd maximum of 100_000 iterations", () => {
+    expect(PBKDF2_ITERATIONS).toBeLessThanOrEqual(100_000);
   });
 });

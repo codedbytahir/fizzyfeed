@@ -5,7 +5,7 @@
 import { Hono } from "hono";
 import type { HonoEnv } from "./env";
 import { BRAND_NAME } from "../shared/brand";
-import { assertBase64Key, base64Decode } from "./lib/crypto";
+import { assertBase64Key, base64Decode, seal, unseal } from "./lib/crypto";
 import { originCheck } from "./lib/http";
 import { rateLimit } from "./lib/ratelimit";
 import { readSessionUserId, slideSession } from "./lib/session";
@@ -56,6 +56,29 @@ api.get("/health", async (c) => {
     brand: BRAND_NAME,
     time: new Date().toISOString(),
   });
+});
+
+// Deep probe (opt-in: GET /api/health/probe) — runs a real seal→unseal
+// roundtrip with the production key material. Added 2026-11-01 after the
+// PBKDF2-iteration incident: config parsing (above) passed while
+// crypto.subtle.deriveKey still threw INSIDE the oauth callback, and
+// Node/vitest has no workerd runtime caps, so no offline test can catch this
+// class. This probe is the only offline-safe way to prove the token-sealing
+// path works in the real runtime. Plain /api/health stays unchanged (CI).
+api.get("/health/probe", async (c) => {
+  const t0 = Date.now();
+  try {
+    const box = await seal(c.env.TOKEN_AES_KEY, "crypto probe plaintext", "health-probe");
+    const opened = await unseal(c.env.TOKEN_AES_KEY, box, "health-probe");
+    return c.json({
+      ok: opened === "crypto probe plaintext",
+      sealRoundtripMs: Date.now() - t0,
+      time: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error(`health crypto probe failed: ${(err as Error).message}`);
+    return c.json({ ok: false, error: { code: "crypto", message: (err as Error).message } }, 500);
+  }
 });
 
 // feature routes (each module owns its own auth + validation)
