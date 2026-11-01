@@ -35,11 +35,16 @@ function NotFound() {
     document.title = `${BRAND_NAME} — page not found`;
   }, []);
   return (
-    <main className="page">
-      <h1 className="headline">page not found</h1>
-      <a className="btn btn--primary" href="/">
-        back to {BRAND_NAME}
-      </a>
+    <main className="page page--404">
+      <div className="page__card">
+        <span className="page__ghost" aria-hidden="true">
+          404
+        </span>
+        <h1 className="headline headline--lg">page not found</h1>
+        <a className="btn btn--primary" href="/">
+          back to {BRAND_NAME}
+        </a>
+      </div>
     </main>
   );
 }

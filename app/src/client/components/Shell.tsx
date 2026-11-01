@@ -1,12 +1,20 @@
 import { useEffect, useState } from "react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import { useMe } from "../lib/me";
 import { BRAND_NAME } from "@shared/brand";
 
+/** Section nav shown once a session is connected — NavLink drives the active state. */
+const NAV_LINKS = [
+  { to: "/app", label: "deck", end: true },
+  { to: "/app/persona", label: "persona", end: false },
+  { to: "/app/recap", label: "recap", end: false },
+  { to: "/app/greatest-hits", label: "greatest hits", end: false },
+] as const;
+
 /**
- * App shell (T13): minimal top nav — wordmark left, session right —
- * content outlet, and the trust-line footer shared by every route.
+ * App shell (T13): minimal top nav — wordmark left, section links center,
+ * session right — content outlet, and the trust-line footer shared by every route.
  */
 export default function Shell() {
   const me = useMe();
@@ -38,6 +46,24 @@ export default function Shell() {
           <Link to="/" className="wordmark" aria-label={`${BRAND_NAME} — home`}>
             {BRAND_NAME}
           </Link>
+          {ready && (
+            <div className="app-nav__links">
+              {NAV_LINKS.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  className={({ isActive }) =>
+                    ["app-nav__link", isActive ? "app-nav__link--active" : ""]
+                      .filter(Boolean)
+                      .join(" ")
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
+          )}
           <div className="app-nav__user">
             {ready && (
               <>

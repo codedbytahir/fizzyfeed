@@ -11,15 +11,69 @@
 
 .deck-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 24px;
   margin-top: 8px;
+}
+
+/* staggered entrance — one wave, 64ms apart, decorative only */
+@media (prefers-reduced-motion: no-preference) {
+  .deck-grid > .deck-cell,
+  .deck-grid > .card {
+    animation: card-in 560ms var(--ease-out-expo) both;
+  }
+
+  .deck-grid > .deck-cell:nth-child(2),
+  .deck-grid > .card:nth-child(2) {
+    animation-delay: var(--stagger);
+  }
+
+  .deck-grid > .deck-cell:nth-child(3),
+  .deck-grid > .card:nth-child(3) {
+    animation-delay: calc(var(--stagger) * 2);
+  }
+
+  .deck-grid > .deck-cell:nth-child(4),
+  .deck-grid > .card:nth-child(4) {
+    animation-delay: calc(var(--stagger) * 3);
+  }
+
+  .deck-grid > .deck-cell:nth-child(5),
+  .deck-grid > .card:nth-child(5) {
+    animation-delay: calc(var(--stagger) * 4);
+  }
+
+  .deck-grid > .deck-cell:nth-child(6),
+  .deck-grid > .card:nth-child(6) {
+    animation-delay: calc(var(--stagger) * 5);
+  }
+
+  .deck-grid > .deck-cell:nth-child(7),
+  .deck-grid > .card:nth-child(7) {
+    animation-delay: calc(var(--stagger) * 6);
+  }
+
+  .deck-grid > .deck-cell:nth-child(8),
+  .deck-grid > .card:nth-child(8) {
+    animation-delay: calc(var(--stagger) * 7);
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .card {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .card__face {
@@ -33,6 +87,95 @@
   box-shadow: var(--shadow-card);
   overflow: hidden;
   isolation: isolate;
+  /* each gradient maps its own glow through --face-glow (see [data-gradient]) */
+  --face-glow: color-mix(in srgb, var(--electric-500) 38%, transparent);
+  transition:
+    transform 240ms var(--ease-out-quart),
+    box-shadow 240ms var(--ease-out-quart);
+}
+
+/* top sheen — light catching the top edge of the card */
+.card__face::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ink-50) 16%, transparent),
+    transparent 28%
+  );
+}
+
+/* bottom vignette — depth behind the text panels */
+.card__face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      130% 110% at 82% -8%,
+      color-mix(in srgb, var(--ink-50) 10%, transparent),
+      transparent 46%
+    ),
+    radial-gradient(
+      150% 120% at 12% 112%,
+      color-mix(in srgb, var(--ink-950) 32%, transparent),
+      transparent 56%
+    );
+}
+
+/* the hover glow uses each card's own gradient family (never recolored) */
+.card__face[data-gradient="bolt"] {
+  --face-glow: color-mix(in srgb, var(--electric-500) 42%, transparent);
+}
+
+.card__face[data-gradient="aurora"] {
+  --face-glow: color-mix(in srgb, var(--violet-500) 42%, transparent);
+}
+
+.card__face[data-gradient="fizz"] {
+  --face-glow: color-mix(in srgb, var(--spark-500) 32%, transparent);
+}
+
+.card__face[data-gradient="grape"] {
+  --face-glow: color-mix(in srgb, var(--violet-500) 42%, transparent);
+}
+
+.card__face[data-gradient="sunset"] {
+  --face-glow: color-mix(in srgb, var(--violet-400) 40%, transparent);
+}
+
+.card__face[data-gradient="nebula"] {
+  --face-glow: color-mix(in srgb, var(--electric-500) 36%, transparent);
+}
+
+.card__face[data-gradient="coral"] {
+  --face-glow: color-mix(in srgb, var(--electric-500) 38%, transparent);
+}
+
+.card:hover .card__face {
+  transform: translateY(-4px);
+  box-shadow:
+    0 24px 64px var(--face-glow),
+    var(--shadow-card);
+}
+
+/* big mono chapter index, top-right, on a scrim pill like the overline */
+.card__index {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  font: 500 13px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--ink-50) 80%, transparent);
+  font-variant-numeric: tabular-nums;
+  background: var(--card-scrim);
+  padding: 7px 10px;
+  border-radius: var(--radius-full);
 }
 
 .card__overline {
@@ -65,7 +208,7 @@
   text-transform: lowercase;
   letter-spacing: -0.02em;
   line-height: 1.05;
-  font-size: clamp(24px, 2.6vw, 32px);
+  font-size: clamp(25px, 2.7vw, 33px);
 }
 
 .card__headline--name {
@@ -133,6 +276,7 @@
   height: 8px;
   border-radius: 50%;
   background: var(--ink-50);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--ink-50) 50%, transparent);
 }
 
 .card__brand {
@@ -211,8 +355,24 @@
 /* ── ghost slot: persona pending, quiet and honest ──────────────────────── */
 
 .card__face--ghost {
-  background: var(--ink-900);
+  --face-glow: transparent;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ink-800) 55%, transparent),
+    var(--ink-900)
+  );
   border: 1px dashed var(--ink-600);
+  box-shadow: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.card__face--ghost::before,
+.card__face--ghost::after {
+  content: none; /* no sheen/vignette on the quiet slot */
+}
+
+.card:hover .card__face--ghost {
   box-shadow: none;
 }
 
@@ -239,6 +399,7 @@
 
 .card__dot--ghost {
   background: var(--ink-500);
+  box-shadow: none;
 }
 
 .card__brand--ghost {
@@ -256,8 +417,6 @@
 /* ── yearline spark (BRAND-GUIDELINES §3: the recap moment) ─────────────── */
 
 .yearline-wrap {
-  border: 1px solid var(--ink-800);
-  background: var(--ink-900);
   border-radius: var(--radius-lg);
   padding: 18px 20px 12px;
 }
@@ -273,12 +432,14 @@
   stroke-width: 1;
 }
 
+/* spark color is fixed (brand law) — the drop-shadow is the same hue, just lit */
 .yearline__spark {
   fill: none;
   stroke: var(--electric-400);
   stroke-width: 1.5;
   stroke-linejoin: round;
   stroke-linecap: round;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--electric-500) 35%, transparent));
 }
 
 .yearline-caption {
@@ -302,4 +463,17 @@
   transition:
     opacity 500ms var(--ease-out-expo),
     transform 500ms var(--ease-out-expo);
+}
+
+/* reduced motion: the hover lift and entrance go still (this file loads after
+   app.css, so its reduce block must be restated here to win the cascade) */
+@media (prefers-reduced-motion: reduce) {
+  .deck-grid > .deck-cell,
+  .deck-grid > .card {
+    animation: none;
+  }
+
+  .card:hover .card__face {
+    transform: none;
+  }
 }

@@ -94,4 +94,20 @@
   --text-5xl:  3rem;      /* 48 */
   --text-6xl:  3.75rem;   /* 60 */
   --text-7xl:  4.75rem;   /* 76 */
+
+  /* ---- app surface kit ("the electric lab") — added for the SPA restyle ----
+     All derived tones from the core scales above; no new hues.
+     Glass surfaces, aurora ambience, hairlines, and one AA-safe gradient for
+     SMALL gradient text (electric-300 → volt-400 both clear 4.5:1 on ink-950;
+     --grad-brand's violet head only clears 3:1, so it stays on large type). */
+  --line:            color-mix(in srgb, var(--ink-50) 7%, transparent);
+  --line-strong:     color-mix(in srgb, var(--ink-50) 14%, transparent);
+  --glass-bg:        color-mix(in srgb, var(--ink-800) 62%, transparent);
+  --glass-bg-soft:   color-mix(in srgb, var(--ink-800) 38%, transparent);
+  --glass-bg-deep:   color-mix(in srgb, var(--ink-900) 72%, transparent);
+  --glass-highlight: color-mix(in srgb, var(--ink-50) 7%, transparent);
+  --aurora-electric: color-mix(in srgb, var(--electric-500) 20%, transparent);
+  --aurora-violet:   color-mix(in srgb, var(--violet-500) 16%, transparent);
+  --aurora-volt:     color-mix(in srgb, var(--volt-500) 12%, transparent);
+  --grad-safe:       linear-gradient(120deg, var(--electric-300) 0%, var(--volt-400) 100%);
 }

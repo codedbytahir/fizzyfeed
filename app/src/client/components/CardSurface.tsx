@@ -71,8 +71,11 @@ export default function CardSurface({
 }) {
   return (
     <article className="card">
-      <div className="card__face" style={{ background: GRADIENTS[card.gradient] }}>
+      <div className="card__face" data-gradient={card.gradient} style={{ background: GRADIENTS[card.gradient] }}>
         <p className="card__overline">{chapterOverline(card)}</p>
+        <span className="card__index" aria-hidden="true">
+          {pad2(card.n)}
+        </span>
         <CardBody card={card} />
         <footer className="card__footer">
           <span className="card__dot" aria-hidden="true" />
