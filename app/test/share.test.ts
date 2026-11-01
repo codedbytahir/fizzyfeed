@@ -1,11 +1,11 @@
 /**
  * Card share tests (task #5): the pure compose/validate layer, then the
- * preview + queue routes against fake D1/KV bindings with Buffer's HTTP API
- * mocked at the global fetch level. The queue mirrors routes/recap.ts
+ * preview + queue routes against fake D1/KV bindings with Buffer's GraphQL
+ * API mocked at the global fetch level. The queue mirrors routes/recap.ts
  * discipline — consent gate, 24h KV idempotency (`share:` namespace),
  * write-scope gate BEFORE the daily counter burns, 5/day cap, per-channel
- * partial results — and attaches the really-rendered card PNG as base64
- * media (node wasm fallback + disk-served woffs, render.test.ts pattern).
+ * partial results — and attaches the card image as its PUBLIC share-page URL
+ * (Buffer hosts no uploads; text-only when the share link is off).
  *
  * The D1 fake extends helpers.FakeD1 with exactly the three statements the
  * share routes add on top of the base (posts select, ai_cache select, scopes
@@ -236,7 +236,7 @@ interface BufferCall {
   method: string;
   channelId: string | null;
   text: string | null; // in-memory only — never logged
-  media: string | null; // media[photo] form field, in-memory only
+  media: string | null; // image asset URL, in-memory only
 }
 
 const bufferCalls: BufferCall[] = [];
@@ -250,26 +250,45 @@ let profilesStatus = 200;
 function installBufferFetch(): void {
   vi.stubGlobal("fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
-    if (url.startsWith("https://api.buffer.com/1/profiles.json")) {
+    const body = JSON.parse(String(init?.body ?? "{}")) as { query?: string; variables?: unknown };
+    const name = /\b(?:query|mutation)\s+(\w+)/.exec(body.query ?? "")?.[1] ?? "";
+    if (url.startsWith("https://api.buffer.com") && name === "OrgId") {
       bufferCalls.push({ url, method: "GET", channelId: null, text: null, media: null });
       if (profilesStatus !== 200) return jsonResponse({ error: "boom" }, profilesStatus);
-      return jsonResponse(channelsFixture);
+      return jsonResponse({ data: { account: { organizations: [{ id: "org-1" }] } } });
     }
-    if (url.startsWith("https://api.buffer.com/1/updates/create.json")) {
-      const form = new URLSearchParams(String(init?.body ?? ""));
-      const channelId = form.get("profile_ids[]") ?? "";
+    if (url.startsWith("https://api.buffer.com") && name === "Channels") {
+      bufferCalls.push({ url, method: "GET", channelId: null, text: null, media: null });
+      if (profilesStatus !== 200) return jsonResponse({ error: "boom" }, profilesStatus);
+      return jsonResponse({
+        data: {
+          channels: channelsFixture.map((ch) => ({
+            id: ch.id,
+            service: ch.service,
+            serviceId: ch.serviceId,
+            displayName: ch.name,
+            avatar: ch.avatarUrl,
+          })),
+        },
+      });
+    }
+    if (url.startsWith("https://api.buffer.com") && name === "CreatePost") {
+      const vars = (body.variables ?? {}) as {
+        input?: { channelId?: string; text?: string; assets?: { image?: { url?: string } }[] };
+      };
+      const channelId = vars.input?.channelId ?? "";
       bufferCalls.push({
         url,
         method: "POST",
         channelId,
-        text: form.get("text"),
-        media: form.get("media[photo]"),
+        text: vars.input?.text ?? null,
+        media: vars.input?.assets?.[0]?.image?.url ?? null,
       });
       const status = failChannelStatus.get(channelId) ?? 200;
       if (status !== 200) return jsonResponse({ error: "boom" }, status);
-      return jsonResponse({ updates: { [channelId]: { id: `post-${channelId}` } } });
+      return jsonResponse({ data: { createPost: { __typename: "PostActionSuccess", post: { id: `post-${channelId}` } } } });
     }
-    throw new Error(`unexpected fetch ${url}`);
+    throw new Error(`unexpected fetch ${url} ${name}`);
   });
 }
 
@@ -533,7 +552,7 @@ describe("GET /api/share/preview", () => {
     // channels come from the mocked Buffer listChannels
     expect(preview.channels.map((ch) => ch.id)).toEqual(["ch-twitter", "ch-instagram"]);
     expect(preview.needsWriteScope).toBe(true);
-    expect(bufferCalls).toHaveLength(1); // profiles.json only
+    expect(bufferCalls).toHaveLength(2); // org lookup + channels (GraphQL)
   });
 
   it("honest numbers appear for kickoff/rhythm/peaks/recap previews", async () => {
@@ -690,8 +709,9 @@ describe("POST /api/share/queue", () => {
     expect(burned).toEqual([]); // quota untouched by upgrade-required attempts
   });
 
-  it("happy path: queues 2 channels with the card PNG attached, stores the marker, audits ids + counts only", async () => {
+  it("happy path: queues 2 channels with the card image attached, stores the marker, audits ids + counts only", async () => {
     const rig = await makeQueueRig();
+    rig.db.shareLinks.set(USER, { share_id: "share-abc", enabled: 1 }); // public card URL source
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
     const queueId = "q-share-happy-1";
     const sentinelText = "sneaky audit sentinel — the shared card body itself";
@@ -709,20 +729,14 @@ describe("POST /api/share/queue", () => {
       { channelId: "ch-instagram", service: "instagram", ok: true, postId: "post-ch-instagram" },
     ]);
 
-    // edited text + media travel verbatim on the wire
+    // edited text + media travel verbatim on the wire — the image is the
+    // PUBLIC share-page card URL (Buffer hosts no uploads)
     const creates = bufferCalls.filter((call) => call.method === "POST");
     expect(creates).toHaveLength(2);
     for (const call of creates) {
       expect(call.text).toBe(sentinelText);
-      expect(call.media).not.toBeNull();
-      expect(call.media?.length ?? 0).toBeGreaterThan(1000); // a real PNG, not a stub
-      expect((call.media ?? "").startsWith("iVBORw0KGgo")).toBe(true); // PNG magic bytes in base64
+      expect(call.media).toBe(`https://app.test/u/share-abc/card/3.png`);
     }
-
-    // KV idempotency marker stored for replay
-    const stored = rig.kv.map.get(`share:${queueId}`);
-    expect(stored).not.toBeNull();
-    expect(JSON.parse(stored ?? "") as ShareQueueResult).toEqual(result);
 
     // audit: EXACTLY one line, ids + counts only — never the text, never image bytes
     expect(logSpy).toHaveBeenCalledTimes(1);
@@ -734,6 +748,25 @@ describe("POST /api/share/queue", () => {
     expect(line).not.toContain("sneaky audit sentinel");
     expect(line).not.toContain("iVBOR");
     expect(BANNED_RE.test(line)).toBe(false);
+
+    // share link disabled → the queue still works, text-only
+    logSpy.mockClear();
+    const rig2 = await makeQueueRig();
+    rig2.db.shareLinks.set(USER, { share_id: "share-abc", enabled: 0 });
+    const res2 = await postJson(
+      app,
+      rig2.env,
+      cookie,
+      queueBody({ queueId: "q-share-textonly", text: sentinelText, channelIds: ["ch-twitter"] })
+    );
+    expect(res2.status).toBe(200);
+    const creates2 = bufferCalls.filter((call) => call.method === "POST").slice(-1);
+    expect(creates2[0]?.media).toBeNull();
+
+    // KV idempotency marker stored for replay
+    const stored = rig.kv.map.get(`share:${queueId}`);
+    expect(stored).not.toBeNull();
+    expect(JSON.parse(stored ?? "") as ShareQueueResult).toEqual(result);
   });
 
   it("IDEMPOTENCY: same queueId twice → one createPost total, replay needs no consent and returns the first result", async () => {

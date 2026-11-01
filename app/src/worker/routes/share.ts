@@ -1,7 +1,8 @@
 /**
  * Card share (task #5): GET /preview composes the deterministic share text
  * for one deck card, lists channels, and reports write-scope state;
- * POST /queue attaches the card PNG and creates the Buffer posts.
+ * POST /queue creates the Buffer posts with the card image attached (via the
+ * public share-page card URL — Buffer's API hosts no uploads).
  *
  * Write-scope invariant: consent-gated createPost call sites are recap.ts
  * (recap queue) + share.ts (card share) — both follow the exact same
@@ -33,7 +34,6 @@ const share = new Hono<HonoEnv>();
 const DAILY_QUEUE_LIMIT = 5; // mirrors spec 06 §3: 5 queue operations/user/day
 const IDEMPOTENCY_TTL = 86_400; // 24h
 const RATE_LIMIT_TTL = 172_800; // 2 days — spans the UTC day boundary
-const B64_CHUNK = 0x8000; // 32k chars per String.fromCharCode call — stack-safe
 
 function bufferClientFrom(env: Env) {
   return createBufferClient({
@@ -65,13 +65,26 @@ function upstreamError(err: unknown): { status: 401 | 502; code: string; message
   return null;
 }
 
-/** Chunk-safe base64 over a PNG (avoids argument-limit blowups on big cards). */
-function pngToBase64(png: Uint8Array): string {
-  let binary = "";
-  for (let i = 0; i < png.length; i += B64_CHUNK) {
-    binary += String.fromCharCode(...png.subarray(i, i + B64_CHUNK));
+/**
+ * Card image for Buffer: the API hosts no uploads — assets must be public,
+ * stable URLs. The opt-in public share page serves exactly the same rendered
+ * card at /u/{shareId}/card/{n}.png; when the share link is disabled we post
+ * text-only rather than gate the share on the toggle.
+ */
+async function cardPhotoUrl(env: Env, userId: string, cardN: number): Promise<{ photoUrl: string } | undefined> {
+  try {
+    const row = await env.DB
+      .prepare("SELECT share_id, enabled FROM share_links WHERE user_id = ?")
+      .bind(userId)
+      .first<{ share_id: string; enabled: number }>();
+    if (!row || row.enabled !== 1 || !row.share_id) return undefined;
+    return { photoUrl: `${env.APP_ORIGIN}/u/${row.share_id}/card/${cardN}.png` };
+  } catch (err) {
+    // a transient share-links read failure must not 500 the queue — the card
+    // post degrades to text-only instead
+    console.error(`share card url lookup failed user=${userId} :: ${(err as Error).message}`);
+    return undefined;
   }
-  return btoa(binary);
 }
 
 // GET /api/share/preview?card=N → SharePreview | 401/404/409/401/502
@@ -228,7 +241,7 @@ share.post("/queue", async (c) => {
   if (!png) {
     return jsonError(c, 404, "card_unavailable", "card not in your deck yet");
   }
-  const photoBase64 = pngToBase64(png);
+  const media = await cardPhotoUrl(c.env, userId, cardN);
 
   // 9 · rate limit: 5 share queues/user/day — checked after the scope gate
   if (count >= DAILY_QUEUE_LIMIT) {
@@ -263,7 +276,7 @@ share.post("/queue", async (c) => {
             channelId,
             text,
             now: true,
-            media: { photoBase64 },
+            media,
           });
           out.push({ channelId, service: channel.service, ok: true, postId: created.id });
         } catch (err) {

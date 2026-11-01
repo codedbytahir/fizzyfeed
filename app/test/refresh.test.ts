@@ -48,7 +48,7 @@ async function seedTokenRow(
 function stubTokenRefresh(handler: (form: URLSearchParams) => Response | Promise<Response>): void {
   vi.stubGlobal("fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
-    if (url !== "https://api.buffer.com/1/oauth2/token.json") {
+    if (url !== "https://auth.buffer.com/token") {
       throw new Error(`unexpected fetch ${url}`);
     }
     return handler(new URLSearchParams(String(init?.body ?? "")));
@@ -73,7 +73,7 @@ describe("withAccessToken (reactive 401)", () => {
       expect(form.get("refresh_token")).toBe(REFRESH_A);
       expect(form.get("client_id")).toBe("test-client");
       expect(form.get("client_secret")).toBe("test-secret");
-      expect(form.get("redirect_uri")).toBe("https://app.test/api/auth/buffer/callback");
+      expect(form.get("redirect_uri")).toBeNull(); // refresh omits redirect_uri per current docs
       return okRefreshResponse();
     });
 

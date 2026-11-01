@@ -31,12 +31,16 @@ import type { BufferChannel, BufferProfile, MeResponse, TokenPair } from "../../
 
 const auth = new Hono<HonoEnv>();
 
-// spec 02 §2: login requests read-only scopes only; the write scope is a
-// separate upgrade consent at recap time (spec 06) — never bundled here.
-const LOGIN_SCOPES = "read";
-// upgrade consent requests the write scope alone (spec 02 §2 — separate consent,
-// never bundled into login)
-const UPGRADE_SCOPES = "write";
+// spec 02 §2 (updated for Buffer's current scope vocabulary): login requests
+// read scopes + offline_access (the refresh token lives only behind it); the
+// write scope is a separate upgrade consent at recap/share time — never
+// bundled here.
+const LOGIN_SCOPES = "account:read posts:read offline_access";
+// upgrade consent requests the write scope — plus offline_access, because the
+// current platform only returns a refresh token when offline_access is
+// granted, and the callback upserts the whole token row (a write-only grant
+// would strand the user without refresh after the 1h access token dies)
+const UPGRADE_SCOPES = "posts:write offline_access";
 
 function bufferClientFrom(env: Env) {
   return createBufferClient({

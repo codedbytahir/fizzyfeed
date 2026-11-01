@@ -122,7 +122,8 @@ interface ChannelPlan {
 class FakeBufferClient implements BufferClient {
   listChannelsReq = 0;
   listPostsReq = 0;
-  pages: { channelId: string; page: number; since?: number; count?: number }[] = [];
+  pages: { channelId: string; cursor: string | null; since?: number; count?: number }[] = [];
+  private served = new Map<string, number>();
 
   constructor(private plans: ChannelPlan[]) {}
 
@@ -138,26 +139,29 @@ class FakeBufferClient implements BufferClient {
 
   async listPosts(
     _accessToken: string,
-    opts: { channelId?: string; since?: number; until?: number; page?: number; count?: number }
-  ): Promise<{ posts: BufferPost[]; hasMore: boolean }> {
+    opts: { channelId: string; since?: number; until?: number; cursor?: string; count?: number }
+  ): Promise<{ posts: BufferPost[]; nextCursor?: string; hasMore: boolean }> {
     this.listPostsReq += 1;
-    const page = opts.page ?? 1;
+    const cursor = opts.cursor ?? null;
     this.pages.push({
-      channelId: opts.channelId ?? "",
-      page,
+      channelId: opts.channelId,
+      cursor,
       since: opts.since,
       count: opts.count,
     });
     const plan = this.plans.find((p) => p.channelId === opts.channelId);
-    if (plan && (plan.loop || page <= plan.dataPages)) {
+    const served = this.served.get(opts.channelId) ?? 0;
+    if (plan && (plan.loop || served < plan.dataPages)) {
+      this.served.set(opts.channelId, served + 1);
+      const n = served + 1;
       const post: BufferPost = {
-        id: `${plan.channelId}-${page}`,
+        id: `${plan.channelId}-${n}`,
         channelId: plan.channelId,
         service: "service",
-        text: `post ${plan.channelId} page ${page}`,
-        createdAt: 1_735_363_200 + page * 60,
+        text: `post ${plan.channelId} page ${n}`,
+        createdAt: 1_735_363_200 + n * 60,
       };
-      return { posts: [post], hasMore: true };
+      return { posts: [post], nextCursor: `cur-${plan.channelId}-${n}`, hasMore: true };
     }
     return { posts: [], hasMore: false };
   }
@@ -194,7 +198,7 @@ function cursorPatch(overrides: Partial<SyncCursor> = {}): string {
     backfillReqsToday: 0,
     backfillDay: TODAY,
     backfillChannel: 0,
-    backfillPage: 1,
+    backfillCursor: null,
     since: SINCE,
     ...overrides,
   });
@@ -263,7 +267,7 @@ describe("parseCursor", () => {
     const c = parseCursor(null);
     expect(c.backfillReqsToday).toBe(0);
     expect(c.backfillChannel).toBe(0);
-    expect(c.backfillPage).toBe(1);
+    expect(c.backfillCursor).toBeNull();
     expect(c.backfillDay).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     const expectedSince = Math.floor(Date.now() / 1000) - BACKFILL_WINDOW_DAYS * 86400;
     expect(Math.abs(c.since - expectedSince)).toBeLessThan(5);
@@ -274,11 +278,11 @@ describe("parseCursor", () => {
       user_id: "u1",
       backfill_done: 0,
       last_polled_at: 0,
-      poll_cursor: JSON.stringify({ backfillReqsToday: 12, backfillPage: 4, since: SINCE }),
+      poll_cursor: JSON.stringify({ backfillReqsToday: 12, backfillCursor: "cur-9", since: SINCE }),
     };
     const c = parseCursor(row);
     expect(c.backfillReqsToday).toBe(12);
-    expect(c.backfillPage).toBe(4);
+    expect(c.backfillCursor).toBe("cur-9");
     expect(c.since).toBe(SINCE);
     expect(c.backfillChannel).toBe(0);
     expect(c.backfillDay).toMatch(/^\d{4}-\d{2}-\d{2}$/);
@@ -293,7 +297,7 @@ describe("parseCursor", () => {
     };
     const c = parseCursor(row);
     expect(c.backfillReqsToday).toBe(0);
-    expect(c.backfillPage).toBe(1);
+    expect(c.backfillCursor).toBeNull();
   });
 });
 
@@ -304,7 +308,7 @@ describe("resetBudgetIfNeeded", () => {
         backfillReqsToday: 239,
         backfillDay: "2020-01-01",
         backfillChannel: 2,
-        backfillPage: 5,
+        backfillCursor: "cur-5",
         since: SINCE,
       },
       "2025-06-01"
@@ -313,7 +317,7 @@ describe("resetBudgetIfNeeded", () => {
     expect(rolled.backfillDay).toBe("2025-06-01");
     expect(rolled.since).toBe(SINCE);
     expect(rolled.backfillChannel).toBe(2);
-    expect(rolled.backfillPage).toBe(5);
+    expect(rolled.backfillCursor).toBe("cur-5");
   });
 
   it("keeps the counter on the same day", () => {
@@ -321,7 +325,7 @@ describe("resetBudgetIfNeeded", () => {
       backfillReqsToday: 7,
       backfillDay: "2025-06-01",
       backfillChannel: 0,
-      backfillPage: 1,
+      backfillCursor: null,
       since: SINCE,
     };
     expect(resetBudgetIfNeeded(c, "2025-06-01")).toBe(c);
@@ -343,7 +347,7 @@ describe("startBackfillWith", () => {
     expect(db.state.get("u1")?.backfill_done).toBe(0);
     const saved = JSON.parse(db.state.get("u1")?.poll_cursor ?? "{}") as SyncCursor;
     expect(saved.backfillReqsToday).toBe(240);
-    expect(saved.backfillPage).toBe(240);
+    expect(typeof saved.backfillCursor).toBe("string"); // mid-stream position kept
     expect(saved.backfillChannel).toBe(0);
     expect(saved.since).toBe(SINCE);
     const cursorWrites = db.log.filter((s) => s.sql.includes("UPDATE sync_state SET poll_cursor"));
@@ -361,27 +365,27 @@ describe("startBackfillWith", () => {
     expect(client.listPostsReq).toBe(0);
   });
 
-  it("resumes from the saved page after a simulated restart", async () => {
+  it("resumes from the saved cursor after a simulated restart", async () => {
     const db = new FakeD1();
-    seedState(db, "u1", { poll_cursor: cursorPatch({ backfillPage: 3 }) });
+    seedState(db, "u1", { poll_cursor: cursorPatch({ backfillCursor: "cur-saved" }) });
     const client = new FakeBufferClient([{ channelId: "ch1", dataPages: 0, loop: true }]);
 
     await startBackfillWith(makeEnv(db), "u1", client, { accessToken: "tok", now: NOW });
 
-    expect(client.pages[0]?.page).toBe(3);
+    expect(client.pages[0]?.cursor).toBe("cur-saved");
     expect(client.pages[0]?.channelId).toBe("ch1");
   });
 
   it("resets the budget on a new UTC day and keeps the resume position", async () => {
     const db = new FakeD1();
     seedState(db, "u1", {
-      poll_cursor: cursorPatch({ backfillReqsToday: 239, backfillPage: 5, backfillDay: "2020-01-01" }),
+      poll_cursor: cursorPatch({ backfillReqsToday: 239, backfillCursor: "cur-5", backfillDay: "2020-01-01" }),
     });
     const client = new FakeBufferClient([{ channelId: "ch1", dataPages: 0, loop: true }]);
 
     await startBackfillWith(makeEnv(db), "u1", client, { accessToken: "tok", now: NOW });
 
-    expect(client.pages[0]?.page).toBe(5); // position kept across the day roll
+    expect(client.pages[0]?.cursor).toBe("cur-5"); // position kept across the day roll
     const saved = JSON.parse(db.state.get("u1")?.poll_cursor ?? "{}") as SyncCursor;
     expect(saved.backfillDay).toBe(TODAY);
     expect(saved.backfillReqsToday).toBe(240); // ran a fresh full budget
@@ -419,7 +423,7 @@ describe("startBackfillWith", () => {
     await startBackfillWith(makeEnv(db), "u1", client, { accessToken: "tok", now: NOW });
 
     const ch2First = client.pages.find((p) => p.channelId === "ch2");
-    expect(ch2First?.page).toBe(1); // next channel restarts at page 1
+    expect(ch2First?.cursor ?? null).toBeNull(); // next channel restarts at its first page
     expect(db.state.get("u1")?.backfill_done).toBe(1);
   });
 });
@@ -432,7 +436,7 @@ describe("pollIncrementalWith", () => {
     seedState(db, "u1", {
       backfill_done: 1,
       last_polled_at: 1_000,
-      poll_cursor: cursorPatch({ backfillReqsToday: 5, backfillPage: 2, backfillChannel: 1 }),
+      poll_cursor: cursorPatch({ backfillReqsToday: 5, backfillCursor: "cur-x", backfillChannel: 1 }),
     });
     const client = new FakeBufferClient([
       { channelId: "ch1", dataPages: 1 },
@@ -447,7 +451,7 @@ describe("pollIncrementalWith", () => {
     expect(stored?.last_polled_at).toBe(NOW);
     const saved = JSON.parse(stored?.poll_cursor ?? "{}") as SyncCursor;
     expect(saved.backfillReqsToday).toBe(9); // 5 carried + channels + 3 pages
-    expect(saved.backfillPage).toBe(2); // cursor metadata preserved
+    expect(saved.backfillCursor).toBe("cur-x"); // cursor metadata preserved
     expect(saved.backfillChannel).toBe(1);
   });
 

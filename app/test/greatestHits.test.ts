@@ -1,7 +1,8 @@
 /**
  * Greatest Hits tests (spec 07, task T19): enable / refresh / revoke / status
- * over fake D1 + KV bindings with Buffer's HTTP mocked at the global fetch
- * level (the user.json PAT-validation probe + the metrics endpoint).
+ * over fake D1 + KV bindings with Buffer's GraphQL API mocked at the global
+ * fetch level (the account-probe key validation + the org lookup + the hits
+ * query).
  *
  * Covered: the AES-GCM discipline (ciphertext ≠ plaintext at rest, roundtrip
  * only under the row owner's AAD), the 10-minute debounce, exact metric-label
@@ -16,7 +17,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Hono } from "hono";
-import greatestHitsRoute, { METRICS_URL } from "../src/worker/routes/greatestHits";
+import greatestHitsRoute, { GRAPHQL_URL } from "../src/worker/routes/greatestHits";
 import { unseal } from "../src/worker/lib/crypto";
 import { setSessionCookie } from "../src/worker/lib/session";
 import type { Env, HonoEnv } from "../src/worker/env";
@@ -32,13 +33,13 @@ import {
 } from "./helpers";
 
 const USER = "user-gh-1";
-/** Sentinel PAT — every test asserts this string never leaks anywhere. */
+/** Sentinel API key — every test asserts this string never leaks anywhere. */
 const PAT = "pat-sentinel-9f2c74ae51d08b36";
 const GH_KEY = `gh:${USER}`;
 const DEB_KEY = `deb:gh:${USER}`;
 // Dummy 32-byte test key built at runtime (recap.test.ts pattern) — not a secret.
 const SESSION_SECRET = btoa("0123456789abcdef0123456789abcdef");
-const TOKEN_PAGE = "https://buffer.com/app/settings/developers";
+const TOKEN_PAGE = "https://developers.buffer.com";
 
 // ── fake D1: base + the two metrics_tokens statements ───────────────────────
 
@@ -201,55 +202,71 @@ function at<T>(list: T[], i: number): T {
 interface FetchCall {
   url: string;
   status: number;
+  op: string;
+  auth: string | undefined; // Authorization header value — asserted, never logged
 }
 
 let calls: FetchCall[] = [];
-let userStatus = 200;
-let metricsStatus = 200;
-let metricsBody: unknown = [];
+let probeStatus = 200;
+let orgStatus = 200;
+let hitsStatus = 200;
+let hitsBody: unknown = metricsFixture();
 
 function installFetch(): void {
   vi.stubGlobal("fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
-    void init;
     const url = String(input);
-    if (url.startsWith("https://api.buffer.com/1/user.json")) {
-      calls.push({ url, status: userStatus });
-      return jsonResponse({ id: "buf-user-1", name: "ada" }, userStatus);
+    const body = JSON.parse(String(init?.body ?? "{}")) as { query?: string };
+    const op = /\b(?:query|mutation)\s+(\w+)/.exec(body.query ?? "")?.[1] ?? "";
+    const auth = (init?.headers as Record<string, string> | undefined)?.["authorization"];
+    if (url.startsWith(GRAPHQL_URL) && op === "Probe") {
+      calls.push({ url, status: probeStatus, op, auth });
+      if (probeStatus !== 200) return jsonResponse({ errors: [{ message: "nope" }] }, probeStatus);
+      return jsonResponse({ data: { account: { id: "buf-user-1" } } });
     }
-    if (url.startsWith(METRICS_URL)) {
-      calls.push({ url, status: metricsStatus });
-      return jsonResponse(metricsBody, metricsStatus);
+    if (url.startsWith(GRAPHQL_URL) && op === "OrgId") {
+      calls.push({ url, status: orgStatus, op, auth });
+      if (orgStatus !== 200) return jsonResponse({ errors: [{ message: "nope" }] }, orgStatus);
+      return jsonResponse({ data: { account: { organizations: [{ id: "org-1" }] } } });
     }
-    throw new Error(`unexpected fetch ${url}`);
+    if (url.startsWith(GRAPHQL_URL) && op === "Hits") {
+      calls.push({ url, status: hitsStatus, op, auth });
+      if (hitsStatus !== 200) return jsonResponse({ errors: [{ message: "nope" }] }, hitsStatus);
+      return jsonResponse({ data: hitsBody });
+    }
+    throw new Error(`unexpected fetch ${url} ${op}`);
   });
 }
 
 function probeCalls(): FetchCall[] {
-  return calls.filter((c) => c.url.startsWith("https://api.buffer.com/1/user.json"));
+  return calls.filter((c) => c.op === "Probe");
 }
 
 function metricsCalls(): FetchCall[] {
-  return calls.filter((c) => c.url.startsWith(METRICS_URL));
+  return calls.filter((c) => c.op === "Hits");
 }
 
 // ── fixtures ────────────────────────────────────────────────────────────────
 
-/** 11 posts, values 1000…900; post 0 carries "impressions", post 1 "favorites". */
-function metricsFixture(): unknown[] {
-  const out: unknown[] = [];
+/** 11 posts, values 1000…900; post 0 carries "impressions", post 1 "reactions". */
+function metricsFixture(): unknown {
+  const nodes: Record<string, unknown>[] = [];
   for (let i = 0; i < 11; i++) {
     const value = 1000 - i * 10;
-    const name = i === 0 ? "impressions" : i === 1 ? "favorites" : "clicks";
+    const type = i === 0 ? "impressions" : i === 1 ? "reactions" : "clicks";
     const text = i === 0 ? `long post ${i} ${"fizz ".repeat(40)}` : `post ${i} about shipping`;
-    const update: Record<string, unknown> = { id: `u-${i}`, text, metrics: { [name]: value } };
+    const node: Record<string, unknown> = {
+      id: `u-${i}`,
+      text,
+      metrics: [{ name: type, type, value }],
+    };
     if (i === 2) {
-      update["channel"] = "linkedin"; // tolerated alternative field, no `service`
+      node["channel"] = "linkedin"; // tolerated alternative field, no `channelService`
     } else {
-      update["service"] = "twitter";
+      node["channelService"] = "twitter";
     }
-    out.push(update);
+    nodes.push(node);
   }
-  return out;
+  return { posts: { edges: nodes.map((node) => ({ node })) } };
 }
 
 /** Simulate the 600s KV cache TTL passing (FakeKV ignores TTLs — age by hand). */
@@ -273,9 +290,10 @@ function enableAndRefresh(rig: GhRig, cookie: string): Promise<void> {
 beforeEach(() => {
   calls = [];
   responseBodies.length = 0;
-  userStatus = 200;
-  metricsStatus = 200;
-  metricsBody = metricsFixture();
+  probeStatus = 200;
+  orgStatus = 200;
+  hitsStatus = 200;
+  hitsBody = metricsFixture();
 });
 
 afterEach(() => {
@@ -295,9 +313,11 @@ describe("POST /enable", () => {
     const res = await post(rig, "/enable", cookie, { token: PAT });
     expect(res.status).toBe(204);
 
-    // exactly ONE fetch: the user.json validation probe, PAT in the query
+    // exactly ONE fetch: the validation probe, key in the Authorization header only
     expect(calls).toHaveLength(1);
-    expect(at(probeCalls(), 0).url).toContain("access_token=");
+    expect(at(probeCalls(), 0).url).toBe(GRAPHQL_URL);
+    expect(at(probeCalls(), 0).url).not.toContain(encodeURIComponent(PAT));
+    expect(at(probeCalls(), 0).auth).toBe(`Bearer ${PAT}`);
 
     // row written — ciphertext at rest, not the plaintext PAT
     const row = rig.db.metricsTokens.get(USER);
@@ -327,10 +347,10 @@ describe("POST /enable", () => {
     expect(rig.kv.map.has(GH_KEY)).toBe(false);
   });
 
-  it("buffer rejects the PAT → 400 invalid_token with the token-page link, no row written", async () => {
+  it("buffer rejects the key → 400 invalid_token with the token-page link, no row written", async () => {
     const rig = makeRig();
     installFetch();
-    userStatus = 401;
+    probeStatus = 401;
     const cookie = await loginCookie();
 
     const res = await post(rig, "/enable", cookie, { token: PAT });
@@ -340,7 +360,7 @@ describe("POST /enable", () => {
     expect(err.error.message).toContain(TOKEN_PAGE);
 
     expect(probeCalls()).toHaveLength(1); // validation was attempted exactly once
-    expect(rig.db.metricsTokens.size).toBe(0); // nothing stored for a bad PAT
+    expect(rig.db.metricsTokens.size).toBe(0); // nothing stored for a bad key
   });
 
   it("no session → 401 no_session (and no upstream call)", async () => {
@@ -390,9 +410,9 @@ describe("POST /refresh", () => {
     expect(top.map((h) => h.postId)).not.toContain("u-9");
     expect(top.map((h) => h.postId)).not.toContain("u-10");
 
-    // exact pass-through: the API's own field names, never renamed
+    // exact pass-through: the API's own metric types, never renamed
     expect(at(top, 0).metric).toEqual({ name: "impressions", value: 1000 });
-    expect(at(top, 1).metric).toEqual({ name: "favorites", value: 990 });
+    expect(at(top, 1).metric).toEqual({ name: "reactions", value: 990 });
     expect(at(top, 0).channel).toBe("twitter");
     expect(at(top, 2).channel).toBe("linkedin"); // tolerated `channel` field
 
@@ -414,7 +434,7 @@ describe("POST /refresh", () => {
       cachedAt?: number;
     };
     expect(entry.top).toHaveLength(9);
-    expect(entry.metricNames).toEqual(["impressions", "favorites", "clicks"]);
+    expect(entry.metricNames).toEqual(["impressions", "reactions", "clicks"]);
     expect(typeof entry.cachedAt).toBe("number");
   });
 
@@ -456,7 +476,7 @@ describe("POST /refresh", () => {
     expect(((await revoked.json()) as { error: { code: string } }).error.code).toBe("gone");
   });
 
-  it("PAT expired upstream (401) → 410 + row deleted + cached results purged", async () => {
+  it("key expired upstream (401) → 410 + row deleted + cached results purged", async () => {
     const rig = makeRig();
     installFetch();
     const cookie = await loginCookie();
@@ -464,7 +484,7 @@ describe("POST /refresh", () => {
     expect(rig.kv.map.has(GH_KEY)).toBe(true);
     expect(rig.db.metricsTokens.has(USER)).toBe(true);
 
-    metricsStatus = 401;
+    hitsStatus = 401;
     ageCache(rig, 601); // simulate the cache TTL passing…
     rig.kv.delete(DEB_KEY); // …and the 10-min debounce window passing
 
@@ -476,6 +496,25 @@ describe("POST /refresh", () => {
     expect(at(metricsCalls(), 1).status).toBe(401); // the expired probe
     expect(rig.db.metricsTokens.has(USER)).toBe(false); // row deleted
     expect(rig.kv.map.has(GH_KEY)).toBe(false); // cache purged
+  });
+
+  it("key dies at the ORG lookup (401) → 410 + row deleted too (not a 502 loop)", async () => {
+    const rig = makeRig();
+    installFetch();
+    const cookie = await loginCookie();
+    await enableAndRefresh(rig, cookie);
+    expect(rig.db.metricsTokens.has(USER)).toBe(true);
+
+    orgStatus = 401; // revoked key fails BEFORE the hits query
+    ageCache(rig, 601);
+    rig.kv.delete(DEB_KEY);
+
+    const res = await post(rig, "/refresh", cookie);
+    expect(res.status).toBe(410);
+    const err = (await res.json()) as { error: { code: string; message: string } };
+    expect(err.error.code).toBe("gone");
+    expect(rig.db.metricsTokens.has(USER)).toBe(false); // row deleted at org stage
+    expect(rig.kv.map.has(GH_KEY)).toBe(false);
   });
 
   it("tampered ciphertext row → 410 + row deleted (unreadable = expired)", async () => {
@@ -520,7 +559,13 @@ describe("POST /refresh", () => {
     // simulate the debounce window passing (mission trick: clear the key) and
     // swap the upstream payload — a refetch would return the decoy
     rig.kv.delete(DEB_KEY);
-    metricsBody = [{ id: "decoy", text: "decoy", service: "twitter", metrics: { clicks: 5 } }];
+    hitsBody = {
+      posts: {
+        edges: [
+          { node: { id: "decoy", text: "decoy", channelService: "twitter", metrics: [{ name: "clicks", type: "clicks", value: 5 }] } },
+        ],
+      },
+    };
 
     const res3 = await post(rig, "/refresh", cookie);
     expect(res3.status).toBe(200);

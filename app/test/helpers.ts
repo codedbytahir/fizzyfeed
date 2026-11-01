@@ -32,6 +32,7 @@ export class FakeD1 {
   readonly tokens = new Map<string, Row>(); // buffer_tokens, by user_id
   readonly syncState = new Map<string, Row>(); // sync_state, by user_id
   readonly metricsTokens = new Map<string, Row>(); // metrics_tokens, by user_id
+  readonly shareLinks = new Map<string, Row>(); // share_links, by user_id
 
   prepare(sql: string): BoundStub & { bind: (...params: unknown[]) => BoundStub } {
     const db = this;
@@ -176,6 +177,10 @@ export class FakeD1 {
     if (q.startsWith("DELETE FROM metrics_tokens")) {
       this.metricsTokens.delete(String(params[0]));
       return [];
+    }
+    if (q.startsWith("SELECT share_id, enabled FROM share_links")) {
+      const row = this.shareLinks.get(String(params[0]));
+      return row ? [{ share_id: row["share_id"], enabled: row["enabled"] }] : [];
     }
 
     throw new Error(`FakeD1: unhandled sql: ${sql}`);

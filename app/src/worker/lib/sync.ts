@@ -23,7 +23,7 @@ export interface SyncCursor {
   backfillReqsToday: number;
   backfillDay: string; // YYYY-MM-DD (UTC) the budget belongs to
   backfillChannel: number; // index into listChannels() still to fetch
-  backfillPage: number; // next page to fetch for backfillChannel
+  backfillCursor: string | null; // Buffer cursor inside backfillChannel's page stream
   since: number; // backfill window start (unix seconds)
 }
 
@@ -39,7 +39,7 @@ export function parseCursor(
     backfillReqsToday: 0,
     backfillDay: utcDayString(nowSec),
     backfillChannel: 0,
-    backfillPage: 1,
+    backfillCursor: null,
     since: nowSec - BACKFILL_WINDOW_DAYS * 86400,
   };
   if (!row?.poll_cursor) return fallback;
@@ -49,8 +49,7 @@ export function parseCursor(
       backfillReqsToday: typeof raw.backfillReqsToday === "number" ? raw.backfillReqsToday : 0,
       backfillDay: typeof raw.backfillDay === "string" ? raw.backfillDay : fallback.backfillDay,
       backfillChannel: typeof raw.backfillChannel === "number" ? raw.backfillChannel : 0,
-      backfillPage:
-        typeof raw.backfillPage === "number" && raw.backfillPage >= 1 ? raw.backfillPage : 1,
+      backfillCursor: typeof raw.backfillCursor === "string" ? raw.backfillCursor : null,
       since: typeof raw.since === "number" ? raw.since : fallback.since,
     };
   } catch {
@@ -183,13 +182,13 @@ export async function startBackfillWith(
   requests += 1;
 
   const startChannel = Math.min(Math.max(cursor.backfillChannel, 0), channels.length);
-  const savedPage = Math.max(cursor.backfillPage, 1);
+  const savedCursor = cursor.backfillCursor;
   let finished = true;
 
   for (let ci = startChannel; ci < channels.length; ci++) {
     const channel = channels[ci];
     if (!channel) break;
-    let page = ci === startChannel ? savedPage : 1;
+    let pageCursor: string | null = ci === startChannel ? savedCursor : null;
     let channelDone = false;
     while (!channelDone) {
       if (requests >= DAILY_REQUEST_SAFETY_STOP) {
@@ -197,7 +196,7 @@ export async function startBackfillWith(
         finished = false;
         cursor.backfillReqsToday = requests;
         cursor.backfillChannel = ci;
-        cursor.backfillPage = page;
+        cursor.backfillCursor = pageCursor;
         await persistCursor(env, userId, cursor);
         break;
       }
@@ -205,22 +204,24 @@ export async function startBackfillWith(
         channelId: channel.id,
         since: cursor.since,
         count: PAGE_SIZE,
-        page,
+        cursor: pageCursor ?? undefined,
       });
       requests += 1;
       await upsertPosts(env, userId, res.posts);
       cursor.backfillReqsToday = requests;
-      if (res.hasMore && res.posts.length > 0) {
-        page += 1;
+      // a hasMore answer without a cursor would re-fetch page 1 forever —
+      // treat it as the end of the stream instead of burning the budget
+      if (res.hasMore && res.posts.length > 0 && res.nextCursor !== undefined) {
+        pageCursor = res.nextCursor;
         cursor.backfillChannel = ci;
-        cursor.backfillPage = page;
+        cursor.backfillCursor = pageCursor;
         await persistCursor(env, userId, cursor);
-        console.log(`${userId} backfill: page ${page}, budget ${requests}/${DAILY_REQUEST_SAFETY_STOP}`);
+        console.log(`${userId} backfill: budget ${requests}/${DAILY_REQUEST_SAFETY_STOP}`);
       } else {
-        // page exhausted → next channel restarts at page 1
+        // stream exhausted → next channel restarts at its first page
         channelDone = true;
         cursor.backfillChannel = ci + 1;
-        cursor.backfillPage = 1;
+        cursor.backfillCursor = null;
         await persistCursor(env, userId, cursor);
       }
     }
@@ -286,7 +287,7 @@ export async function pollIncrementalWith(
 
   let completed = true;
   for (const channel of channels) {
-    let page = 1;
+    let pageCursor: string | null = null;
     let channelDone = false;
     while (!channelDone) {
       if (requests >= DAILY_REQUEST_SAFETY_STOP) {
@@ -297,12 +298,12 @@ export async function pollIncrementalWith(
         channelId: channel.id,
         since,
         count: PAGE_SIZE,
-        page,
+        cursor: pageCursor ?? undefined,
       });
       requests += 1;
       await upsertPosts(env, userId, res.posts);
-      if (res.hasMore && res.posts.length > 0) {
-        page += 1;
+      if (res.hasMore && res.posts.length > 0 && res.nextCursor !== undefined) {
+        pageCursor = res.nextCursor;
       } else {
         channelDone = true;
       }

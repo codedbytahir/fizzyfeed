@@ -33,20 +33,30 @@ function makeApp(): Hono<HonoEnv> {
 
 function stubBufferFetch(): ReturnType<typeof vi.fn> {
   const fn = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-    void init;
     const url = String(input);
-    if (url.startsWith("https://api.buffer.com/1/oauth2/token.json")) {
-      return jsonResponse({ access_token: ACCESS, refresh_token: REFRESH, expires_in: 3600, scope: "read" });
+    if (url.startsWith("https://auth.buffer.com/token")) {
+      return jsonResponse({
+        access_token: ACCESS,
+        refresh_token: REFRESH,
+        expires_in: 3600,
+        scope: "account:read posts:read offline_access",
+      });
     }
-    if (url.startsWith("https://api.buffer.com/1/user.json")) {
-      return jsonResponse({ id: BUFFER_USER_ID, name: "Ada Lovelace", avatar_https: "https://cdn.test/ada.png" });
+    // single GraphQL endpoint — route on the operation name
+    const body = JSON.parse(String(init?.body ?? "{}")) as { query?: string };
+    const name = /\b(?:query|mutation)\s+(\w+)/.exec(body.query ?? "")?.[1] ?? "";
+    if (url.startsWith("https://api.buffer.com") && name === "Profile") {
+      return jsonResponse({ data: { account: { id: BUFFER_USER_ID, name: "Ada Lovelace", avatar: "https://cdn.test/ada.png" } } });
     }
-    if (url.startsWith("https://api.buffer.com/1/profiles.json")) {
-      return jsonResponse([
-        { id: "ch-1", service: "twitter", service_id: "tw-9", service_username: "ada", avatar_https: "https://cdn.test/ada.png" },
-      ]);
+    if (url.startsWith("https://api.buffer.com") && name === "OrgId") {
+      return jsonResponse({ data: { account: { organizations: [{ id: "org-1" }] } } });
     }
-    throw new Error(`unexpected fetch: ${url}`);
+    if (url.startsWith("https://api.buffer.com") && name === "Channels") {
+      return jsonResponse({
+        data: { channels: [{ id: "ch-1", service: "twitter", serviceId: "tw-9", displayName: "ada", avatar: "https://cdn.test/ada.png" }] },
+      });
+    }
+    throw new Error(`unexpected fetch: ${url} ${name}`);
   });
   vi.stubGlobal("fetch", fn);
   return fn;
@@ -101,11 +111,11 @@ describe("GET /api/auth/buffer/login", () => {
 
     expect(res.status).toBe(302);
     const loc = new URL(res.headers.get("Location") ?? "");
-    expect(`${loc.origin}${loc.pathname}`).toBe("https://buffer.com/oauth2/authorize");
+    expect(`${loc.origin}${loc.pathname}`).toBe("https://auth.buffer.com/auth");
     expect(loc.searchParams.get("response_type")).toBe("code");
     expect(loc.searchParams.get("client_id")).toBe("test-client");
     expect(loc.searchParams.get("redirect_uri")).toBe("https://app.test/api/auth/buffer/callback");
-    expect(loc.searchParams.get("scope")).toBe("read");
+    expect(loc.searchParams.get("scope")).toBe("account:read posts:read offline_access");
     expect(loc.searchParams.get("code_challenge_method")).toBe("S256");
     expect(loc.searchParams.get("state")).toMatch(/^[A-Za-z0-9_-]{43}$/);
     expect(loc.searchParams.get("code_challenge")).toMatch(/^[A-Za-z0-9_-]{43}$/);
@@ -161,7 +171,7 @@ describe("GET /api/auth/buffer/callback", () => {
     expect(sessionSet).not.toContain("Max-Age=0");
 
     // PKCE exchange really sent the authorization_code form
-    const tokenCall = fetchMock.mock.calls.find((c) => String(c[0]).startsWith("https://api.buffer.com/1/oauth2/token.json"));
+    const tokenCall = fetchMock.mock.calls.find((c) => String(c[0]).startsWith("https://auth.buffer.com/token"));
     const form = new URLSearchParams(String(tokenCall?.[1]?.body ?? ""));
     expect(form.get("grant_type")).toBe("authorization_code");
     expect(form.get("code")).toBe("auth-code-1");
@@ -175,7 +185,7 @@ describe("GET /api/auth/buffer/callback", () => {
     expect(user["avatar_url"]).toBe("https://cdn.test/ada.png");
     expect(userId).toBe(user["id"]);
     const tokenRow = rig.db.tokens.get(userId) as Row;
-    expect(tokenRow["scopes"]).toBe("read");
+    expect(tokenRow["scopes"]).toBe("account:read posts:read offline_access");
     expect(rig.db.syncState.get(userId)?.["backfill_done"]).toBe(0);
 
     // ciphertext ≠ plaintext, unsealable only with AAD=userId
@@ -295,8 +305,10 @@ describe("GET /api/auth/me", () => {
     });
 
     // the sealed access token was decrypted from D1 and used for the Buffer call
-    const profilesCall = fetchMock.mock.calls.find((c) => String(c[0]).startsWith("https://api.buffer.com/1/profiles.json"));
-    expect(String(profilesCall?.[0])).toContain(`access_token=${ACCESS}`);
+    // (GraphQL: the token travels in the Authorization header, never the URL)
+    const channelsCall = fetchMock.mock.calls.find((c) => String((c[1] as RequestInit | undefined)?.body ?? "").includes("query Channels"));
+    expect(String(channelsCall?.[0])).toBe("https://api.buffer.com");
+    expect((channelsCall?.[1]?.headers as Record<string, string>)["authorization"]).toBe(`Bearer ${ACCESS}`);
   });
 });
 

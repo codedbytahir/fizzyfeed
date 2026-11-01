@@ -33,7 +33,12 @@ export interface CreatePostInput {
   text: string;
   scheduledAt?: number; // unix seconds; omit → Buffer picks next free slot
   now?: boolean;
-  media?: { photoBase64: string }; // base64 PNG attached as media[photo] (card share)
+  /**
+   * The Buffer API does not accept file uploads — images travel as publicly
+   * reachable URLs that must stay live until the post publishes. Fizzyfeed
+   * serves card PNGs from the opt-in public share page (/u/{shareId}/card/n.png).
+   */
+  media?: { photoUrl: string };
 }
 
 export interface BufferProfile {
@@ -47,14 +52,13 @@ export interface BufferClient {
   getProfile(accessToken: string): Promise<BufferProfile>;
   listChannels(accessToken: string): Promise<BufferChannel[]>;
   /**
-   * Buffer's posts API is per-channel; omitting channelId iterates the user's
-   * channels and merges results. Posts come newest-first — implementers stop
-   * paging once createdAt < since.
+   * Buffer's posts API is cursor-paginated and org-scoped; implementers stop
+   * paging once the oldest post is older than `since`. Posts come newest-first.
    */
   listPosts(
     accessToken: string,
-    opts: { channelId?: string; since?: number; until?: number; page?: number; count?: number }
-  ): Promise<{ posts: BufferPost[]; hasMore: boolean }>;
+    opts: { channelId: string; since?: number; until?: number; cursor?: string; count?: number }
+  ): Promise<{ posts: BufferPost[]; nextCursor?: string; hasMore: boolean }>;
   createPost(accessToken: string, input: CreatePostInput): Promise<{ id: string }>;
   refreshAccessToken(refreshToken: string): Promise<TokenPair>;
 }

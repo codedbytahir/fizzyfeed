@@ -1,18 +1,18 @@
 /**
  * Greatest Hits (spec 07): the opt-in real-engagement chapter. Power users
- * paste a Buffer personal access token (PAT); we validate it with ONE cheap
- * read, seal it AES-GCM (AAD = user_id — the same discipline as buffer_tokens)
- * into metrics_tokens, and use it for a single debounced metrics read per
- * refresh (10 min KV debounce, spec 07 §4).
+ * paste a Buffer API key (Settings → API); we validate it with ONE cheap
+ GraphQL read, seal it AES-GCM (AAD = user_id — the same discipline as
+ * buffer_tokens) into metrics_tokens, and use it for a single debounced
+ * metrics read per refresh (10 min KV debounce, spec 07 §4).
  *
  * Honest limits (spec 07 §1): metrics are never faked and never renamed — each
- * hit carries the EXACT field name the metrics API returns ("impressions"
- * stays "impressions"; the UI may not relabel it "views"). Buffer's standard
- * API does not expose these numbers cleanly, so the metrics endpoint is
- * documented best-effort and its payload is parsed tolerantly (array or
- * { updates: [...] }; metrics as a name → number bag).
+ * hit carries the EXACT metric type the API returns ("impressions" stays
+ * "impressions"; the UI may not relabel it "views"). Metrics come from the
+ * GraphQL Post.metrics entries (name/type/value); only posts Buffer itself
+ * marks `sent` within the trailing year are ranked, and the payload is parsed
+ * tolerantly (edges may be missing entries; numeric value required).
  *
- * PAT discipline (spec 07 §3): encrypted at rest in D1 only — never in KV,
+ * Key discipline (spec 07 §3): encrypted at rest in D1 only — never in KV,
  * never logged, never returned to the client (not even masked; /status shows
  * only "enabled" + "since"). Response bodies carry hits, nothing else.
  */
@@ -27,23 +27,33 @@ import type { MetricsTokenRow } from "../../shared/schema";
 
 const greatestHits = new Hono<HonoEnv>();
 
-/** Documented best-effort metrics endpoint (spec 07 §1) — mocked in tests. */
-export const METRICS_URL = "https://api.buffer.com/1/updates/metrics.json";
-/** Buffer's PAT management page — linked verbatim in the invalid_token message. */
-const TOKEN_PAGE = "https://buffer.com/app/settings/developers";
+/** Single GraphQL endpoint — both the probe and the metrics read land here. */
+export const GRAPHQL_URL = BUFFER_ENDPOINTS.apiBase;
+const PROBE_QUERY = `query Probe { account { id } }`;
+const ORG_QUERY = `query OrgId { account { organizations { id } } }`;
+const HITS_QUERY = `query Hits($first: Int, $input: PostsInput!) {
+  posts(first: $first, input: $input) {
+    edges { node { id text channelService metrics { name type value } } }
+  }
+}`;
+/** Buffer's API-key management page — linked verbatim in the invalid_token message. */
+const TOKEN_PAGE = "https://developers.buffer.com";
 
 const REFRESH_DEBOUNCE_SEC = 600; // 10 min (spec 07 §4)
 const CACHE_TTL_SEC = 600; // cached top hits live exactly one debounce window
 const TOP_N = 9;
 const EXCERPT_MAX = 80;
 const MIN_TOKEN_LEN = 16;
+const HITS_PAGE_SIZE = 100;
+const HITS_WINDOW_DAYS = 365;
 
 /**
- * Which metric field wins when a post exposes several. Documented preference:
- * impressions first, then likes/favorites, then clicks, then replies. The
- * chosen field's NAME is passed through exactly as the API spells it.
+ * Which metric type wins when a post exposes several. Documented preference
+ * (cross-network PostMetricType vocabulary): impressions first, then reach,
+ * then reactions, comments, clicks. The chosen type's NAME is passed through
+ * exactly as the API spells it.
  */
-const METRIC_PREFERENCE = ["impressions", "likes", "favorites", "clicks", "replies"] as const;
+const METRIC_PREFERENCE = ["impressions", "reach", "reactions", "comments", "clicks"] as const;
 
 const GONE_MESSAGE = "greatest hits is off — enable it again to refresh";
 const UPSTREAM_MESSAGE = "metrics service is unreachable right now";
@@ -71,12 +81,72 @@ function asBytes(v: ArrayBuffer | Uint8Array): Uint8Array {
   return v instanceof Uint8Array ? v : new Uint8Array(v);
 }
 
+// ── GraphQL plumbing (key travels in the Authorization header only) ─────────
+
+type GqlResult =
+  | { ok: true; data: Record<string, unknown> }
+  | { ok: false; status: number };
+
+async function gqlRequest(
+  key: string,
+  query: string,
+  variables: Record<string, unknown>
+): Promise<GqlResult> {
+  let res: Response;
+  try {
+    res = await fetch(GRAPHQL_URL, {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
+      body: JSON.stringify({ query, variables }),
+    });
+  } catch {
+    return { ok: false, status: 0 };
+  }
+  // 401/403 → the key stopped working (expired/revoked upstream)
+  if (res.status === 401 || res.status === 403) return { ok: false, status: res.status };
+  if (!res.ok) return { ok: false, status: res.status };
+  const body = asRecord(await res.json().catch(() => ({})));
+  if (Array.isArray(body["errors"]) && body["errors"].length > 0) {
+    return { ok: false, status: res.status };
+  }
+  const data = body["data"];
+  if (typeof data !== "object" || data === null) return { ok: false, status: res.status };
+  return { ok: true, data: data as Record<string, unknown> };
+}
+
+/** One cheap read to validate a pasted key before anything is stored. */
+async function probeKey(key: string): Promise<boolean> {
+  const res = await gqlRequest(key, PROBE_QUERY, {});
+  return res.ok && asStr(asRecord(res.data["account"])["id"]) !== undefined;
+}
+
+/** The metrics queries are org-scoped — resolve the account's first org. */
+async function firstOrganizationId(
+  key: string
+): Promise<{ ok: true; orgId: string } | { ok: false; status: number }> {
+  const res = await gqlRequest(key, ORG_QUERY, {});
+  if (!res.ok) return { ok: false, status: res.status };
+  const account = asRecord(res.data["account"]);
+  const orgs = Array.isArray(account["organizations"]) ? account["organizations"] : [];
+  const orgId = asStr(asRecord(orgs[0])["id"]);
+  // an org-less answer is still an upstream failure — the hits query is
+  // org-scoped and cannot run
+  return orgId ? { ok: true, orgId } : { ok: false, status: 200 };
+}
+
 // ── metrics mapping (honest labels, spec 07 §4) ─────────────────────────────
 
-function extractUpdates(body: unknown): unknown[] {
-  if (Array.isArray(body)) return body;
-  const updates = asRecord(body)["updates"];
-  return Array.isArray(updates) ? updates : [];
+/** Post.metrics is a name/type/value list — flatten to a type → number bag. */
+function metricsBag(list: unknown): Record<string, unknown> {
+  if (!Array.isArray(list)) return {};
+  const bag: Record<string, unknown> = {};
+  for (const entry of list) {
+    const o = asRecord(entry);
+    const type = asStr(o["type"]);
+    const value = asNum(o["value"]);
+    if (type && value !== undefined) bag[type] = value;
+  }
+  return bag;
 }
 
 /**
@@ -99,21 +169,23 @@ function mapHit(raw: unknown): GreatestHit | null {
   const o = asRecord(raw);
   const postId = asStr(o["id"]);
   if (!postId) return null;
-  const metric = pickMetric(asRecord(o["metrics"]));
+  const metric = pickMetric(metricsBag(o["metrics"]));
   if (!metric) return null; // no numeric metric → cannot rank honestly → skip
   const text = asStr(o["text"]) ?? "";
   return {
     postId,
     excerpt: text.slice(0, EXCERPT_MAX),
-    channel: asStr(o["service"]) ?? asStr(o["channel"]) ?? "",
+    channel: asStr(o["channelService"]) ?? asStr(o["channel"]) ?? "",
     metric,
   };
 }
 
-function topHits(body: unknown): GreatestHit[] {
+function topHits(data: Record<string, unknown>): GreatestHit[] {
   const hits: GreatestHit[] = [];
-  for (const raw of extractUpdates(body)) {
-    const hit = mapHit(raw);
+  const conn = asRecord(data["posts"]);
+  const edges = Array.isArray(conn["edges"]) ? conn["edges"] : [];
+  for (const edge of edges) {
+    const hit = mapHit(asRecord(edge)["node"]);
     if (hit) hits.push(hit);
   }
   hits.sort((a, b) => b.metric.value - a.metric.value);
@@ -172,7 +244,7 @@ greatestHits.post("/enable", async (c) => {
       c,
       400,
       "invalid_token",
-      `paste a buffer personal access token — create one at ${TOKEN_PAGE}`
+      `paste a buffer api key — create one at ${TOKEN_PAGE} (Settings → API)`
     );
 
   let raw: unknown;
@@ -184,17 +256,10 @@ greatestHits.post("/enable", async (c) => {
   const token = asStr(asRecord(raw)["token"]);
   if (!token || token.length < MIN_TOKEN_LEN) return invalid();
 
-  // Validate FIRST with one cheap read — user.json works for PATs. Never
-  // createBufferClient here: the factory needs OAuth client opts a PAT flow
-  // does not have. The PAT travels in the query string only, to Buffer.
-  const probe = new URL(`${BUFFER_ENDPOINTS.apiBase}/user.json`);
-  probe.searchParams.set("access_token", token);
-  let probeOk = false;
-  try {
-    probeOk = (await fetch(probe.toString(), { method: "GET" })).ok;
-  } catch {
-    probeOk = false;
-  }
+  // Validate FIRST with one cheap read — a bare account query works for API
+  // keys. Never createBufferClient here: the factory needs OAuth client opts
+  // an API-key flow does not have. The key travels in the header only.
+  const probeOk = await probeKey(token);
   if (!probeOk) return invalid();
 
   const box = await seal(c.env.TOKEN_AES_KEY, token, userId); // AAD = user_id
@@ -233,15 +298,15 @@ greatestHits.post("/refresh", async (c) => {
     .first<MetricsTokenRow>();
   if (!row || row.revoked_at !== null) return jsonError(c, 410, "gone", GONE_MESSAGE);
 
-  let pat: string;
+  let key: string;
   try {
-    pat = await unseal(
+    key = await unseal(
       c.env.TOKEN_AES_KEY,
       { iv: asBytes(row.iv), salt: asBytes(row.salt), ct: asBytes(row.pat_enc) },
       userId
     );
   } catch {
-    // unreadable/tampered row → treat exactly like an expired PAT
+    // unreadable/tampered row → treat exactly like an expired key
     await c.env.DB.prepare("DELETE FROM metrics_tokens WHERE user_id = ?").bind(userId).run();
     await purgeCache(c.env, userId);
     return jsonError(c, 410, "gone", GONE_MESSAGE);
@@ -251,43 +316,56 @@ greatestHits.post("/refresh", async (c) => {
   const cachedTop = await readFreshCache(c.env, userId);
   if (cachedTop) return c.json({ top: cachedTop });
 
-  const url = new URL(METRICS_URL);
-  url.searchParams.set("access_token", pat);
-  let res: Response;
-  try {
-    res = await fetch(url.toString(), { method: "GET" });
-  } catch {
+  const org = await firstOrganizationId(key);
+  if (!org.ok) {
+    if (org.status === 401 || org.status === 403) {
+      // key expired/revoked upstream → forget it entirely: row + cached results
+      await c.env.DB.prepare("DELETE FROM metrics_tokens WHERE user_id = ?").bind(userId).run();
+      await purgeCache(c.env, userId);
+      return jsonError(
+        c,
+        410,
+        "gone",
+        "your buffer key stopped working — enable greatest hits again with a fresh one"
+      );
+    }
+    return jsonError(c, 502, "upstream", UPSTREAM_MESSAGE);
+  }
+  const orgId = org.orgId;
+
+  const since = Math.floor(Date.now() / 1000) - HITS_WINDOW_DAYS * 86_400;
+  const result = await gqlRequest(key, HITS_QUERY, {
+    first: HITS_PAGE_SIZE,
+    input: {
+      organizationId: orgId,
+      filter: { status: ["sent"], startDate: new Date(since * 1000).toISOString() },
+      sort: [{ field: "createdAt", direction: "desc" }],
+    },
+  });
+
+  if (!result.ok) {
+    if (result.status === 401 || result.status === 403) {
+      // key expired/revoked upstream → forget it entirely: row + cached results
+      await c.env.DB.prepare("DELETE FROM metrics_tokens WHERE user_id = ?").bind(userId).run();
+      await purgeCache(c.env, userId);
+      return jsonError(
+        c,
+        410,
+        "gone",
+        "your buffer key stopped working — enable greatest hits again with a fresh one"
+      );
+    }
     return jsonError(c, 502, "upstream", UPSTREAM_MESSAGE);
   }
 
-  if (res.status === 401 || res.status === 403) {
-    // PAT expired/revoked upstream → forget it entirely: row + cached results
-    await c.env.DB.prepare("DELETE FROM metrics_tokens WHERE user_id = ?").bind(userId).run();
-    await purgeCache(c.env, userId);
-    return jsonError(
-      c,
-      410,
-      "gone",
-      "your buffer token stopped working — enable greatest hits again with a fresh one"
-    );
-  }
-  if (!res.ok) return jsonError(c, 502, "upstream", UPSTREAM_MESSAGE);
-
-  let body: unknown;
-  try {
-    body = await res.json();
-  } catch {
-    return jsonError(c, 502, "upstream", UPSTREAM_MESSAGE);
-  }
-
-  const top = topHits(body);
+  const top = topHits(result.data);
   const entry: GhCacheEntry = {
     top,
     metricNames: [...new Set(top.map((hit) => hit.metric.name))],
     cachedAt: Math.floor(Date.now() / 1000),
   };
   await c.env.CACHE.put(cacheKey(userId), JSON.stringify(entry), { expirationTtl: CACHE_TTL_SEC });
-  return c.json({ top }); // hits only — the PAT never leaves this module
+  return c.json({ top }); // hits only — the key never leaves this module
 });
 
 // POST /api/greatest-hits/revoke → 204 (row deleted; cached results purged)
