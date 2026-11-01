@@ -5,6 +5,7 @@
 import { Hono } from "hono";
 import type { HonoEnv } from "./env";
 import { BRAND_NAME } from "../shared/brand";
+import { assertBase64Key, base64Decode } from "./lib/crypto";
 import { originCheck } from "./lib/http";
 import { rateLimit } from "./lib/ratelimit";
 import { readSessionUserId, slideSession } from "./lib/session";
@@ -31,13 +32,31 @@ api.use("/share-link/*", rateLimit("write"));
 api.use("/yearize/*", rateLimit("write"));
 api.use("*", rateLimit("read")); // catch-all read/unknown, health exempt inside
 
-api.get("/health", (c) =>
-  c.json({
+// config probe (ops): secrets are write-only, so a malformed key otherwise only
+// surfaces as an unexplained 500 deep inside the oauth callback (seen live
+// 2026-11-01). Surfacing it here makes `curl /api/health` the first thing to
+// check — 200 = key material parses, 500 = fix the secret before anything else.
+api.get("/health", async (c) => {
+  const configError = await (async () => {
+    try {
+      assertBase64Key(c.env.TOKEN_AES_KEY, 32);
+      base64Decode(c.env.SESSION_SECRET); // parse-only: length is "≥ 32 bytes" per spec 01
+      if (!c.env.BUFFER_CLIENT_ID) return "BUFFER_CLIENT_ID missing";
+      return null;
+    } catch (err) {
+      return `key material malformed: ${(err as Error).message}`;
+    }
+  })();
+  if (configError) {
+    console.error(`health config error: ${configError}`);
+    return c.json({ ok: false, error: { code: "config", message: configError } }, 500);
+  }
+  return c.json({
     ok: true,
     brand: BRAND_NAME,
     time: new Date().toISOString(),
-  })
-);
+  });
+});
 
 // feature routes (each module owns its own auth + validation)
 api.route("/auth", auth); // /api/auth/buffer/*, /api/auth/logout, /api/me, /api/auth/revoke
