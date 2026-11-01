@@ -15,7 +15,7 @@
 <meta name="twitter:title" content="fizzyfeed — your year in posts">
 <meta name="twitter:description" content="twelve months of publishing, carded. seven story cards, an alter ego, one queued recap.">
 <meta name="twitter:image" content="https://codedbytahir.github.io/fizzyfeed/social/og-image.png">
-<meta name="theme-color" content="#05070E">
+<meta name="theme-color" content="#F7F5EC">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -29,9 +29,9 @@
 }
 </script>
 <link rel="icon" type="image/png" href="logo/favicon-48.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+
+
+
 <link rel="stylesheet" href="styles.css">
 <style id="fx-css">
 /* ===== inlined fx modules (contract: docs/ANIMATIONS.md §2) ===== */
@@ -39,25 +39,25 @@
 /* == fx-01 hero-deck module styles — ALL selectors scoped under .fx-hero-deck == */
   .fx-hero-deck{
     /* design tokens — ANIMATIONS.md §1 (verbatim) */
-    --electric-500:#0A5CFF; --electric-600:#0047E0; --volt-500:#00D5FF; --violet-500:#6333FF;
-    --spark-500:#C8FF4D; --ink-950:#05070E; --ink-900:#0A0E1A; --ink-800:#131A2B;
-    --ink-300:#9AA8C4; --ink-200:#C6D0E4; --ink-50:#F5F8FE; --white:#FFFFFF;
-    --grad-brand: linear-gradient(135deg,#6333FF,#0A5CFF,#00D5FF);
-    --grad-bolt:  linear-gradient(135deg,#0A5CFF,#00D5FF);  /* card 1 */
-    --grad-nebula:linear-gradient(135deg,#6333FF,#0A5CFF);  /* card 6 */
-    --grad-aurora:linear-gradient(135deg,#00D5FF,#00FFA3);  /* card 2 */
-    --grad-fizz:  linear-gradient(135deg,#C8FF4D,#00E5A0);  /* card 3 */
-    --grad-sunset:linear-gradient(135deg,#FF8A00,#FF3D77);  /* card 5 */
-    --grad-coral: linear-gradient(135deg,#FF5C5C,#FF9E2C);  /* card 7 */
-    --grad-grape: linear-gradient(135deg,#A855F7,#6366FA);  /* card 4 */
+    --electric-500:#F7D21A; --electric-600:#C9A000; --volt-500:#0064BE; --violet-500:#FF5E63;
+    --spark-500:#70E093; --ink-950:#F7F5EC; --ink-900:#F0EDE0; --ink-800:#E6E1D1;
+    --ink-300:#565B63; --ink-200:#272C32; --ink-50:#12161C; --white:#12161C;
+    --grad-brand: linear-gradient(135deg,#F7D21A,#F7D21A);
+    --grad-bolt:  linear-gradient(135deg,#F7D21A,#F7D21A);  /* card 1 */
+    --grad-nebula:linear-gradient(135deg,#AE7D52,#AE7D52);  /* card 6 */
+    --grad-aurora:linear-gradient(135deg,#C6DFEF,#C6DFEF);  /* card 2 */
+    --grad-fizz:  linear-gradient(135deg,#70E093,#70E093);  /* card 3 */
+    --grad-sunset:linear-gradient(135deg,#0064BE,#0064BE);  /* card 5 */
+    --grad-coral: linear-gradient(135deg,#FF5E63,#FF5E63);  /* card 7 */
+    --grad-grape: linear-gradient(135deg,#D9AC69,#D9AC69);  /* card 4 */
     --radius-card:28px; --radius-md:14px; --radius-pill:999px;
-    --glow-electric: 0 0 0 1px rgb(10 92 255 / .25), 0 12px 48px rgb(10 92 255 / .35);
-    --shadow-card: 0 8px 30px rgb(5 7 14 / .35);
+    --glow-electric: 0 1px 2px rgb(18 22 28 / .06), 0 12px 28px -14px rgb(18 22 28 / .22);
+    --shadow-card: 0 1px 2px rgb(18 22 28 / .06), 0 12px 28px -14px rgb(18 22 28 / .22);
 
     display:block;
     width:100%;
     color:var(--white);
-    font-family:'Inter',system-ui,sans-serif;
+    font-family:'Chillax',ui-rounded,system-ui,sans-serif;
   }
 
   /* 16:9 stage, scales 1200 → 720 */
@@ -84,13 +84,13 @@
   }
   .fx-hero-deck__glow--a{
     top:-20%;right:-12%;width:58%;
-    background:radial-gradient(closest-side, rgb(10 92 255 / .24), transparent 72%);
+    background:radial-gradient(closest-side, rgb(201 160 0 / .24), transparent 72%);
     opacity:.7;
     animation:fx-hero-deck__breath 14s ease-in-out infinite;
   }
   .fx-hero-deck__glow--b{
     bottom:-24%;left:-14%;width:54%;
-    background:radial-gradient(closest-side, rgb(99 51 255 / .22), transparent 72%);
+    background:radial-gradient(closest-side, rgb(255 94 99 / .22), transparent 72%);
     opacity:.6;
     animation:fx-hero-deck__breath 14s ease-in-out -7s infinite;
   }
@@ -232,7 +232,7 @@
     2.6%,100%{opacity:0;transform:scale(2.4)}
   }
   .fx-hero-deck__mtletter{
-    font:500 11px 'JetBrains Mono',ui-monospace,monospace;
+    font:500 11px 'Chillax',ui-rounded,sans-serif;
     fill:var(--white);
     fill-opacity:.62;
     text-anchor:middle;
@@ -407,11 +407,11 @@
   }
 
   .fx-hero-deck__cardlabel{
-    font:500 17px 'Space Grotesk',sans-serif;
+    font:500 17px 'Chillax',ui-rounded,sans-serif;
     fill:var(--white);
   }
   .fx-hero-deck__cardstat{
-    font:500 12.5px 'JetBrains Mono',ui-monospace,monospace;
+    font:500 12.5px 'Chillax',ui-rounded,sans-serif;
     font-variant-numeric:tabular-nums;
     fill:var(--white);
     fill-opacity:.92; /* the hero's 'honest numbers' stat must clear 4.5:1 on the bolt gradient */
@@ -422,7 +422,7 @@
     left:0;right:0;bottom:4.2%;
     margin:0;
     text-align:center;
-    font-family:'Inter',system-ui,sans-serif;
+    font-family:'Chillax',ui-rounded,system-ui,sans-serif;
     font-weight:400;
     font-size:clamp(12px,1.15cqi,13.5px);
     letter-spacing:.02em;
@@ -445,18 +445,18 @@
 /* == fx-yearline-draw module styles — all selectors scoped under .fx-yearline-draw == */
   .fx-yearline-draw{
     /* design tokens §1 */
-    --electric-500:#0A5CFF; --electric-600:#0047E0; --volt-500:#00D5FF;
-    --spark-500:#C8FF4D; --ink-950:#05070E; --ink-900:#0A0E1A; --ink-800:#131A2B;
-    --ink-300:#9AA8C4; --ink-200:#C6D0E4; --ink-50:#F5F8FE; --white:#FFFFFF;
+    --electric-500:#F7D21A; --electric-600:#C9A000; --volt-500:#0064BE;
+    --spark-500:#70E093; --ink-950:#F7F5EC; --ink-900:#F0EDE0; --ink-800:#E6E1D1;
+    --ink-300:#565B63; --ink-200:#272C32; --ink-50:#12161C; --white:#12161C;
 
     position:relative; overflow:hidden; box-sizing:border-box;
     width:100%; max-width:1272px;
     padding:30px 56px 24px;
     background:
-      radial-gradient(720px 320px at 88% -20%, rgb(10 92 255 / .12), transparent 62%),
+      radial-gradient(720px 320px at 88% -20%, rgb(201 160 0 / .12), transparent 62%),
       var(--ink-950);
     color:var(--ink-200);
-    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    font-family:'Chillax',ui-rounded,system-ui,sans-serif;
   }
   .fx-yearline-draw,.fx-yearline-draw *{box-sizing:border-box}
 
@@ -464,12 +464,12 @@
   .fx-yearline-draw__head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
   .fx-yearline-draw__sparkdot{width:7px;height:7px;border-radius:50%;background:var(--spark-500);box-shadow:0 0 10px rgb(200 255 77 / .4)}
   .fx-yearline-draw__tagline{
-    font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;
+    font-family:'Chillax',ui-rounded,sans-serif;font-weight:500;font-size:15px;
     letter-spacing:.01em;color:var(--ink-200);
   }
   .fx-yearline-draw__sample{
-    margin-left:auto;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:11px;
-    letter-spacing:.06em;color:var(--ink-300);
+    margin-left:auto;font-family:'Chillax',ui-rounded,sans-serif;font-weight:500;font-size:11px;
+    letter-spacing:0;color:var(--ink-300);
   }
 
   .fx-yearline-draw__anim{transition:opacity .45s ease}
@@ -478,7 +478,7 @@
   .fx-yearline-draw__stats{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-bottom:22px}
   .fx-yearline-draw__stat{min-width:0}
   .fx-yearline-draw__value{
-    font-family:'JetBrains Mono',monospace;font-weight:500;
+    font-family:'Chillax',ui-rounded,sans-serif;font-weight:500;
     font-size:40px;line-height:1;color:var(--ink-50);
     font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1;
   }
@@ -502,7 +502,7 @@
     transform-box:fill-box;transform-origin:center;
   }
   .fx-yearline-draw__mlabel{
-    font-family:'JetBrains Mono',monospace;font-weight:500;font-size:11.5px;
+    font-family:'Chillax',ui-rounded,sans-serif;font-weight:500;font-size:11.5px;
     fill:var(--ink-300);text-anchor:middle;
     transform-box:fill-box;transform-origin:50% 100%;
   }
@@ -562,7 +562,7 @@
 /* == fx-02 feed-to-deck module styles — every selector scoped under the module root == */
   .fx.fx-feed-to-deck{position:relative;width:100%;max-width:1400px;margin-inline:auto}
   .fx-feed-to-deck__svg{display:block;width:100%;height:auto}
-  .fx-feed-to-deck__glyph{font-family:'Space Grotesk',sans-serif;font-weight:700;fill:#FFFFFF;text-anchor:middle;dominant-baseline:central}
+  .fx-feed-to-deck__glyph{font-family:'Chillax',ui-rounded,sans-serif;font-weight:700;fill:#12161C;text-anchor:middle;dominant-baseline:central}
 
   /* animated nodes: transform / opacity / stroke-dashoffset only */
   .fx-feed-to-deck__tile{opacity:0;transform-box:view-box;transform-origin:0 0;animation:fx2Tile 22s linear infinite;animation-delay:var(--d,0s)}
@@ -642,20 +642,20 @@
 
 .fx-deck-fan{
   /* ANIMATIONS.md §1 tokens (inlined) */
-  --electric-500:#0A5CFF; --electric-600:#0047E0; --volt-500:#00D5FF; --violet-500:#6333FF;
-  --spark-500:#C8FF4D; --ink-950:#05070E; --ink-900:#0A0E1A; --ink-800:#131A2B;
-  --ink-300:#9AA8C4; --ink-200:#C6D0E4; --ink-50:#F5F8FE; --white:#FFFFFF;
-  --grad-brand:linear-gradient(135deg,#6333FF,#0A5CFF,#00D5FF);
-  --grad-bolt:linear-gradient(135deg,#0A5CFF,#00D5FF);
-  --grad-nebula:linear-gradient(135deg,#6333FF,#0A5CFF);
-  --grad-aurora:linear-gradient(135deg,#00D5FF,#00FFA3);
-  --grad-fizz:linear-gradient(135deg,#C8FF4D,#00E5A0);
-  --grad-sunset:linear-gradient(135deg,#FF8A00,#FF3D77);
-  --grad-coral:linear-gradient(135deg,#FF5C5C,#FF9E2C);
-  --grad-grape:linear-gradient(135deg,#A855F7,#6366FA);
+  --electric-500:#F7D21A; --electric-600:#C9A000; --volt-500:#0064BE; --violet-500:#FF5E63;
+  --spark-500:#70E093; --ink-950:#F7F5EC; --ink-900:#F0EDE0; --ink-800:#E6E1D1;
+  --ink-300:#565B63; --ink-200:#272C32; --ink-50:#12161C; --white:#12161C;
+  --grad-brand:linear-gradient(135deg,#F7D21A,#F7D21A);
+  --grad-bolt:linear-gradient(135deg,#F7D21A,#F7D21A);
+  --grad-nebula:linear-gradient(135deg,#AE7D52,#AE7D52);
+  --grad-aurora:linear-gradient(135deg,#C6DFEF,#C6DFEF);
+  --grad-fizz:linear-gradient(135deg,#70E093,#70E093);
+  --grad-sunset:linear-gradient(135deg,#0064BE,#0064BE);
+  --grad-coral:linear-gradient(135deg,#FF5E63,#FF5E63);
+  --grad-grape:linear-gradient(135deg,#D9AC69,#D9AC69);
   --radius-card:28px; --radius-md:14px; --radius-pill:999px;
-  --glow-electric:0 0 0 1px rgb(10 92 255/.25), 0 12px 48px rgb(10 92 255/.35);
-  --shadow-card:0 8px 30px rgb(5 7 14/.35);
+  --glow-electric:0 0 0 1px rgb(201 160 0 / .25), 0 12px 48px rgb(201 160 0 / .35);
+  --shadow-card:0 8px 30px rgb(18 22 28 / .35);
 
   position:relative;
   isolation:isolate;
@@ -663,7 +663,7 @@
   background:var(--ink-950);
   overflow:hidden;
   container-type:inline-size;
-  font-family:'Inter',ui-sans-serif,system-ui,sans-serif;
+  font-family:'Chillax',ui-rounded,system-ui,sans-serif;
   -webkit-font-smoothing:antialiased;
   user-select:none;
 }
@@ -672,7 +672,7 @@
 .fx-deck-fan__viewport{position:relative;height:56.25vw;height:56.25cqw}
 .fx-deck-fan__glow{position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(46% 54% at 50% 44%,
-    rgb(10 92 255/.20) 0%, rgb(10 92 255/.09) 42%, rgb(10 92 255/0) 72%)}
+    rgb(201 160 0 / .20) 0%, rgb(201 160 0 / .09) 42%, rgb(201 160 0 / 0) 72%)}
 .fx-deck-fan__stage{position:absolute;inset:0}
 .fx-deck-fan__floor{position:absolute;left:35.8333%;top:68.15%;width:28.3333%;height:6.5185%;
   border-radius:50%;pointer-events:none;
@@ -707,23 +707,23 @@
 .fx-deck-fan__card--7{--fan-rot:24deg;z-index:7;background:var(--grad-coral);animation:fx-deck-fan--card-7 12s infinite}
 
 /* — static scrim so white text holds ≥4.5:1 even on the lime/sunset heads
-   (worst case: white .75 over lime #C8FF4D under the .85 scrim ≈ 6:1) —
+   (worst case: fringe .9 over blue #0064BE ≈ 5.7:1) —
    anchored top-left with the num/label: empirically the least-occluded
    zone in the fan pose (bottoms converge and overlap; tops spread wide) — */
 .fx-deck-fan__scrim{position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   background:radial-gradient(170% 130% at 0% 0%,
-    rgb(5 7 14/.85) 0%, rgb(5 7 14/.55) 34%, rgb(5 7 14/.24) 52%, rgb(5 7 14/0) 70%)}
+    rgb(254 252 248 / .5) 0%, rgb(254 252 248 / .18) 40%, rgb(254 252 248 / 0) 62%)}
 .fx-deck-fan__num{position:absolute;top:1.8333cqw;left:1.8333cqw;
-  font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:500;
-  font-size:max(1.0833cqw,6px);line-height:1;letter-spacing:.14em;
+  font-family:'Chillax',ui-rounded,sans-serif;font-weight:500;
+  font-size:max(1.0833cqw,6px);line-height:1;letter-spacing:0;
   font-variant-numeric:tabular-nums;
-  color:rgb(255 255 255/.75);
-  text-shadow:0 1px 6px rgb(5 7 14/.6);text-shadow:0 1px .5cqw rgb(5 7 14/.6)}
+  color:rgb(18 22 28/.78);
+  text-shadow:none}
 .fx-deck-fan__label{position:absolute;top:3.6667cqw;left:1.8333cqw;
-  font-family:'Space Grotesk','Inter',ui-sans-serif,sans-serif;font-weight:600;
+  font-family:'Chillax',ui-rounded,sans-serif;font-weight:600;
   font-size:max(2.4cqw,13px);line-height:1.05;letter-spacing:-.01em;text-transform:lowercase;
-  color:var(--white);
-  text-shadow:0 1px 8px rgb(5 7 14/.45);text-shadow:0 1px .6667cqw rgb(5 7 14/.45)}
+  color:var(--ink);
+  text-shadow:none}
 
 /* — loop-closing spark on the top card (card 7) — */
 .fx-deck-fan__spark{position:absolute;top:1.8333cqw;right:1.8333cqw;width:1.8333cqw;height:1.8333cqw;
@@ -738,7 +738,7 @@
    pointer-events none: the fan is role="img" — dots are decorative,
    no lens/ripple/burst here (those live on the chapter cards' plates). */
 .fx-deck-fan__art{position:absolute;inset:0;overflow:hidden;pointer-events:none;
-  border-radius:inherit;color:#FFFFFF}
+  border-radius:inherit;color:#FEFCF8}
 
 /* ≤480px: the 6px numerals render as specks and the 13px label floor rides too
    low over the halftone gradients — the cards read as art with big titles */
@@ -836,13 +836,13 @@
 /* == fx-05 persona-morph module styles — ALL selectors scoped under .fx-persona-morph == */
   .fx-persona-morph {
     /* design tokens · ANIMATIONS.md §1 (inlined, no external CSS imports) */
-    --electric-500: #0A5CFF; --electric-600: #0047E0; --volt-500: #00D5FF; --violet-500: #6333FF;
-    --spark-500: #C8FF4D; --ink-950: #05070E; --ink-900: #0A0E1A; --ink-800: #131A2B;
-    --ink-300: #9AA8C4; --ink-200: #C6D0E4; --ink-50: #F5F8FE; --white: #FFFFFF;
-    --grad-nebula: linear-gradient(135deg, #6333FF, #0A5CFF);
+    --electric-500: #F7D21A; --electric-600: #C9A000; --volt-500: #0064BE; --violet-500: #FF5E63;
+    --spark-500: #70E093; --ink-950: #F7F5EC; --ink-900: #F0EDE0; --ink-800: #E6E1D1;
+    --ink-300: #565B63; --ink-200: #272C32; --ink-50: #12161C; --white: #12161C;
+    --grad-nebula: linear-gradient(135deg, #AE7D52, #AE7D52);
     --radius-card: 28px;
-    --shadow-card: 0 8px 30px rgb(5 7 14 / .35);
-    --glow-electric: 0 0 0 1px rgb(10 92 255 / .25), 0 12px 48px rgb(10 92 255 / .35);
+    --shadow-card: 0 1px 2px rgb(18 22 28 / .06), 0 12px 28px -14px rgb(18 22 28 / .22);
+    --glow-electric: 0 1px 2px rgb(18 22 28 / .06), 0 12px 28px -14px rgb(18 22 28 / .22);
     /* module vars */
     --fx-card-scale: 1;
     --fx-spark-len: 520px;
@@ -864,7 +864,7 @@
   .fx-persona-morph__glow {
     position: absolute;
     inset: -12%;
-    background: radial-gradient(ellipse 52% 46% at 50% 50%, rgb(99 51 255 / .22) 0%, rgb(99 51 255 / 0) 70%);
+    background: radial-gradient(ellipse 52% 46% at 50% 50%, rgb(255 94 99 / .22) 0%, rgb(255 94 99 / 0) 70%);
     pointer-events: none;
   }
 
@@ -881,19 +881,20 @@
     flex-wrap: wrap;
     justify-content: center;
     max-width: calc(100% - 48px);
-    font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    font-family: "Chillax", ui-rounded, sans-serif;
     font-weight: 500;
     font-size: 12px;
     line-height: 1.6;
-    letter-spacing: .08em;
-    color: rgb(255 255 255 / .58); /* ≈5.6:1 flat, ≈5.3:1 under the violet glow */
+    letter-spacing: 0;
+    color: var(--muted, #565B63);
   }
   .fx-persona-morph__roster span {
     white-space: nowrap;
     transition: color .4s ease;
   }
   .fx-persona-morph__roster span.is-active {
-    color: var(--volt-500, #00D5FF);
+    color: var(--volt-500, #0064BE);
+    font-weight: 600;
   }
 
   .fx-persona-morph__stage {
@@ -931,13 +932,13 @@
   }
 
   .fx-persona-morph__overline {
-    font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    font-family: "Chillax", ui-rounded, sans-serif;
     font-weight: 500;
     font-size: 12px;
     line-height: 16px;
     letter-spacing: .18em;
     color: rgb(255 255 255 / .85); /* ≈4.8:1 on the nebula gradient at label height */
-    text-shadow: 0 1px 6px rgb(5 7 14 / .6);
+    text-shadow: 0 1px 6px rgb(18 22 28 / .6);
   }
 
   /* persona name — fixed box so the morph engine never sees the container resize */
@@ -946,7 +947,7 @@
     margin-top: 22px;
     width: 100%;
     height: 56px;
-    font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
+    font-family: "Chillax", ui-rounded, system-ui, sans-serif;
     font-weight: 700;
     font-size: 42px;
     line-height: 56px;
@@ -1091,17 +1092,17 @@
 /* == fx-06 queue-recap module styles — ALL selectors scoped under .fx-queue-recap == */
   .fx.fx-queue-recap{
     /* §1 design tokens (inlined) */
-    --electric-500:#0A5CFF; --electric-600:#0047E0; --volt-500:#00D5FF; --violet-500:#6333FF;
-    --spark-500:#C8FF4D; --ink-950:#05070E; --ink-900:#0A0E1A; --ink-800:#131A2B;
-    --ink-300:#9AA8C4; --ink-200:#C6D0E4; --ink-50:#F5F8FE; --white:#FFFFFF;
-    --grad-brand:linear-gradient(135deg,#6333FF,#0A5CFF,#00D5FF);
+    --electric-500:#F7D21A; --electric-600:#C9A000; --volt-500:#0064BE; --violet-500:#FF5E63;
+    --spark-500:#70E093; --ink-950:#F7F5EC; --ink-900:#F0EDE0; --ink-800:#E6E1D1;
+    --ink-300:#565B63; --ink-200:#272C32; --ink-50:#12161C; --white:#12161C;
+    --grad-brand:linear-gradient(135deg,#F7D21A,#F7D21A);
     --radius-card:28px; --radius-md:14px; --radius-pill:999px;
-    --shadow-card:0 8px 30px rgb(5 7 14 / .35);
-    --glow-electric:0 0 0 1px rgb(10 92 255 / .25), 0 12px 48px rgb(10 92 255 / .35);
+    --shadow-card:0 8px 30px rgb(18 22 28 / .35);
+    --glow-electric:0 0 0 1px rgb(201 160 0 / .25), 0 12px 48px rgb(201 160 0 / .35);
 
     position:relative; width:100%; max-width:1200px; aspect-ratio:16/9;
     background:var(--ink-950); overflow:hidden; user-select:none;
-    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    font-family:'Chillax',ui-rounded,system-ui,sans-serif;
   }
   .fx-queue-recap__stage{
     position:absolute; left:50%; top:50%; width:1200px; height:675px;
@@ -1112,17 +1113,17 @@
   /* ambient light — the two radial glows (OG-kit language), breathing opacity only */
   .fx-queue-recap__glow{position:absolute; border-radius:50%; pointer-events:none}
   .fx-queue-recap__glow--a{left:420px; top:-140px; width:560px; height:560px;
-    background:radial-gradient(closest-side, rgb(10 92 255/.16), rgb(10 92 255/0));
+    background:radial-gradient(closest-side, rgb(201 160 0 / .16), rgb(201 160 0 / 0));
     animation:fx-qr-glow 7.5s ease-in-out infinite alternate}
   .fx-queue-recap__glow--b{left:-80px; top:320px; width:520px; height:520px;
-    background:radial-gradient(closest-side, rgb(99 51 255/.13), rgb(99 51 255/0));
+    background:radial-gradient(closest-side, rgb(255 94 99 / .13), rgb(255 94 99 / 0));
     animation:fx-qr-glow 7.5s ease-in-out infinite alternate-reverse}
   @keyframes fx-qr-glow{from{opacity:.55}to{opacity:1}}
 
   /* ---- recap card ---- */
   .fx-queue-recap__card{
     position:absolute; left:390px; top:148px; width:420px; height:280px;
-    background:var(--white); border-radius:var(--radius-card);
+    background:var(--card); border-radius:var(--radius-card);
     box-shadow:var(--shadow-card); will-change:transform,opacity;
     -webkit-font-smoothing:antialiased;
   }
@@ -1141,24 +1142,24 @@
   }
   @keyframes fx-qr-dot{0%,100%{opacity:.35; transform:scale(1)} 50%{opacity:1; transform:scale(1.3)}}
   .fx-queue-recap__meta-label{
-    font:500 11px/1 'Inter',system-ui,sans-serif; letter-spacing:.06em;
-    color:#5A6B8C; /* solid, 5.4:1 on white — was #33405C at opacity .72 ≈ 2.9:1 */
+    font:500 11px/1 'Chillax',ui-rounded,system-ui,sans-serif; letter-spacing:0;
+    color:#565B63; /* solid, 5.4:1 on white — was #33405C at opacity .72 ≈ 2.9:1 */
   }
   .fx-queue-recap__meta-tag{
-    margin-left:auto; font:500 10px/1 'JetBrains Mono',ui-monospace,monospace;
-    letter-spacing:.05em; color:#33405C; background:var(--ink-50);
-    border:1px solid rgb(5 7 14/.06); border-radius:var(--radius-pill); padding:4px 9px 3px;
+    margin-left:auto; font:500 10px/1 'Chillax',ui-rounded,sans-serif;
+    letter-spacing:0; color:#272C32; background:var(--paper-2);
+    border:1px solid rgb(18 22 28 / .06); border-radius:var(--radius-pill); padding:4px 9px 3px;
   }
   .fx-queue-recap__line{margin:0; white-space:nowrap}
   .fx-queue-recap__line--head{
     margin-top:24px; min-height:30px;
-    font:700 24px/1.25 'Space Grotesk','Inter',system-ui,sans-serif;
+    font:700 24px/1.25 'Chillax',ui-rounded,sans-serif;
     letter-spacing:-.01em; color:var(--ink-950);
   }
-  .fx-queue-recap__rule{height:1px; background:rgb(5 7 14/.08); margin-top:22px; flex:none}
+  .fx-queue-recap__rule{height:1px; background:rgb(18 22 28 / .08); margin-top:22px; flex:none}
   .fx-queue-recap__line--stats,.fx-queue-recap__line--body{
     margin-top:20px; min-height:21px;
-    font:400 14px/1.5 'Inter',system-ui,sans-serif; color:#33405C;
+    font:400 14px/1.5 'Chillax',ui-rounded,system-ui,sans-serif; color:#272C32;
   }
   .fx-queue-recap__line--body{margin-top:10px}
   .fx-queue-recap__type{
@@ -1176,22 +1177,22 @@
 
   /* ---- mini channel chips (fan arc above the card) ---- */
   .fx-queue-recap__chip{position:absolute; width:52px; height:52px}
-  .fx-queue-recap__chip:nth-of-type(1){left:339px; top:152px; --tilt:-18deg; --dot:#6333FF}
-  .fx-queue-recap__chip:nth-of-type(2){left:424px; top:129px; --tilt:-12deg; --dot:#FF8A00}
-  .fx-queue-recap__chip:nth-of-type(3){left:512px; top:115px; --tilt:-6deg;  --dot:#0A5CFF}
-  .fx-queue-recap__chip:nth-of-type(4){left:600px; top:110px; --tilt:0deg;   --dot:#0047E0}
-  .fx-queue-recap__chip:nth-of-type(5){left:688px; top:115px; --tilt:6deg;   --dot:#C8FF4D}
-  .fx-queue-recap__chip:nth-of-type(6){left:776px; top:129px; --tilt:12deg;  --dot:#FF5C5C}
-  .fx-queue-recap__chip:nth-of-type(7){left:861px; top:152px; --tilt:18deg;  --dot:#00D5FF}
+  .fx-queue-recap__chip:nth-of-type(1){left:339px; top:152px; --tilt:-18deg; --dot:#F7D21A}
+  .fx-queue-recap__chip:nth-of-type(2){left:424px; top:129px; --tilt:-12deg; --dot:#C6DFEF}
+  .fx-queue-recap__chip:nth-of-type(3){left:512px; top:115px; --tilt:-6deg;  --dot:#70E093}
+  .fx-queue-recap__chip:nth-of-type(4){left:600px; top:110px; --tilt:0deg;   --dot:#D9AC69}
+  .fx-queue-recap__chip:nth-of-type(5){left:688px; top:115px; --tilt:6deg;   --dot:#0064BE}
+  .fx-queue-recap__chip:nth-of-type(6){left:776px; top:129px; --tilt:12deg;  --dot:#AE7D52}
+  .fx-queue-recap__chip:nth-of-type(7){left:861px; top:152px; --tilt:18deg;  --dot:#0064BE}
   .fx-queue-recap__chip-in{
     position:relative; width:100%; height:100%;
     display:flex; align-items:center; justify-content:center;
-    background:var(--ink-800); border:1px solid rgb(255 255 255/.06); border-radius:var(--radius-md);
-    box-shadow:inset 0 1px 0 rgb(255 255 255/.07), 0 10px 24px rgb(5 7 14/.5);
+    background:var(--card); border:0; border-radius:var(--radius-md);
+    box-shadow:inset 0 0 0 1px rgb(18 22 28 / .12), inset 0 1.5px 0 var(--fringe, #FEFCF8), 0 10px 24px rgb(18 22 28 / .16);
     opacity:0; transform:rotate(var(--tilt,0deg)); will-change:transform,opacity;
   }
   .fx-queue-recap__chip-glyph{
-    font:600 15px/1 'Inter',system-ui,sans-serif; color:var(--white); letter-spacing:.01em;
+    font:600 15px/1 'Chillax',ui-rounded,system-ui,sans-serif; color:var(--white); letter-spacing:.01em;
   }
   .fx-queue-recap__chip:nth-of-type(1) .fx-queue-recap__chip-glyph{font-size:16px}
   .fx-queue-recap__chip:nth-of-type(2) .fx-queue-recap__chip-glyph{font-size:12.5px}
@@ -1218,23 +1219,23 @@
   .fx-queue-recap__cta{position:absolute; left:50%; top:462px; height:50px; transform:translateX(-50%); pointer-events:none}
   .fx-queue-recap__cta-halo{
     position:absolute; inset:-46px -70px; border-radius:var(--radius-pill); opacity:0;
-    background:radial-gradient(closest-side, rgb(10 92 255/.22), rgb(10 92 255/0) 74%);
+    background:radial-gradient(closest-side, rgb(201 160 0 / .22), rgb(201 160 0 / 0) 74%);
     will-change:opacity; pointer-events:none;
   }
   .fx-queue-recap__cta-glowhot{
     position:absolute; inset:0; border-radius:var(--radius-pill); opacity:0; z-index:1;
-    box-shadow:0 0 0 1px rgb(10 92 255/.3), 0 14px 60px rgb(10 92 255/.32), 0 4px 18px rgb(10 92 255/.22);
+    box-shadow:0 0 0 1px rgb(201 160 0 / .3), 0 14px 60px rgb(201 160 0 / .32), 0 4px 18px rgb(201 160 0 / .22);
     will-change:opacity,transform; pointer-events:none;
   }
   .fx-queue-recap__cta-press{
     position:relative; z-index:2; display:flex; align-items:center; height:50px; padding:0 30px;
-    border-radius:var(--radius-pill); background:var(--electric-600); color:rgb(255 255 255/.92);
-    font:500 15px/1 'Inter',system-ui,sans-serif; letter-spacing:.01em; white-space:nowrap;
-    box-shadow:0 0 0 1px rgb(10 92 255/.2), 0 8px 26px rgb(5 7 14/.45); will-change:transform;
+    border-radius:var(--radius-pill); background:var(--electric-500); color:var(--ink);
+    font:600 15px/1 'Chillax',ui-rounded,system-ui,sans-serif; letter-spacing:.01em; white-space:nowrap;
+    box-shadow:inset 0 1.5px 0 var(--fringe, #FEFCF8), 0 5px 0 0 var(--electric-600), 0 8px 26px rgb(18 22 28 / .22); will-change:transform;
   }
   .fx-queue-recap__cta-note{
     position:absolute; left:50%; top:532px; transform:translateX(-50%);
-    font:500 12px/1 'JetBrains Mono',ui-monospace,monospace; letter-spacing:.05em;
+    font:500 12px/1 'Chillax',ui-rounded,sans-serif; letter-spacing:0;
     color:var(--ink-300); white-space:nowrap;
   }
   @media (max-width: 720px){
@@ -1251,9 +1252,9 @@
   .fx-queue-recap__courier{
     position:absolute; left:0; top:0; width:44px; height:44px;
     margin:-22px 0 0 -22px; border-radius:12px;
-    background:var(--white);
-    box-shadow:0 8px 22px rgb(5 7 14/.5), 0 0 0 1px rgb(5 7 14/.05),
-               0 0 26px rgb(10 92 255/.4);
+    background:var(--card);
+    box-shadow:0 8px 22px rgb(18 22 28 / .5), 0 0 0 1px rgb(18 22 28 / .05),
+               0 0 26px rgb(201 160 0 / .4);
     display:grid; place-items:center;
     opacity:0; z-index:3; pointer-events:none;
     will-change:transform,opacity;
@@ -1283,7 +1284,7 @@
 
 <header class="nav">
   <div class="wrap">
-    <a href="#top" aria-label="fizzyfeed home"><img class="brand" src="logo/lockup-on-dark.svg" alt="fizzyfeed" height="26"></a>
+    <a href="#top" aria-label="fizzyfeed home" class="brand"><span class="brand__bead" aria-hidden="true"></span>fizzyfeed</a>
     <nav aria-label="sections">
       <a href="#how">how it works</a>
       <a href="#chapters">chapters</a>
@@ -1319,17 +1320,17 @@
     <svg class="fx-hero-deck__svg" viewBox="0 0 1200 675" aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id="fx01-bolt" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#0A5CFF"/>
-          <stop offset="1" stop-color="#00D5FF"/>
+          <stop offset="0" stop-color="#F7D21A"/>
+          <stop offset="1" stop-color="#F7D21A"/>
         </linearGradient>
         <linearGradient id="fx01-shade" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#05070E" stop-opacity="0"/>
-          <stop offset="1" stop-color="#05070E" stop-opacity=".38"/>
+          <stop offset="0" stop-color="#12161C" stop-opacity="0"/>
+          <stop offset="1" stop-color="#12161C" stop-opacity=".38"/>
         </linearGradient>
         <linearGradient id="fx01-shade-top" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#05070E" stop-opacity=".35"/>
-          <stop offset=".35" stop-color="#05070E" stop-opacity="0"/>
-          <stop offset="1" stop-color="#05070E" stop-opacity="0"/>
+          <stop offset="0" stop-color="#12161C" stop-opacity=".35"/>
+          <stop offset=".35" stop-color="#12161C" stop-opacity="0"/>
+          <stop offset="1" stop-color="#12161C" stop-opacity="0"/>
         </linearGradient>
         <radialGradient id="fx01-halog">
           <stop offset="0" stop-color="#FFFFFF" stop-opacity=".9"/>
@@ -1337,12 +1338,12 @@
           <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
         </radialGradient>
         <radialGradient id="fx01-poolg">
-          <stop offset="0" stop-color="#0A5CFF" stop-opacity=".3"/>
-          <stop offset="1" stop-color="#0A5CFF" stop-opacity="0"/>
+          <stop offset="0" stop-color="#F7D21A" stop-opacity=".3"/>
+          <stop offset="1" stop-color="#F7D21A" stop-opacity="0"/>
         </radialGradient>
         <radialGradient id="fx01-shadowg">
-          <stop offset="0" stop-color="#05070E" stop-opacity=".5"/>
-          <stop offset="1" stop-color="#05070E" stop-opacity="0"/>
+          <stop offset="0" stop-color="#12161C" stop-opacity=".5"/>
+          <stop offset="1" stop-color="#12161C" stop-opacity="0"/>
         </radialGradient>
         <radialGradient id="fx01-gridfade" cx=".5" cy=".46" r=".75">
           <stop offset="0" stop-color="#FFFFFF"/>
@@ -1356,57 +1357,57 @@
 
       <!-- subtle dark grid -->
       <g class="fx-hero-deck__grid" mask="url(#fx01-gridmask)">
-        <path fill="none" stroke="#131A2B" stroke-width="1" d="M0 0V675 M60 0V675 M120 0V675 M180 0V675 M240 0V675 M300 0V675 M360 0V675 M420 0V675 M480 0V675 M540 0V675 M600 0V675 M660 0V675 M720 0V675 M780 0V675 M840 0V675 M900 0V675 M960 0V675 M1020 0V675 M1080 0V675 M1140 0V675 M1200 0V675 M0 0H1200 M0 60H1200 M0 120H1200 M0 180H1200 M0 240H1200 M0 300H1200 M0 360H1200 M0 420H1200 M0 480H1200 M0 540H1200 M0 600H1200 M0 660H1200"/>
+        <path fill="none" stroke="#D7D4C9" stroke-width="1" d="M0 0V675 M60 0V675 M120 0V675 M180 0V675 M240 0V675 M300 0V675 M360 0V675 M420 0V675 M480 0V675 M540 0V675 M600 0V675 M660 0V675 M720 0V675 M780 0V675 M840 0V675 M900 0V675 M960 0V675 M1020 0V675 M1080 0V675 M1140 0V675 M1200 0V675 M0 0H1200 M0 60H1200 M0 120H1200 M0 180H1200 M0 240H1200 M0 300H1200 M0 360H1200 M0 420H1200 M0 480H1200 M0 540H1200 M0 600H1200 M0 660H1200"/>
       </g>
 
       <!-- faint post tiles drifting in the deep background -->
       <g class="fx-hero-deck__tiles">
-        <g transform="translate(150 108) rotate(-4)" opacity=".1">
+        <g transform="translate(150 108) rotate(-4)" opacity=".08">
           <g class="fx-hero-deck__tilefloat" style="--td:16s;--tdel:-3s">
-            <rect x="-23" y="-29" width="46" height="58" rx="12" fill="#131A2B"/>
-            <circle cx="-11" cy="-15" r="3.5" fill="#0A5CFF"/>
-            <rect x="-13" y="0" width="26" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
-            <rect x="-13" y="10" width="17" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+            <rect x="-23" y="-29" width="46" height="58" rx="12" fill="#12161C"/>
+            <circle cx="-11" cy="-15" r="3.5" fill="#F7D21A"/>
+            <rect x="-13" y="0" width="26" height="4" rx="2" fill="#FEFCF8" opacity=".3"/>
+            <rect x="-13" y="10" width="17" height="4" rx="2" fill="#FEFCF8" opacity=".16"/>
           </g>
         </g>
         <g transform="translate(1002 132) rotate(3)" opacity=".09">
           <g class="fx-hero-deck__tilefloat" style="--td:13s;--tdel:-8s">
             <rect x="-36" y="-26" width="72" height="52" rx="12" fill="#131A2B"/>
-            <circle cx="-23" cy="-12" r="3.5" fill="#00D5FF"/>
-            <rect x="-25" y="2" width="34" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
-            <rect x="-25" y="12" width="22" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+            <circle cx="-23" cy="-12" r="3.5" fill="#0064BE"/>
+            <rect x="-25" y="2" width="34" height="4" rx="2" fill="#FEFCF8" opacity=".3"/>
+            <rect x="-25" y="12" width="22" height="4" rx="2" fill="#FEFCF8" opacity=".16"/>
           </g>
         </g>
         <g transform="translate(96 500) rotate(3)" opacity=".12">
           <g class="fx-hero-deck__tilefloat" style="--td:18s;--tdel:-6s">
             <rect x="-22" y="-28" width="44" height="56" rx="12" fill="#131A2B"/>
-            <circle cx="-10" cy="-14" r="3.5" fill="#6333FF"/>
-            <rect x="-12" y="0" width="24" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
-            <rect x="-12" y="10" width="15" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+            <circle cx="-10" cy="-14" r="3.5" fill="#FF5E63"/>
+            <rect x="-12" y="0" width="24" height="4" rx="2" fill="#FEFCF8" opacity=".3"/>
+            <rect x="-12" y="10" width="15" height="4" rx="2" fill="#FEFCF8" opacity=".16"/>
           </g>
         </g>
         <g transform="translate(1092 470) rotate(-3)" opacity=".09">
           <g class="fx-hero-deck__tilefloat" style="--td:12s;--tdel:-2s">
             <rect x="-33" y="-24" width="66" height="48" rx="12" fill="#131A2B"/>
-            <circle cx="-21" cy="-10" r="3.5" fill="#C8FF4D"/>
-            <rect x="-23" y="2" width="30" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
-            <rect x="-23" y="12" width="19" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+            <circle cx="-21" cy="-10" r="3.5" fill="#70E093"/>
+            <rect x="-23" y="2" width="30" height="4" rx="2" fill="#FEFCF8" opacity=".3"/>
+            <rect x="-23" y="12" width="19" height="4" rx="2" fill="#FEFCF8" opacity=".16"/>
           </g>
         </g>
         <g transform="translate(782 72) rotate(-2)" opacity=".1">
           <g class="fx-hero-deck__tilefloat" style="--td:15s;--tdel:-11s">
             <rect x="-20" y="-25" width="40" height="50" rx="12" fill="#131A2B"/>
-            <circle cx="-9" cy="-12" r="3.5" fill="#00D5FF"/>
-            <rect x="-11" y="0" width="22" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
-            <rect x="-11" y="10" width="14" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+            <circle cx="-9" cy="-12" r="3.5" fill="#0064BE"/>
+            <rect x="-11" y="0" width="22" height="4" rx="2" fill="#FEFCF8" opacity=".3"/>
+            <rect x="-11" y="10" width="14" height="4" rx="2" fill="#FEFCF8" opacity=".16"/>
           </g>
         </g>
         <g transform="translate(420 84) rotate(2)" opacity=".08">
           <g class="fx-hero-deck__tilefloat" style="--td:17s;--tdel:-5s">
             <rect x="-19" y="-24" width="38" height="48" rx="12" fill="#131A2B"/>
-            <circle cx="-8" cy="-11" r="3.5" fill="#0A5CFF"/>
-            <rect x="-10" y="0" width="20" height="4" rx="2" fill="#FFFFFF" opacity=".3"/>
-            <rect x="-10" y="10" width="13" height="4" rx="2" fill="#FFFFFF" opacity=".16"/>
+            <circle cx="-8" cy="-11" r="3.5" fill="#F7D21A"/>
+            <rect x="-10" y="0" width="20" height="4" rx="2" fill="#FEFCF8" opacity=".3"/>
+            <rect x="-10" y="10" width="13" height="4" rx="2" fill="#FEFCF8" opacity=".16"/>
           </g>
         </g>
       </g>
@@ -1496,11 +1497,11 @@
       <!-- the deck -->
       <g class="fx-hero-deck__deck">
         <g class="fx-hero-deck__card fx-hero-deck__card--bl">
-          <rect x="465" y="187" width="270" height="340" rx="28" fill="#6333FF"/>
+          <rect x="465" y="187" width="270" height="340" rx="28" fill="#FF5E63"/>
           <rect x="465" y="187" width="270" height="340" rx="28" fill="url(#fx01-shade)"/>
         </g>
         <g class="fx-hero-deck__card fx-hero-deck__card--br">
-          <rect x="465" y="187" width="270" height="340" rx="28" fill="#00D5FF"/>
+          <rect x="465" y="187" width="270" height="340" rx="28" fill="#0064BE"/>
           <rect x="465" y="187" width="270" height="340" rx="28" fill="url(#fx01-shade)"/>
         </g>
         <g class="fx-hero-deck__card fx-hero-deck__card--fr">
@@ -1565,9 +1566,9 @@
       <svg class="fx-yearline-draw__chart" viewBox="0 0 1088 232" aria-hidden="true" focusable="false">
         <defs>
           <radialGradient id="fx4-tint">
-            <stop offset="0" stop-color="#C8FF4D" stop-opacity=".9"/>
-            <stop offset=".55" stop-color="#C8FF4D" stop-opacity=".35"/>
-            <stop offset="1" stop-color="#C8FF4D" stop-opacity="0"/>
+            <stop offset="0" stop-color="#70E093" stop-opacity=".9"/>
+            <stop offset=".55" stop-color="#70E093" stop-opacity=".35"/>
+            <stop offset="1" stop-color="#70E093" stop-opacity="0"/>
           </radialGradient>
         </defs>
 
@@ -2004,9 +2005,9 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
       </mask>
 
       <radialGradient id="fx2Glow">
-        <stop offset="0" stop-color="#0A5CFF" stop-opacity=".22"/>
-        <stop offset=".5" stop-color="#0A5CFF" stop-opacity=".1"/>
-        <stop offset="1" stop-color="#0A5CFF" stop-opacity="0"/>
+        <stop offset="0" stop-color="#F7D21A" stop-opacity=".22"/>
+        <stop offset=".5" stop-color="#F7D21A" stop-opacity=".1"/>
+        <stop offset="1" stop-color="#F7D21A" stop-opacity="0"/>
       </radialGradient>
       <linearGradient id="fx2Slab" x1="0" y1="0" x2="1" y2="0">
         <stop offset="0" stop-color="#0A0E1A"/>
@@ -2014,7 +2015,7 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
       </linearGradient>
       <linearGradient id="fx2Intake" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stop-color="#0A0E1A"/>
-        <stop offset="1" stop-color="#05070E"/>
+        <stop offset="1" stop-color="#12161C"/>
       </linearGradient>
       <linearGradient id="fx2Bevel" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stop-color="#FFFFFF" stop-opacity=".5"/>
@@ -2023,19 +2024,19 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
       </linearGradient>
 
       <!-- story card gradients (§1, exact) -->
-      <linearGradient id="fx2GradBolt"   x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0A5CFF"/><stop offset="1" stop-color="#00D5FF"/></linearGradient>
-      <linearGradient id="fx2GradAurora" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00D5FF"/><stop offset="1" stop-color="#00FFA3"/></linearGradient>
-      <linearGradient id="fx2GradFizz"   x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C8FF4D"/><stop offset="1" stop-color="#00E5A0"/></linearGradient>
-      <linearGradient id="fx2GradGrape"  x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A855F7"/><stop offset="1" stop-color="#6366FA"/></linearGradient>
-      <linearGradient id="fx2GradSunset" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8A00"/><stop offset="1" stop-color="#FF3D77"/></linearGradient>
-      <linearGradient id="fx2GradNebula" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6333FF"/><stop offset="1" stop-color="#0A5CFF"/></linearGradient>
-      <linearGradient id="fx2GradCoral"  x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF5C5C"/><stop offset="1" stop-color="#FF9E2C"/></linearGradient>
+      <linearGradient id="fx2GradBolt"   x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7D21A"/><stop offset="1" stop-color="#0064BE"/></linearGradient>
+      <linearGradient id="fx2GradAurora" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0064BE"/><stop offset="1" stop-color="#C6DFEF"/></linearGradient>
+      <linearGradient id="fx2GradFizz"   x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#70E093"/><stop offset="1" stop-color="#70E093"/></linearGradient>
+      <linearGradient id="fx2GradGrape"  x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D9AC69"/><stop offset="1" stop-color="#D9AC69"/></linearGradient>
+      <linearGradient id="fx2GradSunset" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0064BE"/><stop offset="1" stop-color="#0064BE"/></linearGradient>
+      <linearGradient id="fx2GradNebula" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#AE7D52"/><stop offset="1" stop-color="#AE7D52"/></linearGradient>
+      <linearGradient id="fx2GradCoral"  x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF5E63"/><stop offset="1" stop-color="#FF5E63"/></linearGradient>
 
       <!-- the Deck mark's own gradient (official mark-gradient.svg geometry, scaled) -->
       <linearGradient id="fx2GradMark" x1="0" y1="1" x2="1" y2="0">
-        <stop offset="0" stop-color="#6333FF"/>
-        <stop offset=".45" stop-color="#0A5CFF"/>
-        <stop offset="1" stop-color="#00D5FF"/>
+        <stop offset="0" stop-color="#F7D21A"/>
+        <stop offset=".45" stop-color="#F7D21A"/>
+        <stop offset="1" stop-color="#0064BE"/>
       </linearGradient>
 
       <!-- static filters (defined once, never animated) -->
@@ -2058,41 +2059,41 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
     <!-- flowing layer: edge-fade masks (horizontal × vertical, nested) -->
     <g mask="url(#fx2MaskX)"><g mask="url(#fx2MaskY)">
       <!-- floor shadow under the hub (static, pre-blurred) -->
-      <ellipse cx="700" cy="552" rx="300" ry="34" fill="#05070E" opacity=".45" filter="url(#fx2Shadow)"/>
-      <ellipse cx="700" cy="552" rx="208" ry="20" fill="#05070E" opacity=".9" filter="url(#fx2Shadow)"/>
+      <ellipse cx="700" cy="552" rx="300" ry="34" fill="#12161C" opacity=".45" filter="url(#fx2Shadow)"/>
+      <ellipse cx="700" cy="552" rx="208" ry="20" fill="#12161C" opacity=".9" filter="url(#fx2Shadow)"/>
 
       <!-- channel tiles: drift in from left / right edges, dissolve at the hub's outer ring -->
-      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:150px;--ex:452px;--ey:318px;--sc:.95;--o:.95;--r0:-6deg;--r1:5deg;--d:-1s;color:#0A5CFF;opacity:.95;transform:translate(170px,225px) scale(.95) rotate(-1deg)">
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:150px;--ex:452px;--ey:318px;--sc:.95;--o:.95;--r0:-6deg;--r1:5deg;--d:-1s;color:#F7D21A;opacity:.95;transform:translate(170px,225px) scale(.95) rotate(-1deg)">
         <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">X</text>
       </g>
-      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:300px;--ex:428px;--ey:402px;--sc:1;--o:.92;--r0:4deg;--r1:-4deg;--d:-9.2s;color:#C8FF4D;opacity:.92;transform:translate(160px,345px) scale(1) rotate(0deg)">
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:300px;--ex:428px;--ey:402px;--sc:1;--o:.92;--r0:4deg;--r1:-4deg;--d:-9.2s;color:#70E093;opacity:.92;transform:translate(160px,345px) scale(1) rotate(0deg)">
         <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="15">IG</text>
       </g>
-      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:585px;--ex:452px;--ey:478px;--sc:.9;--o:.82;--r0:-5deg;--r1:4deg;--d:-4.6s;color:#00D5FF;opacity:.82;transform:translate(170px,535px) scale(.9) rotate(-1deg)">
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:585px;--ex:452px;--ey:478px;--sc:.9;--o:.82;--r0:-5deg;--r1:4deg;--d:-4.6s;color:#0064BE;opacity:.82;transform:translate(170px,535px) scale(.9) rotate(-1deg)">
         <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="15">in</text>
       </g>
-      <g class="fx-feed-to-deck__tile" filter="url(#fx2Soft)" style="--sx:-90px;--sy:96px;--ex:470px;--ey:258px;--sc:.7;--o:.5;--r0:6deg;--r1:-6deg;--d:-14.4s;color:#FF8A00;opacity:0;transform:translate(-90px,96px) scale(.7) rotate(6deg)">
+      <g class="fx-feed-to-deck__tile" filter="url(#fx2Soft)" style="--sx:-90px;--sy:96px;--ex:470px;--ey:258px;--sc:.7;--o:.5;--r0:6deg;--r1:-6deg;--d:-14.4s;color:#0064BE;opacity:0;transform:translate(-90px,96px) scale(.7) rotate(6deg)">
         <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">f</text>
       </g>
-      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:434px;--ex:462px;--ey:432px;--sc:.8;--o:.68;--r0:-4deg;--r1:3deg;--d:-18.6s;color:#A855F7;opacity:0;transform:translate(-90px,434px) scale(.8) rotate(-4deg)">
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:434px;--ex:462px;--ey:432px;--sc:.8;--o:.68;--r0:-4deg;--r1:3deg;--d:-18.6s;color:#D9AC69;opacity:0;transform:translate(-90px,434px) scale(.8) rotate(-4deg)">
         <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">♪</text>
       </g>
-      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:660px;--ex:476px;--ey:528px;--sc:.95;--o:.9;--r0:3deg;--r1:-5deg;--d:-6.9s;color:#00FFA3;opacity:0;transform:translate(-90px,660px) scale(.95) rotate(3deg)">
+      <g class="fx-feed-to-deck__tile" style="--sx:-90px;--sy:660px;--ex:476px;--ey:528px;--sc:.95;--o:.9;--r0:3deg;--r1:-5deg;--d:-6.9s;color:#C6DFEF;opacity:0;transform:translate(-90px,660px) scale(.95) rotate(3deg)">
         <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">b</text>
       </g>
-      <g class="fx-feed-to-deck__tile" style="--sx:1490px;--sy:210px;--ex:948px;--ey:322px;--sc:.92;--o:.9;--r0:5deg;--r1:-4deg;--d:-2.8s;color:#FF3D77;opacity:.9;transform:translate(1220px,266px) scale(.92) rotate(1deg)">
+      <g class="fx-feed-to-deck__tile" style="--sx:1490px;--sy:210px;--ex:948px;--ey:322px;--sc:.92;--o:.9;--r0:5deg;--r1:-4deg;--d:-2.8s;color:#0064BE;opacity:.9;transform:translate(1220px,266px) scale(.92) rotate(1deg)">
         <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="17">▶</text>
       </g>
-      <g class="fx-feed-to-deck__tile" filter="url(#fx2Soft)" style="--sx:1490px;--sy:372px;--ex:968px;--ey:402px;--sc:.76;--o:.58;--r0:-5deg;--r1:5deg;--d:-11.6s;color:#6333FF;opacity:0;transform:translate(1490px,372px) scale(.76) rotate(-5deg)">
+      <g class="fx-feed-to-deck__tile" filter="url(#fx2Soft)" style="--sx:1490px;--sy:372px;--ex:968px;--ey:402px;--sc:.76;--o:.58;--r0:-5deg;--r1:5deg;--d:-11.6s;color:#FF5E63;opacity:0;transform:translate(1490px,372px) scale(.76) rotate(-5deg)">
         <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="15">th</text>
       </g>
-      <g class="fx-feed-to-deck__tile" style="--sx:1490px;--sy:620px;--ex:942px;--ey:486px;--sc:.9;--o:.85;--r0:4deg;--r1:-3deg;--d:-7.7s;color:#FF9E2C;opacity:.85;transform:translate(1215px,552px) scale(.9) rotate(1deg)">
+      <g class="fx-feed-to-deck__tile" style="--sx:1490px;--sy:620px;--ex:942px;--ey:486px;--sc:.9;--o:.85;--r0:4deg;--r1:-3deg;--d:-7.7s;color:#FF5E63;opacity:.85;transform:translate(1215px,552px) scale(.9) rotate(1deg)">
         <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">P</text>
       </g>
-      <g class="fx-feed-to-deck__tile" filter="url(#fx2Soft)" style="--sx:1490px;--sy:120px;--ex:952px;--ey:262px;--sc:.68;--o:.5;--r0:-6deg;--r1:6deg;--d:-16.3s;color:#00E5A0;opacity:0;transform:translate(1490px,120px) scale(.68) rotate(-6deg)">
+      <g class="fx-feed-to-deck__tile" filter="url(#fx2Soft)" style="--sx:1490px;--sy:120px;--ex:952px;--ey:262px;--sc:.68;--o:.5;--r0:-6deg;--r1:6deg;--d:-16.3s;color:#70E093;opacity:0;transform:translate(1490px,120px) scale(.68) rotate(-6deg)">
         <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">M</text>
       </g>
-      <g class="fx-feed-to-deck__tile" style="--sx:1490px;--sy:520px;--ex:958px;--ey:540px;--sc:.98;--o:.95;--r0:2deg;--r1:-4deg;--d:-20.1s;color:#6366FA;opacity:.95;transform:translate(1225px,530px) scale(.98) rotate(-1deg)">
+      <g class="fx-feed-to-deck__tile" style="--sx:1490px;--sy:520px;--ex:958px;--ey:540px;--sc:.98;--o:.95;--r0:2deg;--r1:-4deg;--d:-20.1s;color:#D9AC69;opacity:.95;transform:translate(1225px,530px) scale(.98) rotate(-1deg)">
         <use href="#fx2TileBase"/><text class="fx-feed-to-deck__glyph" font-size="21">G</text>
       </g>
 
@@ -2125,10 +2126,10 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
     <!-- deck hub (painted above the flow so cards are born behind it) -->
     <g class="fx-feed-to-deck__hub">
       <rect class="fx-feed-to-deck__slab" x="505" y="438" width="390" height="108" rx="54" fill="url(#fx2Slab)"/>
-      <ellipse class="fx-feed-to-deck__intake" cx="700" cy="492" rx="148" ry="30" fill="url(#fx2Intake)" stroke="#0A5CFF" stroke-opacity=".28"/>
+      <ellipse class="fx-feed-to-deck__intake" cx="700" cy="492" rx="148" ry="30" fill="url(#fx2Intake)" stroke="#12161C" stroke-opacity=".28"/>
       <rect class="fx-feed-to-deck__bevel" x="505" y="438" width="390" height="108" rx="54" fill="none" stroke="url(#fx2Bevel)" stroke-width="1.4"/>
       <circle class="fx-feed-to-deck__ringA" cx="700" cy="390" r="104" fill="none" stroke="#FFFFFF" stroke-opacity=".5" stroke-width="1.5" pathLength="360" stroke-dasharray="262 98"/>
-      <circle class="fx-feed-to-deck__ringB" cx="700" cy="390" r="146" fill="none" stroke="#0A5CFF" stroke-opacity=".85" stroke-width="2" pathLength="360" stroke-dasharray="198 162"/>
+      <circle class="fx-feed-to-deck__ringB" cx="700" cy="390" r="146" fill="none" stroke="#12161C" stroke-opacity=".85" stroke-width="2" pathLength="360" stroke-dasharray="198 162"/>
       <!-- the Deck mark: three fanned gradient cards + white yearline spark (official geometry, scaled) -->
       <g transform="translate(700 392)">
         <g class="fx-feed-to-deck__markBob">
@@ -2152,7 +2153,7 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
       <div class="sec-head">
         <span class="overline reveal">the deck</span>
         <h2 id="ch-h" class="reveal">seven chapters.</h2>
-        <p class="sub reveal">one card per moment, led by the brand gradients. read in one sitting — not a dashboard with a party hat.</p>
+        <p class="sub reveal">one card per moment, each its own color of card stock. read in one sitting — not a dashboard with a party hat.</p>
       </div>
 <div class="fx fx-deck-fan" data-brand-name="fizzyfeed" role="img" aria-label="A deck of seven gradient story cards rests, fans out one by one to reveal the seven chapters of the posting year — each card printed with its chapter illustration in halftone dots — holds, restacks in reverse order, and closes with a small white spark pulse on the top card.">
   <div class="fx-deck-fan__viewport">
@@ -2163,49 +2164,49 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
         <div class="fx-deck-fan__sway">
 
           <div class="fx-deck-fan__card fx-deck-fan__card--1">
-            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-01-kickoff.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-01-kickoff.webp" data-from="#F7D21A" data-to="#12161C" data-accent="#C9A000"></div>
             <div class="fx-deck-fan__scrim"></div>
             <span class="fx-deck-fan__num">01</span>
             <span class="fx-deck-fan__label">kickoff</span>
           </div>
 
           <div class="fx-deck-fan__card fx-deck-fan__card--2">
-            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-02-rhythm.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-02-rhythm.webp" data-from="#C6DFEF" data-to="#12161C" data-accent="#C9A000"></div>
             <div class="fx-deck-fan__scrim"></div>
             <span class="fx-deck-fan__num">02</span>
             <span class="fx-deck-fan__label">rhythm</span>
           </div>
 
           <div class="fx-deck-fan__card fx-deck-fan__card--3">
-            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-03-streaks.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-03-streaks.webp" data-from="#70E093" data-to="#12161C" data-accent="#C9A000"></div>
             <div class="fx-deck-fan__scrim"></div>
             <span class="fx-deck-fan__num">03</span>
             <span class="fx-deck-fan__label">streaks</span>
           </div>
 
           <div class="fx-deck-fan__card fx-deck-fan__card--4">
-            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-04-the-mix.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-04-the-mix.webp" data-from="#D9AC69" data-to="#12161C" data-accent="#C9A000"></div>
             <div class="fx-deck-fan__scrim"></div>
             <span class="fx-deck-fan__num">04</span>
             <span class="fx-deck-fan__label">the mix</span>
           </div>
 
           <div class="fx-deck-fan__card fx-deck-fan__card--5">
-            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-05-peaks.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-05-peaks.webp" data-from="#0064BE" data-to="#12161C" data-accent="#C9A000"></div>
             <div class="fx-deck-fan__scrim"></div>
             <span class="fx-deck-fan__num">05</span>
             <span class="fx-deck-fan__label">peaks</span>
           </div>
 
           <div class="fx-deck-fan__card fx-deck-fan__card--6">
-            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-06-alter-ego.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-06-alter-ego.webp" data-from="#AE7D52" data-to="#12161C" data-accent="#C9A000"></div>
             <div class="fx-deck-fan__scrim"></div>
             <span class="fx-deck-fan__num">06</span>
             <span class="fx-deck-fan__label">alter ego</span>
           </div>
 
           <div class="fx-deck-fan__card fx-deck-fan__card--7">
-            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-07-the-recap.webp" data-from="#05070E" data-to="#131A2B" data-accent="#FFFFFF"></div>
+            <div class="fx-deck-fan__art" aria-hidden="true" data-halftone data-src="img/chapters/ch-07-the-recap.webp" data-from="#FF5E63" data-to="#12161C" data-accent="#C9A000"></div>
             <div class="fx-deck-fan__scrim"></div>
             <span class="fx-deck-fan__num">07</span>
             <span class="fx-deck-fan__label">the recap</span>
@@ -2685,9 +2686,9 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
 
     <div class="fx-queue-recap__courier" aria-hidden="true">
       <svg viewBox="0 0 26 26" aria-hidden="true" focusable="false">
-        <defs><linearGradient id="fx-qr-courier-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6333FF"/><stop offset=".5" stop-color="#0A5CFF"/><stop offset="1" stop-color="#00D5FF"/></linearGradient></defs>
-        <rect x="4.6" y="5.2" width="9.6" height="13.4" rx="2.4" transform="rotate(-13 9.4 11.9)" fill="#6333FF" opacity=".85"/>
-        <rect x="11.8" y="5.2" width="9.6" height="13.4" rx="2.4" transform="rotate(13 16.6 11.9)" fill="#00D5FF" opacity=".85"/>
+        <defs><linearGradient id="fx-qr-courier-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7D21A"/><stop offset=".5" stop-color="#F7D21A"/><stop offset="1" stop-color="#F7D21A"/></linearGradient></defs>
+        <rect x="4.6" y="5.2" width="9.6" height="13.4" rx="2.4" transform="rotate(-13 9.4 11.9)" fill="#FF5E63" opacity=".85"/>
+        <rect x="11.8" y="5.2" width="9.6" height="13.4" rx="2.4" transform="rotate(13 16.6 11.9)" fill="#0064BE" opacity=".85"/>
         <rect x="7.9" y="4.6" width="10.2" height="14.6" rx="2.6" fill="url(#fx-qr-courier-grad)"/>
         <path d="M10.2 13.6c1.9-.5 3.5-2 4.3-4.6M10.4 16.5c3-.6 5.4-2.4 6.5-5.6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" fill="none"/>
       </svg>
@@ -3115,7 +3116,7 @@ document.querySelectorAll('.fx-yearline-draw').forEach(initModule);
   <div class="wrap">
     <div class="f-row">
       <div class="f-brand">
-        <img src="logo/lockup-on-dark.svg" alt="fizzyfeed" data-brand-name-img height="20">
+        <span class="brand brand--footer" data-brand-name-img><span class="brand__bead" aria-hidden="true"></span>fizzyfeed</span>
         <span>your year in posts.</span>
       </div>
       <div class="f-right">
