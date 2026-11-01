@@ -65,6 +65,6 @@ jobs:
         if: ${{ env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' }}
         run: |
           sleep 10
-          status=$(curl -s -o /dev/null -w "%{http_code}" https://fizzyfeed.<fill-your-subdomain>.workers.dev/api/health || true)
+          status=$(curl -s -o /dev/null -w "%{http_code}" https://fizzyfeed.developerfirr1.workers.dev/api/health || true)
           echo "health endpoint: $status"
           [ "$status" = "200" ] || echo "::warning::health check returned $status — verify the workers.dev subdomain in docs/DEPLOY.md"

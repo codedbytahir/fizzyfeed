@@ -34,8 +34,8 @@
   },
   "vars": {
     "BUFFER_CLIENT_ID": "replace-me",
-    "BUFFER_REDIRECT_URI": "https://fizzyfeed.workers.dev/api/auth/buffer/callback",
-    "APP_ORIGIN": "https://fizzyfeed.workers.dev"
+    "BUFFER_REDIRECT_URI": "https://fizzyfeed.developerfirr1.workers.dev/api/auth/buffer/callback",
+    "APP_ORIGIN": "https://fizzyfeed.developerfirr1.workers.dev"
   },
   "triggers": {
     "crons": ["0 * * * *"]

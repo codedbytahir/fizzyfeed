@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: health ping
         run: |
-          status=$(curl -s -o /dev/null -w "%{http_code}" https://fizzyfeed.<fill-your-subdomain>.workers.dev/api/health || true)
+          status=$(curl -s -o /dev/null -w "%{http_code}" https://fizzyfeed.developerfirr1.workers.dev/api/health || true)
           echo "health: $status"
           [ "$status" = "200" ] || echo "::warning::health endpoint returned $status"
 
