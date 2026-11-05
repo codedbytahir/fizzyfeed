@@ -122,3 +122,16 @@ export const IconArrow = make(
     <path d="M11 4.8H6a2 2 0 0 0-2 2V19a2 2 0 0 0 2 2h12.2a2 2 0 0 0 2-2v-5" />
   </>,
 );
+
+/** theme toggle — the sun (switch to the day stock) */
+export const IconSun = make(
+  <>
+    <circle cx="12" cy="12" r="4.1" />
+    <path d="M12 2.9v2M12 19.1v2M2.9 12h2M19.1 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4" />
+  </>,
+);
+
+/** theme toggle — the crescent (switch to the night print) */
+export const IconMoon = make(
+  <path d="M20.2 14.2A8.6 8.6 0 0 1 9.8 3.8a8.6 8.6 0 1 0 10.4 10.4z" />,
+);

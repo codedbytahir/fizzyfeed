@@ -13,6 +13,8 @@ body {
   caret-color: var(--color-accent-2);
 }
 ::selection { background: color-mix(in oklab, var(--color-accent) 60%, transparent); color: var(--color-ink); }
+/* on the dark wall the theme ink is warm-white — the pear band needs its own ink */
+[data-theme="dark"] ::selection { color: var(--color-accent-ink); }
 :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; border-radius: 4px; }
 a { color: var(--color-accent-2); text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
 h1, h2, h3 {

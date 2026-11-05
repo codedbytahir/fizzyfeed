@@ -70,6 +70,10 @@
    from logo/ — the link keeps its aria-label so the imgs stay decorative-ish */
 .wordmark__mark { display: block; width: 26px; height: 26px; }
 .wordmark__text { display: block; height: 17px; width: auto; }
+/* both wordmark stocks ship; the room decides */
+.wordmark__text--dark { display: none; }
+[data-theme="dark"] .wordmark__text--light { display: none; }
+[data-theme="dark"] .wordmark__text--dark { display: block; }
 
 .app-nav__links { display: flex; align-items: center; gap: var(--space-xs); margin-inline: auto; }
 .app-nav__link {
@@ -216,6 +220,28 @@
 }
 .linkbtn:hover { text-decoration-thickness: 2px; }
 .linkbtn:disabled { color: var(--color-muted); cursor: default; text-decoration-thickness: 1px; }
+
+/* the night-print switch: a round bead of card stock in the nav */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  background: var(--grain), var(--color-card);
+  box-shadow: inset 0 0 0 1px var(--color-rule);
+  color: var(--color-ink-2);
+  transition: background-color var(--dur-micro) var(--ease-snap), color var(--dur-micro) var(--ease-snap);
+}
+.theme-toggle:hover {
+  background: var(--grain), var(--color-paper-2);
+  color: var(--color-ink);
+}
+.theme-toggle__icon { display: inline-flex; }
 
 /* ── card-stock controls ───────────────────────────────────────────────────── */
 
@@ -385,6 +411,8 @@
   padding: var(--space-sm);
   transform-origin: 50% 150%;
   transition: translate var(--dur-short) var(--ease-snap), rotate var(--dur-short) var(--ease-snap);
+  /* printed stock: its ink stays dark in both themes */
+  color: var(--sheet-ink);
 }
 .fan-card:nth-child(1) { rotate: -30deg; }
 .fan-card:nth-child(2) { rotate: -20deg; }
@@ -491,7 +519,7 @@
 }
 .yearline { width: 100%; height: 64px; }
 .yearline__base { stroke: color-mix(in oklab, var(--color-accent-ink) 30%, var(--color-accent)); stroke-width: 1; }
-.yearline__spark { stroke: var(--color-ink); stroke-width: 1.6; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.yearline__spark { stroke: var(--sheet-ink); stroke-width: 1.6; fill: none; stroke-linejoin: round; stroke-linecap: round; }
 .yearline-caption { font-size: var(--text-xs); color: color-mix(in oklab, var(--color-accent-ink) 62%, var(--color-accent)); }
 
 /* ── deck grid + footer row ────────────────────────────────────────────────── */
@@ -711,7 +739,7 @@
   resize: vertical;
   border: 1px solid var(--color-muted);
   border-radius: var(--radius-input);
-  background: var(--grain), var(--color-fringe);
+  background: var(--grain), var(--color-field);
   color: var(--color-ink);
   padding: var(--space-md);
   font-size: 1.05rem;
@@ -756,8 +784,8 @@
   margin: var(--space-2xs);
   width: 8px;
   height: 5px;
-  border-left: 2px solid var(--color-fringe);
-  border-bottom: 2px solid var(--color-fringe);
+  border-left: 2px solid var(--color-check);
+  border-bottom: 2px solid var(--color-check);
   rotate: -45deg;
 }
 .channel__input:focus-visible + .channel__box { outline: 2px solid var(--color-focus); outline-offset: 2px; }
@@ -818,7 +846,7 @@
   padding: 0 var(--space-md);
   border: 1px solid var(--color-muted);
   border-radius: var(--radius-input);
-  background: var(--grain), var(--color-fringe);
+  background: var(--grain), var(--color-field);
   color: var(--color-ink);
 }
 .input::placeholder { color: var(--color-muted); }
@@ -837,6 +865,8 @@
   box-shadow: inset 0 -2px 0 var(--color-accent-deep);
   font-weight: var(--display-weight);
   font-size: var(--text-sm);
+  /* pear bead: its number stays dark in both themes */
+  color: var(--color-accent-ink);
 }
 .hit-list > *:nth-child(n+4) .gh-rank { background: var(--grain), var(--color-card); box-shadow: inset 0 0 0 1px var(--color-rule); }
 .gh-excerpt { color: var(--color-ink-2); }
@@ -847,7 +877,7 @@
   position: fixed;
   inset: 0;
   z-index: var(--z-modal);
-  background: color-mix(in oklab, var(--color-ink) 44%, transparent);
+  background: var(--color-scrim);
   display: grid;
   place-items: center;
   padding: var(--space-md);
@@ -1012,3 +1042,36 @@
   .deck-head__row { align-items: flex-start; flex-direction: column; }
   .evidence__list { grid-template-columns: 1fr 1fr; }
 }
+
+/* ── night print (dark theme structural notes) ──────────────────────────────
+ * Tokens carry the dark theme (tokens.css); these are the few spots where
+ * the LIGHT composition itself was wrong on the dark wall — text that paired
+ * with --color-ink as a dark ink, tinted mats that must go deep, and the
+ * footer, which flips to the light colophon band. */
+
+/* active pill: --color-ink turns warm-white on the dark wall, so its label
+   flips to the wall color instead of fringe (fringe stays near-white) */
+[data-theme="dark"] .app-nav__link--active { color: var(--color-paper); }
+[data-theme="dark"] .app-nav__link--active:hover { color: var(--color-paper); }
+
+/* the pear highlighter: band stays pear, the words take its own ink */
+[data-theme="dark"] .hl { color: var(--color-accent-ink); }
+
+/* tinted mats read as chrome, so they go deep instead of staying lit slips */
+[data-theme="dark"] .notice {
+  background: var(--grain), color-mix(in oklab, var(--color-accent-2) 16%, var(--color-card));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-accent-2) 40%, transparent);
+}
+[data-theme="dark"] .evidence,
+[data-theme="dark"] .share-link-row {
+  background: var(--grain), var(--fibre), color-mix(in oklab, var(--color-accent-2) 18%, var(--color-card));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-accent-2) 36%, transparent), var(--shadow-card);
+}
+[data-theme="dark"] .recap-done {
+  background: var(--grain), var(--fibre), color-mix(in oklab, var(--color-mint) 14%, var(--color-card));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-mint-deep) 45%, transparent), var(--shadow-card);
+}
+
+/* the torn ink band flips to the light colophon strip — same edge, opposite stock */
+[data-theme="dark"] .app-footer { color: var(--color-paper); }
+[data-theme="dark"] .app-footer__trust { color: color-mix(in oklab, var(--color-paper) 78%, var(--color-ink)); }

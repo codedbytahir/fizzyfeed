@@ -4,7 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light" />
-    <meta name="theme-color" content="#F7F5EC" /> <!-- /* token: --color-paper */ -->
+    <meta name="theme-color" content="#F7F5EC" data-theme-light="#F7F5EC" data-theme-dark="#0B0F14" /> <!-- /* token: --color-paper · dark: oklch(16.5% 0.012 255) */ -->
+    <script>
+      /* theme bootstrap: stored choice -> system preference, before first paint
+         (no flash of the wrong stock); the meta swatches keep the hexes here,
+         out of product code */
+      (function () {
+        var t = "";
+        try { t = localStorage.getItem("theme") || ""; } catch (e) {}
+        if (t !== "light" && t !== "dark") {
+          t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = t;
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", t === "dark" ? m.dataset.themeDark : m.dataset.themeLight);
+      })();
+    </script>
     <!-- brand name injected at runtime from BRAND_NAME (single rename point) -->
     <title>your year in posts</title>
     <meta name="description" content="connect buffer, turn 12 months of publishing into 7 story cards, an alter ego, and a recap queued to every channel. honest numbers, one click." />

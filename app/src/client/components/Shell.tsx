@@ -3,7 +3,8 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import { useMe } from "../lib/me";
 import { BRAND_NAME } from "@shared/brand";
-import { IconCards, IconLoop, IconSpark, IconStar } from "./icons";
+import { currentTheme, toggleTheme, type Theme } from "../lib/theme";
+import { IconCards, IconLoop, IconMoon, IconSpark, IconStar, IconSun } from "./icons";
 
 /** Section nav shown once a session is connected — NavLink drives the active state.
  *  The mono index is the product's 5-step flow, carried in the chrome. */
@@ -23,6 +24,9 @@ export default function Shell() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  // the bootstrap in index.html set data-theme before first paint; mirror it here
+  const [theme, setThemeState] = useState<Theme>(() => currentTheme());
+  const flipTheme = () => setThemeState(toggleTheme());
 
   useEffect(() => () => setBusy(false), []);
 
@@ -63,10 +67,18 @@ export default function Shell() {
               width={26}
               height={26}
             />
+            {/* both stocks ship; CSS shows the one the room is lit for (the
+              link carries the aria-label, so the imgs stay decorative) */}
             <img
-              className="wordmark__text"
+              className="wordmark__text wordmark__text--light"
               src="/logo/wordmark-on-light.svg"
-              alt={BRAND_NAME}
+              alt=""
+              height={17}
+            />
+            <img
+              className="wordmark__text wordmark__text--dark"
+              src="/logo/wordmark-on-dark.svg"
+              alt=""
               height={17}
             />
           </Link>
@@ -95,6 +107,16 @@ export default function Shell() {
             </div>
           )}
           <div className="app-nav__user">
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={flipTheme}
+              aria-label={theme === "dark" ? "switch to the light theme" : "switch to the dark theme"}
+            >
+              <span className="theme-toggle__icon" aria-hidden="true">
+                {theme === "dark" ? <IconSun size={16} /> : <IconMoon size={16} />}
+              </span>
+            </button>
             {ready && (
               <>
                 {ready.avatarUrl && (
