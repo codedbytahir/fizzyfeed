@@ -1,15 +1,14 @@
 import type { ReactNode } from "react";
 
-/** Decorative fanned-cards glyph in plain ink (the deck motif). */
+/** The real mark's glyph — the three fanned cards in plain ink (logo/svg/mark-glyph-light). */
 function DeckGlyph() {
   return (
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" focusable="false" aria-hidden="true">
-      <g stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round">
-        <rect x="11" y="9" width="14" height="20" rx="3" transform="rotate(-12 18 19)" />
-        <rect x="23" y="9" width="14" height="20" rx="3" transform="rotate(12 30 19)" />
-        <rect x="17" y="15" width="14" height="20" rx="3" />
-        <path d="M21 30.5h6" />
+    <svg width="48" height="37" viewBox="6 64 500 388" fill="none" focusable="false" aria-hidden="true">
+      <g stroke="currentColor" strokeWidth="20">
+        <rect transform="translate(168,258) rotate(-11)" x="-120" y="-160" width="240" height="320" rx="54" />
+        <rect transform="translate(344,258) rotate(11)" x="-120" y="-160" width="240" height="320" rx="54" />
       </g>
+      <rect x="136" y="98" width="240" height="320" rx="54" fill="currentColor" />
     </svg>
   );
 }

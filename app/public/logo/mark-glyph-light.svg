@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="6 64 500 388" role="img" aria-label="The Deck glyph — ink cards for light backgrounds">
+  <title>The Deck glyph — for light backgrounds</title>
+  <g fill="none" stroke="#05070E" stroke-width="20">
+    <rect transform="translate(168,258) rotate(-11)" x="-120" y="-160" width="240" height="320" rx="54"/>
+    <rect transform="translate(344,258) rotate(11)" x="-120" y="-160" width="240" height="320" rx="54"/>
+  </g>
+  <rect x="136" y="98" width="240" height="320" rx="54" fill="#05070E"/>
+</svg>

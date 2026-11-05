@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="The Deck mark — three fanned gradient cards with a white yearline spark on the front card">
+  <title>The Deck mark — gradient</title>
+  <defs>
+    <linearGradient id="dl-left" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00D5FF"/>
+      <stop offset="1" stop-color="#0A5CFF"/>
+    </linearGradient>
+    <linearGradient id="dl-right" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6333FF"/>
+      <stop offset="1" stop-color="#0A5CFF"/>
+    </linearGradient>
+    <linearGradient id="dl-center" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#6333FF"/>
+      <stop offset="0.45" stop-color="#0A5CFF"/>
+      <stop offset="1" stop-color="#00D5FF"/>
+    </linearGradient>
+  </defs>
+  <rect transform="translate(168,258) rotate(-11)" x="-120" y="-160" width="240" height="320" rx="54" fill="url(#dl-left)"/>
+  <rect transform="translate(344,258) rotate(11)" x="-120" y="-160" width="240" height="320" rx="54" fill="url(#dl-right)"/>
+  <rect x="136" y="98" width="240" height="320" rx="54" fill="url(#dl-center)"/>
+  <path d="M 198 304 L 240 264 L 264 288 L 304 242" fill="none" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="304" cy="242" r="14" fill="#FFFFFF"/>
+</svg>

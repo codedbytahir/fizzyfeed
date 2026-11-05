@@ -46,6 +46,14 @@ export default function Connect() {
   return (
     <section className="connect">
       <div className="connect__copy">
+        <img
+          className="connect__seal"
+          src="/logo/mark-gradient.svg"
+          alt=""
+          width={52}
+          height={52}
+          aria-hidden="true"
+        />
         <h1 className="headline headline--xl">
           your year in <span className="hl">posts.</span>
         </h1>

@@ -55,7 +55,19 @@ export default function Shell() {
       <nav className={scrolled ? "app-nav is-scrolled" : "app-nav"} aria-label="primary">
         <div className="app-nav__inner">
           <Link to="/" className="wordmark" aria-label={`${BRAND_NAME} — home`}>
-            {BRAND_NAME}
+            <img
+              className="wordmark__mark"
+              src="/logo/mark-gradient.svg"
+              alt=""
+              width={26}
+              height={26}
+            />
+            <img
+              className="wordmark__text"
+              src="/logo/wordmark-on-light.svg"
+              alt={BRAND_NAME}
+              height={17}
+            />
           </Link>
           {ready && (
             <div className="app-nav__links">

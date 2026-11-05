@@ -62,23 +62,14 @@
 .wordmark {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-2xs);
   color: var(--color-ink);
   text-decoration: none;
-  font-family: var(--font-display);
-  font-weight: var(--display-weight);
-  font-size: 1.15rem;
-  letter-spacing: var(--tracking-display);
 }
-/* the fizz mark: one pear bead — the wordmark's own punctuation */
-.wordmark::before {
-  content: "";
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  background: var(--grain), var(--color-accent);
-  box-shadow: inset -1px -2px 0 var(--color-accent-deep);
-}
+/* the real mark: the gradient card stack beside the baked wordmark, straight
+   from logo/ — the link keeps its aria-label so the imgs stay decorative-ish */
+.wordmark__mark { display: block; width: 26px; height: 26px; }
+.wordmark__text { display: block; height: 17px; width: auto; }
 
 .app-nav__links { display: flex; align-items: center; gap: var(--space-xs); margin-inline: auto; }
 .app-nav__link {
@@ -318,6 +309,9 @@
 }
 .connect__copy { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-lg); }
 .connect__sub { font-size: 1.15rem; }
+/* the mark alone, hung on the wall above the headline — the non-text variant
+   carries the hero; the full lockup lives in the nav */
+.connect__seal { display: block; width: 52px; height: 52px; }
 .connect__chips { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
 .connect__cta { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-sm); }
 .connect__as { font-size: var(--text-sm); color: var(--color-muted); }
