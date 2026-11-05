@@ -103,10 +103,11 @@
 .card__dataline { font-size: var(--text-xs); opacity: 0.74; }
 .card__caption { font-size: var(--text-sm); line-height: 1.5; opacity: 0.86; max-width: 40ch; }
 
-/* halftone plate: the chapter image printed as dots — the landing's deck-fan
-   art hung on each sheet. window.HalftoneDots paints the canvas; the plate is
-   a paper print pinned to the stock, so dots start from the sheet's own hue
-   and sink into ink. */
+/* chapter plate: the chapter illustration printed as a clean dot-matrix stamp
+   (baked offline, rendered as SVG — ChapterPlate). The plate is a paper print
+   pinned to the stock; dots start from the sheet's own hue and sink into ink.
+   The wide recap sheet carries the year climbing to a spark (desktop) and the
+   chapter glyph on narrow sheets. */
 .card__art {
   position: relative;
   overflow: hidden;
@@ -115,9 +116,29 @@
   border-radius: var(--radius-stock);
   background: var(--grain), var(--color-paper);
   box-shadow: inset 0 0 0 1px var(--shade-7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
 }
 .card--wide .card__art { height: 108px; }
 @media (max-width: 48rem) { .card__art { height: 104px; } }
+.card__art-svg { width: 100%; height: 100%; display: block; }
+.card__art--wave .card__art-svg--glyph { display: none; }
+@media (max-width: 48rem) {
+  .card__art--wave .card__art-svg--wave { display: none; }
+  .card__art--wave .card__art-svg--glyph { display: block; }
+}
+
+/* the plate stays alive: dots swell gently while the sheet is hovered */
+@media (prefers-reduced-motion: no-preference) {
+  .card__art circle {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform var(--dur-short) var(--ease-snap);
+  }
+  .card__face:hover .card__art circle { transform: scale(1.16); }
+}
 
 /* the fizz bead + wordmark every sheet signs itself with */
 .card__footer { display: flex; align-items: center; gap: var(--space-xs); }

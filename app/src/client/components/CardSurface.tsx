@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { CardData, CardGradient } from "@shared/types";
 import { BRAND_NAME } from "@shared/brand";
 import CardBody from "./CardBody";
-import HalftoneArt from "./HalftoneArt";
+import ChapterPlate from "./ChapterPlate";
 import { IconCopy, IconDownload } from "./icons";
 
 /**
@@ -91,7 +91,7 @@ export default function CardSurface({
           {pad2(card.n)}
         </span>
         <CardBody card={card} />
-        <HalftoneArt kind={card.kind} />
+        <ChapterPlate kind={card.kind} />
         <footer className="card__footer">
           <span className="card__dot" aria-hidden="true" />
           <span className="card__brand">{BRAND_NAME}</span>
