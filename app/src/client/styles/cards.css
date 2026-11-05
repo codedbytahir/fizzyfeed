@@ -77,6 +77,9 @@
   min-width: 0;
 }
 .card__headline {
+  /* headings carry an explicit theme ink (base.css) — on a printed sheet the
+     color must come from the stock instead (sheet-ink, dark in both themes) */
+  color: inherit;
   font-size: clamp(1.5rem, 2.4vw, 1.9rem);
   line-height: 1.06;
   overflow-wrap: break-word;
