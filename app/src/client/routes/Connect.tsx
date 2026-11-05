@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMe } from "../lib/me";
 import { BRAND_NAME } from "@shared/brand";
 import Chip from "../components/Chip";
+import { IconArrow, IconCheck, IconKey, IconLock } from "../components/icons";
 
 /**
  * Step 1 — connect (T13). Full navigation to the oauth endpoint, never a
@@ -63,9 +64,18 @@ export default function Connect() {
           channel in one click. no dashboards, no fake numbers.
         </p>
         <div className="connect__chips">
-          <Chip>read-only</Chip>
-          <Chip>encrypted</Chip>
-          <Chip>you approve</Chip>
+          <Chip>
+            <IconLock size={13} />
+            read-only
+          </Chip>
+          <Chip>
+            <IconKey size={13} />
+            encrypted
+          </Chip>
+          <Chip>
+            <IconCheck size={13} />
+            you approve
+          </Chip>
         </div>
         <div className="connect__cta">
           {reconnecting ? (
@@ -74,21 +84,7 @@ export default function Connect() {
               <a className="btn btn--primary" href="/api/auth/buffer/login">
                 reconnect buffer
                 <span className="btn__icon" aria-hidden="true">
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 18 18"
-                    fill="none"
-                    focusable="false"
-                  >
-                    <path
-                      d="M7.5 10.5 15.5 2.5M15.5 2.5h-5.6M15.5 2.5v5.6M12.5 10.5v3a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h3"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <IconArrow size={18} />
                 </span>
               </a>
               <p className="connect__micro">
@@ -107,21 +103,7 @@ export default function Connect() {
               <a className="btn btn--primary" href="/api/auth/buffer/login">
                 connect buffer
                 <span className="btn__icon" aria-hidden="true">
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 18 18"
-                    fill="none"
-                    focusable="false"
-                  >
-                    <path
-                      d="M7.5 10.5 15.5 2.5M15.5 2.5h-5.6M15.5 2.5v5.6M12.5 10.5v3a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h3"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <IconArrow size={18} />
                 </span>
               </a>
               <p className="connect__micro">

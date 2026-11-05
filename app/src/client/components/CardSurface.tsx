@@ -2,6 +2,8 @@ import { useState } from "react";
 import type { CardData, CardGradient } from "@shared/types";
 import { BRAND_NAME } from "@shared/brand";
 import CardBody from "./CardBody";
+import HalftoneArt from "./HalftoneArt";
+import { IconCopy, IconDownload } from "./icons";
 
 /**
  * One solid card-stock sheet per chapter (theme: Hum) — fills reference the
@@ -55,9 +57,11 @@ function ShareRow({ n, onNote }: { n: number; onNote?: (message: string) => void
   return (
     <>
       <button type="button" className="linkbtn" onClick={() => void copy()}>
+        <IconCopy size={13} />
         {copied ? "copied" : "copy link"}
       </button>
       <a className="linkbtn" href={`/api/cards/${n}.png`} download={`card-${pad2(n)}.png`}>
+        <IconDownload size={13} />
         download
       </a>
     </>
@@ -87,6 +91,7 @@ export default function CardSurface({
           {pad2(card.n)}
         </span>
         <CardBody card={card} />
+        <HalftoneArt kind={card.kind} />
         <footer className="card__footer">
           <span className="card__dot" aria-hidden="true" />
           <span className="card__brand">{BRAND_NAME}</span>

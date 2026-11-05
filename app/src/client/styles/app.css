@@ -88,7 +88,15 @@
   background: var(--color-ink);
   color: var(--color-fringe);
 }
+/* hover must never outshine the active pill — the old bug: the generic hover
+   background (paper) won on specificity and left fringe text on light ground */
+.app-nav__link--active:hover {
+  background: color-mix(in oklab, var(--color-ink) 86%, var(--color-fringe));
+  color: var(--color-fringe);
+}
 .app-nav__idx { font-size: 0.72em; color: color-mix(in oklab, currentColor 62%, transparent); }
+.app-nav__icon { display: inline-flex; align-self: center; opacity: 0.82; }
+.app-nav__link--active .app-nav__icon { opacity: 1; }
 .app-nav__user { display: flex; align-items: center; gap: var(--space-sm); margin-left: auto; }
 .app-nav__name { font-size: var(--text-sm); color: var(--color-ink-2); }
 .avatar {
@@ -196,6 +204,9 @@
   background: none;
   border: 0;
   padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32em;
   color: var(--color-accent-2);
   text-decoration: underline;
   text-decoration-thickness: 1px;

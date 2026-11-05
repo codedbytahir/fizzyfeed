@@ -13,6 +13,7 @@ import ShareLinkRow from "../components/ShareLinkRow";
 import StatCounter from "../components/StatCounter";
 import StatusLine from "../components/StatusLine";
 import Yearline from "../components/Yearline";
+import { IconSend, IconSpark, IconStar, IconSync } from "../components/icons";
 
 /** Chapter slot 6 while the alter ego is missing (spec 04 §1). */
 function PersonaPlaceholder() {
@@ -178,6 +179,9 @@ export default function Deck() {
           <>
             <button type="button" className="btn btn--primary" onClick={() => void syncNow()}>
               sync my buffer now
+              <span className="btn__icon" aria-hidden="true">
+                <IconSync size={17} />
+              </span>
             </button>
             <Link className="btn btn--ghost" to="/">
               back to the start
@@ -199,6 +203,7 @@ export default function Deck() {
         <ShareLinkRow />
         <div className="deck-foot">
           <Link className="linkbtn" to="/app/greatest-hits">
+            <IconStar size={13} />
             greatest hits: your real top posts, opt-in
           </Link>
           <span className="deck-foot__mono">{deck.data.stats.year}</span>
@@ -224,9 +229,15 @@ export default function Deck() {
           <div className="deck-actions">
             <Link className="btn btn--ghost" to="/app/persona">
               name my alter ego
+              <span className="btn__icon" aria-hidden="true">
+                <IconSpark size={16} />
+              </span>
             </Link>
             <Link className="btn btn--primary" to="/app/recap">
               queue the recap
+              <span className="btn__icon" aria-hidden="true">
+                <IconSend size={16} />
+              </span>
             </Link>
           </div>
         </div>

@@ -3,14 +3,15 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import { useMe } from "../lib/me";
 import { BRAND_NAME } from "@shared/brand";
+import { IconCards, IconLoop, IconSpark, IconStar } from "./icons";
 
 /** Section nav shown once a session is connected — NavLink drives the active state.
  *  The mono index is the product's 5-step flow, carried in the chrome. */
 const NAV_LINKS = [
-  { to: "/app", label: "deck", idx: "01", end: true },
-  { to: "/app/persona", label: "persona", idx: "04", end: false },
-  { to: "/app/recap", label: "recap", idx: "05", end: false },
-  { to: "/app/greatest-hits", label: "greatest hits", idx: "+", end: false },
+  { to: "/app", label: "deck", idx: "01", end: true, Icon: IconCards },
+  { to: "/app/persona", label: "persona", idx: "04", end: false, Icon: IconSpark },
+  { to: "/app/recap", label: "recap", idx: "05", end: false, Icon: IconLoop },
+  { to: "/app/greatest-hits", label: "greatest hits", idx: "+", end: false, Icon: IconStar },
 ] as const;
 
 /**
@@ -82,6 +83,9 @@ export default function Shell() {
                       .join(" ")
                   }
                 >
+                  <span className="app-nav__icon" aria-hidden="true">
+                    <item.Icon size={15} />
+                  </span>
                   <span className="app-nav__idx" aria-hidden="true">
                     {item.idx}
                   </span>
