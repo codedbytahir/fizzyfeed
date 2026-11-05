@@ -310,6 +310,95 @@ describe("GET /api/auth/me", () => {
     expect(String(channelsCall?.[0])).toBe("https://api.buffer.com");
     expect((channelsCall?.[1]?.headers as Record<string, string>)["authorization"]).toBe(`Bearer ${ACCESS}`);
   });
+
+  it("keeps the session with needsReconnect when the Buffer token is dead (no 401 bounce)", async () => {
+    const rig = createTestRig();
+    const app = makeApp();
+    const { sessionCookie } = await connect(app, rig);
+
+    // the Buffer grant is dead: every channel call 401s and the refresh is
+    // rejected with 400 invalid_grant (the live 2026-11-01 incident shape)
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        if (url.startsWith("https://auth.buffer.com/token")) {
+          return jsonResponse({ error: "invalid_grant", error_description: "nope" }, 400);
+        }
+        const body = JSON.parse(String(init?.body ?? "{}")) as { query?: string };
+        const name = /\b(?:query|mutation)\s+(\w+)/.exec(body.query ?? "")?.[1] ?? "";
+        if (url.startsWith("https://api.buffer.com") && name === "OrgId") {
+          return jsonResponse({ data: { account: { organizations: [{ id: "org-1" }] } } });
+        }
+        if (url.startsWith("https://api.buffer.com") && name === "Channels") {
+          return jsonResponse({ errors: [{ message: "expired" }] }, 401);
+        }
+        throw new Error(`unexpected fetch: ${url} ${name}`);
+      })
+    );
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const res = await app.request(
+      "/api/auth/me",
+      { headers: { Cookie: sessionCookie } },
+      rig.env,
+      new FakeExecutionContext() as unknown as ExecutionContext
+    );
+    expect(res.status).toBe(200); // the browser session is valid — identity stands
+    const body = (await res.json()) as {
+      connected: boolean;
+      needsReconnect?: boolean;
+      channels: unknown[];
+      displayName: string;
+    };
+    expect(body.connected).toBe(true);
+    expect(body.needsReconnect).toBe(true);
+    expect(body.channels).toEqual([]);
+    expect(body.displayName).toBe("Ada Lovelace");
+    // the diagnostic line carries the oauth code, never token material
+    const logged = errSpy.mock.calls.map((a) => a.map(String).join(" ")).join("\n");
+    expect(logged).toContain("invalid_grant");
+    expect(logged).not.toContain(ACCESS);
+    expect(logged).not.toContain(REFRESH);
+  });
+
+  it("reports connected:false when the session outlives the token row (revoked elsewhere)", async () => {
+    const rig = createTestRig();
+    const app = makeApp();
+    const { sessionCookie, userId } = await connect(app, rig);
+    rig.db.tokens.delete(userId);
+
+    const res = await app.request(
+      "/api/auth/me",
+      { headers: { Cookie: sessionCookie } },
+      rig.env,
+      new FakeExecutionContext() as unknown as ExecutionContext
+    );
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { connected: boolean; needsReconnect?: boolean; channels: unknown[] };
+    expect(body.connected).toBe(false);
+    expect(body.needsReconnect).toBe(true);
+    expect(body.channels).toEqual([]);
+  });
+
+  it("callback re-opens the backfill on reconnect (done-with-0-posts can never stick)", async () => {
+    const rig = createTestRig();
+    const app = makeApp();
+    const first = await connect(app, rig);
+    expect(first.userId).not.toBe("");
+
+    // simulate the stuck state seen live: backfill marked done, zero posts
+    const state = rig.db.syncState.get(first.userId) as Row;
+    state["backfill_done"] = 1;
+
+    // reconnect (fresh login → callback with the same buffer account)
+    const second = await connect(app, rig);
+    expect(second.sessionCookie).not.toBe("");
+    const after = rig.db.syncState.get(first.userId) as Row;
+    expect(after["backfill_done"]).toBe(0);
+    // the users row survived (same buffer identity, same user id)
+    expect(rig.db.usersById.get(first.userId)?.["display_name"]).toBe("Ada Lovelace");
+  });
 });
 
 describe("log hygiene sentinel (spec 01 §5)", () => {

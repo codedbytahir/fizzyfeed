@@ -46,6 +46,16 @@ export class BufferApiError extends Error {
   }
 }
 
+/**
+ * Categorical OAuth error code from a token-endpoint failure body (the fixed
+ * RFC-6749 vocabulary: "invalid_grant", "invalid_client", ...). Bodies are
+ * otherwise never echoed back — this one field is a constant label, carries no
+ * token material, and is logged so refresh failures are diagnosable.
+ */
+export interface UpstreamCodeBearer {
+  upstreamCode?: string;
+}
+
 const FORM_HEADERS = { "content-type": "application/x-www-form-urlencoded" } as const;
 const JSON_HEADERS = { "content-type": "application/json" } as const;
 
@@ -70,7 +80,12 @@ function isoToUnix(v: unknown): number | undefined {
   return Number.isFinite(ms) ? Math.floor(ms / 1000) : undefined;
 }
 
-async function bufferFetch(url: string, init: RequestInit, action: string): Promise<Response> {
+async function bufferFetch(
+  url: string,
+  init: RequestInit,
+  action: string,
+  opts?: { oauthError?: boolean }
+): Promise<Response> {
   let res: Response;
   try {
     res = await fetch(url, init);
@@ -78,8 +93,25 @@ async function bufferFetch(url: string, init: RequestInit, action: string): Prom
     throw new BufferApiError(502, `buffer unreachable during ${action}`);
   }
   if (!res.ok) {
-    if (res.status === 401) throw new BufferApiError(401, `buffer rejected ${action}`, 401);
-    throw new BufferApiError(502, `buffer ${action} failed`, res.status);
+    let err: BufferApiError;
+    if (res.status === 401) {
+      err = new BufferApiError(401, `buffer rejected ${action}`, 401);
+    } else {
+      err = new BufferApiError(502, `buffer ${action} failed`, res.status);
+    }
+    if (opts?.oauthError) {
+      // token endpoint errors are small json bodies whose `error` field is a
+      // fixed OAuth category — safe to carry for logging, nothing else is read
+      try {
+        const body = (await res.json()) as { error?: unknown };
+        if (typeof body?.error === "string" && body.error.length > 0) {
+          (err as BufferApiError & { upstreamCode?: string }).upstreamCode = body.error.slice(0, 40);
+        }
+      } catch {
+        // non-json error body — the status alone still narrows it down
+      }
+    }
+    throw err;
   }
   return res;
 }
@@ -348,7 +380,12 @@ export function createBufferClient(opts: BufferClientOpts): BufferClient {
         client_id: opts.clientId,
         client_secret: opts.clientSecret,
       });
-      const res = await bufferFetch(BUFFER_ENDPOINTS.tokenUrl, { method: "POST", headers: FORM_HEADERS, body: form.toString() }, "token refresh");
+      const res = await bufferFetch(
+        BUFFER_ENDPOINTS.tokenUrl,
+        { method: "POST", headers: FORM_HEADERS, body: form.toString() },
+        "token refresh",
+        { oauthError: true }
+      );
       return mapTokenResponse(await bufferJson(res, "token refresh"), refreshToken, "token refresh");
     },
   };

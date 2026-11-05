@@ -31,14 +31,17 @@ export default function Connect() {
     document.title = `${BRAND_NAME} — your year in posts`;
   }, []);
 
-  useEffect(() => {
-    if (me.state.status === "ready" && me.state.me.connected) {
-      navigate("/app", { replace: true });
-    }
-  }, [me, navigate]);
+  const ready = me.state.status === "ready" ? me.state.me : null;
+  const liveSession = ready !== null && ready.connected && !ready.needsReconnect;
 
-  const connectedName =
-    me.state.status === "ready" && me.state.me.connected ? me.state.me.displayName : null;
+  useEffect(() => {
+    if (liveSession) navigate("/app", { replace: true });
+  }, [liveSession, navigate]);
+
+  // a live session resumes into the deck; a dead Buffer token gets its own
+  // reconnect panel — the session itself is still good (no login loop)
+  const reconnecting = ready !== null && ready.needsReconnect;
+  const connectedName = liveSession ? ready?.displayName ?? null : null;
 
   return (
     <section className="connect">
@@ -47,8 +50,9 @@ export default function Connect() {
           your year in <span className="hl">posts.</span>
         </h1>
         <p className="sub connect__sub">
-          connect buffer, and 12 months of publishing becomes 7 story cards, an alter ego, and a
-          recap queued everywhere. your numbers, honestly drawn.
+          connect buffer once: we read your publishing history and draw it as 7 story cards. your
+          rhythm, your streaks, your mix, an alter ego named by ai. then queue the recap to every
+          channel in one click. no dashboards, no fake numbers.
         </p>
         <div className="connect__chips">
           <Chip>read-only</Chip>
@@ -56,7 +60,34 @@ export default function Connect() {
           <Chip>you approve</Chip>
         </div>
         <div className="connect__cta">
-          {connectedName ? (
+          {reconnecting ? (
+            <>
+              <p className="connect__as">buffer access expired for {ready?.displayName}</p>
+              <a className="btn btn--primary" href="/api/auth/buffer/login">
+                reconnect buffer
+                <span className="btn__icon" aria-hidden="true">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                    focusable="false"
+                  >
+                    <path
+                      d="M7.5 10.5 15.5 2.5M15.5 2.5h-5.6M15.5 2.5v5.6M12.5 10.5v3a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h3"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </a>
+              <p className="connect__micro">
+                one tap restores the connection. your session and your indexed posts are untouched.
+              </p>
+            </>
+          ) : connectedName ? (
             <>
               <p className="connect__as">connected as {connectedName}</p>
               <Link className="btn btn--primary" to="/app">
@@ -86,7 +117,7 @@ export default function Connect() {
                 </span>
               </a>
               <p className="connect__micro">
-                read-only access: you approve every step on buffer’s screen.
+                read-only access: you approve every step on buffer&rsquo;s screen.
               </p>
             </>
           )}

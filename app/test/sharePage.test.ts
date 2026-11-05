@@ -219,6 +219,11 @@ class ShareDb {
         .filter((p) => p.user_id === params[0] && p.year === params[1])
         .map((p) => p as unknown as Row);
     }
+    if (q.startsWith("SELECT DISTINCT year FROM posts")) {
+      const userId = String(params[0]);
+      const years = [...new Set(this.posts.filter((p) => p.user_id === userId).map((p) => p.year))];
+      return years.sort((a, b) => b - a).map((y) => ({ year: y }));
+    }
     if (q.startsWith("SELECT payload_json FROM ai_cache")) {
       return this.personaRow ? [this.personaRow as unknown as Row] : [];
     }

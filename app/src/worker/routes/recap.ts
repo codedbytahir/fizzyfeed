@@ -16,7 +16,7 @@ import { jsonError } from "../lib/http";
 import { BufferApiError, createBufferClient } from "../lib/buffer";
 import { RefreshError, withAccessToken } from "../lib/refresh";
 import { readSessionUserId } from "../lib/session";
-import { buildDeck } from "./deck";
+import { buildDeck, resolveDeckYear } from "./deck";
 import {
   composeRecap,
   hasWriteScope,
@@ -71,7 +71,7 @@ recap.get("/preview", async (c) => {
   const userId = await readSessionUserId(c);
   if (!userId) return jsonError(c, 401, "no_session", "sign in with buffer to open your recap");
 
-  const year = new Date().getUTCFullYear();
+  const year = await resolveDeckYear(c.env, userId, undefined);
   const { deck, persona } = await buildDeck(c.env, userId, year);
 
   let channels: BufferChannel[];

@@ -258,7 +258,8 @@ describe("buildDeckFromStats", () => {
       n: 1,
       kind: "kickoff",
       date: "",
-      excerpt: "not enough year yet — connect your buffer and post a little more",
+      excerpt:
+        "nothing to draw yet. send a post through buffer and the deck builds itself, one chapter at a time.",
       gradient: "bolt",
     });
   });
@@ -330,7 +331,52 @@ describe("GET /api/deck", () => {
     const first = bundle.deck.cards[0];
     expect(first?.kind).toBe("kickoff");
     const kickoff = first as Extract<CardData, { kind: "kickoff" }>;
-    expect(kickoff.excerpt).toContain("not enough year yet");
+    expect(kickoff.excerpt).toContain("nothing to draw yet");
+  });
+
+  it("defaults to the most recent year that actually has posts (not the calendar year)", async () => {
+    // history lives in an older year entirely: the deck must draw THAT year
+    const oldYear = CURRENT_YEAR - 2;
+    const oldRows = richRows().map((r) => {
+      const at = Date.UTC(oldYear, r.month ?? 0, (Number(r.id.replace("p", "")) % 25) + 1) / 1000;
+      const d = new Date(at * 1000);
+      return { ...r, created_at: at, year: d.getUTCFullYear() };
+    });
+    const env = makeEnv({ posts: oldRows, personaRow: null }, makeKv().cache);
+    const res = await app.request("/api/deck", { headers: { Cookie: cookie } }, env);
+    expect(res.status).toBe(200);
+    const deck = (await res.json()) as Deck;
+    expect(deck.year).toBe(oldYear);
+    expect(deck.years).toEqual([oldYear]);
+    expect(deck.empty).toBeUndefined();
+  });
+
+  it("honors an explicit ?year= override and lists every post year", async () => {
+    const oldYear = CURRENT_YEAR - 1;
+    const mixed = [
+      ...richRows(), // current year
+      ...richRows().map((r, i) => {
+        const at = Date.UTC(oldYear, i % 12, (i % 25) + 1) / 1000;
+        const d = new Date(at * 1000);
+        return { ...r, id: `old-${r.id}`, created_at: at, year: d.getUTCFullYear() };
+      }),
+    ];
+    const env = makeEnv({ posts: mixed, personaRow: null }, makeKv().cache);
+    const res = await app.request(`/api/deck?year=${oldYear}`, { headers: { Cookie: cookie } }, env);
+    expect(res.status).toBe(200);
+    const deck = (await res.json()) as Deck;
+    expect(deck.year).toBe(oldYear);
+    expect(deck.years).toEqual([CURRENT_YEAR, oldYear]);
+  });
+
+  it("ignores an invalid ?year= and falls back to the default rule", async () => {
+    const env = makeEnv({ posts: richRows(), personaRow: null }, makeKv().cache);
+    for (const bad of ["20x4", "12345", "-1", "1999"]) {
+      const res = await app.request(`/api/deck?year=${bad}`, { headers: { Cookie: cookie } }, env);
+      expect(res.status).toBe(200);
+      const deck = (await res.json()) as Deck;
+      expect(deck.year).toBe(CURRENT_YEAR);
+    }
   });
 });
 

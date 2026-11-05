@@ -50,7 +50,19 @@ export interface SealedTokenColumns {
 
 const REFRESH_ENVELOPE_VERSION = 1;
 const DAY_SEC = 86_400;
-const PROACTIVE_HORIZON_SEC = 86_400; // spec 02 §4: refresh when expires_at < now + 24h
+/**
+ * Proactive cron horizon: refresh only tokens dying within 15 min. Access
+ * tokens live 1h, so the old 24h horizon rotated the single-use refresh token
+ * EVERY hour even for idle accounts — maximum churn on a token that can only
+ * be consumed once. 15 min keeps active users seamless (reactive refresh +
+ * next cron tick) and stops burning rotations for accounts nobody is using.
+ */
+const PROACTIVE_HORIZON_SEC = 900;
+
+/** Error thrown when the refresh token can never work again — reconnect is the only way forward. */
+export function isReconnectRequired(err: unknown): boolean {
+  return err instanceof RefreshError && err.status === 401;
+}
 
 interface RefreshEnvelope {
   v: number;
@@ -144,6 +156,13 @@ function isBuffer401(err: unknown): boolean {
  */
 async function rotateTokens(env: Env, userId: string, row: StoredTokenRow): Promise<string> {
   const refreshToken = await unsealRefreshToken(env.TOKEN_AES_KEY, userId, row.refresh_enc);
+  if (!refreshToken) {
+    // Buffer never issued a refresh token for this grant (seen live 2026-11-01:
+    // the granted scopes lacked offline_access, so the exchange returned no
+    // refresh_token and an empty string was sealed). A refresh call with an
+    // empty token is guaranteed invalid_grant — surface reconnect instead.
+    throw new RefreshError("buffer reconnect required", 401);
+  }
   const client = createBufferClient({
     clientId: env.BUFFER_CLIENT_ID,
     clientSecret: env.BUFFER_CLIENT_SECRET,
@@ -154,10 +173,18 @@ async function rotateTokens(env: Env, userId: string, row: StoredTokenRow): Prom
     pair = await client.refreshAccessToken(refreshToken);
   } catch (err) {
     if (err instanceof BufferApiError) {
-      throw new RefreshError(
-        err.status === 401 ? "buffer session expired" : "buffer refresh failed",
-        err.status === 401 ? 401 : 502
+      const oauthCode = (err as BufferApiError & { upstreamCode?: string }).upstreamCode;
+      console.error(
+        `buffer refresh rejected user=${userId} status=${err.upstreamStatus ?? err.status} code=${oauthCode ?? "none"}`
       );
+      // Deterministic rejections (401/403, or 400 invalid_grant from a
+      // consumed/absent refresh token) can never succeed on retry — surface
+      // them as reconnect-required so the client shows a reconnect flow
+      // instead of retrying a dead token forever.
+      if (err.status === 401 || err.upstreamStatus === 400 || err.upstreamStatus === 403) {
+        throw new RefreshError("buffer reconnect required", 401);
+      }
+      throw new RefreshError("buffer refresh failed", 502);
     }
     throw err;
   }

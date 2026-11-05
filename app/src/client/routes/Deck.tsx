@@ -60,7 +60,11 @@ function DeckSkeleton() {
 export default function Deck() {
   const { state } = useMe();
   const navigate = useNavigate();
-  const deck = useApi<DeckData>("/api/deck");
+  // year = undefined → the API picks the most recent year that has posts;
+  // the picker overrides it once the user chooses a specific year
+  const [year, setYear] = useState<number | undefined>(undefined);
+  const deckUrl = year === undefined ? "/api/deck" : `/api/deck?year=${year}`;
+  const deck = useApi<DeckData>(deckUrl);
   const reload = deck.reload;
 
   useEffect(() => {
@@ -126,6 +130,19 @@ export default function Deck() {
 
   const backfilling = status !== null && !status.backfillDone;
 
+  // manual sync: fire the yearize run, then keep polling status; the deck
+  // refetches when the backfill flips to done (existing effect above)
+  const syncNow = useCallback(async () => {
+    try {
+      await apiFetch("/api/yearize/run", { method: "POST" });
+      showNote("sync started: reading your buffer history");
+    } catch {
+      showNote("sync could not start: try again in a minute");
+      return;
+    }
+    setStatus((prev) => (prev ? { ...prev, backfillDone: false } : { backfillDone: false, lastPolledAt: 0, postsIndexed: 0 }));
+  }, []);
+
   let body: ReactNode;
   if (backfilling) {
     body = (
@@ -155,12 +172,17 @@ export default function Deck() {
   } else if (deck.data?.empty) {
     body = (
       <EmptyState
-        title="not enough year yet"
-        body="connect your buffer and post a little more — your deck opens up as the year fills in."
+        title="nothing to draw yet"
+        body="your buffer is connected, but no sent posts have landed in the whole history we read. everything you send through buffer counts automatically from now on. just connected? run a sync to be sure nothing was missed."
         action={
-          <Link className="btn btn--ghost" to="/">
-            back to the start
-          </Link>
+          <>
+            <button type="button" className="btn btn--primary" onClick={() => void syncNow()}>
+              sync my buffer now
+            </button>
+            <Link className="btn btn--ghost" to="/">
+              back to the start
+            </Link>
+          </>
         }
       />
     );
@@ -194,7 +216,10 @@ export default function Deck() {
             <h1 className="headline headline--lg">
               {deck.data && !deck.data.empty ? `${deck.data.year}, drawn` : "your deck"}
             </h1>
-            <p className="sub">no fake numbers: every card comes from your posts.</p>
+            <p className="sub">
+              every number here comes from your real posts. share the deck as images, or queue one
+              recap to every channel in a click.
+            </p>
           </div>
           <div className="deck-actions">
             <Link className="btn btn--ghost" to="/app/persona">
@@ -205,6 +230,21 @@ export default function Deck() {
             </Link>
           </div>
         </div>
+        {deck.data && (deck.data.years?.length ?? 0) > 1 && (
+          <nav className="year-picker" aria-label="deck year">
+            {deck.data.years?.map((y) => (
+              <button
+                key={y}
+                type="button"
+                className={y === deck.data?.year ? "year-picker__btn is-active" : "year-picker__btn"}
+                aria-current={y === deck.data?.year ? "true" : undefined}
+                onClick={() => setYear(y)}
+              >
+                {y}
+              </button>
+            ))}
+          </nav>
+        )}
         {deck.data && !deck.data.empty && (
           <div className="yearline-wrap">
             <div className="yearline-head">

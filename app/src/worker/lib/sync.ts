@@ -1,11 +1,19 @@
 /**
- * Sync plumbing (spec 03 §2): 12-month backfill with a per-day request
- * ceiling, incremental polling, and idempotent post upserts.
+ * Sync plumbing (spec 03 §2, revised 2026-11): FULL-history backfill with a
+ * per-day request ceiling, incremental polling, and idempotent post upserts.
+ *
+ * The original design clamped the backfill to a trailing 365-day window; users
+ * whose posting history sat outside that window (or straddled the calendar
+ * year) saw their posts silently dropped from every deck — "less than a year
+ * of posts does not count". The backfill now drains each channel's entire
+ * sent-post history (newest first, cursor-paginated) under the same daily
+ * request budget, resuming across cron ticks. The yearize aggregates pick the
+ * year to draw, so any year with posts counts.
  *
  * Resume model: all progress lives in sync_state.poll_cursor (SyncCursor
  * JSON), persisted after EVERY page so a cron kill resumes mid-channel.
- * The request budget (DAILY_REQUEST_SAFETY_STOP) resets each UTC day while
- * `since` and the page position survive. Tokens never reach logs.
+ * The request budget (DAILY_REQUEST_SAFETY_STOP) resets each UTC day.
+ * Tokens never reach logs.
  */
 import { DAILY_REQUEST_SAFETY_STOP } from "../../shared/brand";
 import type { BufferClient, BufferPost } from "../../shared/types";
@@ -15,6 +23,12 @@ import { withAccessToken } from "./refresh";
 import { createBufferClient } from "./buffer";
 
 export const BACKFILL_WINDOW_DAYS = 365;
+
+/**
+ * Fallback window for the FIRST incremental poll after a backfill (used only
+ * when no poll watermark exists). The backfill itself no longer clamps to it.
+ */
+export const POLL_FALLBACK_WINDOW_DAYS = BACKFILL_WINDOW_DAYS;
 
 const PAGE_SIZE = 50;
 const UPSERT_CHUNK = 50;
@@ -40,7 +54,7 @@ export function parseCursor(
     backfillDay: utcDayString(nowSec),
     backfillChannel: 0,
     backfillCursor: null,
-    since: nowSec - BACKFILL_WINDOW_DAYS * 86400,
+    since: nowSec - POLL_FALLBACK_WINDOW_DAYS * 86400,
   };
   if (!row?.poll_cursor) return fallback;
   try {
@@ -202,7 +216,8 @@ export async function startBackfillWith(
       }
       const res = await client.listPosts(opts.accessToken, {
         channelId: channel.id,
-        since: cursor.since,
+        // full history: no `since` clamp — the stop rule in listPosts pages
+        // until Buffer's cursor stream ends (or the daily budget runs out)
         count: PAGE_SIZE,
         cursor: pageCursor ?? undefined,
       });
@@ -274,13 +289,13 @@ export async function pollIncrementalWith(
     return;
   }
 
-  // poll window: last successful sweep → saved backfill window → trailing year
+  // poll window: last successful sweep → saved fallback window
   const since =
     state.last_polled_at > 0
       ? state.last_polled_at
       : cursor.since > 0
         ? cursor.since
-        : now - BACKFILL_WINDOW_DAYS * 86400;
+        : now - POLL_FALLBACK_WINDOW_DAYS * 86400;
   let requests = cursor.backfillReqsToday;
   const channels = await client.listChannels(opts.accessToken);
   requests += 1;

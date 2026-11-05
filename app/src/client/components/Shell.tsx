@@ -45,6 +45,7 @@ export default function Shell() {
   };
 
   const ready = me.state.status === "ready" ? me.state.me : null;
+  const needsReconnect = ready?.needsReconnect === true;
 
   return (
     <div className="app">
@@ -103,6 +104,17 @@ export default function Shell() {
           </div>
         </div>
       </nav>
+      {needsReconnect && (
+        <div className="reconnect-banner" role="status">
+          <p className="reconnect-banner__text">
+            buffer access expired. your deck and posts are safe; reconnect to keep syncing and
+            sharing.
+          </p>
+          <a className="btn btn--primary reconnect-banner__cta" href="/api/auth/buffer/login">
+            reconnect buffer
+          </a>
+        </div>
+      )}
       <main id="main" className="app-main">
         <Outlet />
       </main>

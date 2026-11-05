@@ -126,6 +126,11 @@ class ShareD1 extends FakeD1 {
     if (q.startsWith("SELECT * FROM posts")) {
       return stubFor(sql, async () => db.posts as unknown as Row[]);
     }
+    if (q.startsWith("SELECT DISTINCT year FROM posts")) {
+      return stubFor(sql, async () =>
+        [...new Set(db.posts.map((p) => p.year))].sort((a, b) => b - a).map((y) => ({ year: y }))
+      );
+    }
     if (q.includes("ai_cache")) {
       return stubFor(sql, async () => (db.personaRow ? [db.personaRow] : []));
     }

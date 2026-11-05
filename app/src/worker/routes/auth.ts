@@ -167,14 +167,24 @@ auth.get("/buffer/callback", async (c) => {
       "INSERT INTO buffer_tokens (user_id, access_enc, refresh_enc, iv, salt, expires_at, scopes, rotated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
         "ON CONFLICT(user_id) DO UPDATE SET access_enc = excluded.access_enc, refresh_enc = excluded.refresh_enc, iv = excluded.iv, salt = excluded.salt, expires_at = excluded.expires_at, scopes = excluded.scopes, rotated_at = excluded.rotated_at"
     ).bind(userId, columns.accessEnc, columns.refreshEnc, columns.iv, columns.salt, now + pair.expiresIn, pair.scope, now),
+    // every reconnect re-opens the backfill: the flag could previously stick
+    // at done-with-0-posts (seen live 2026-11-01) and reconnects could never
+    // re-index. Upserts are idempotent, the daily request budget still caps
+    // the work, and last_polled_at is preserved so incremental polling keeps
+    // its window once the backfill completes again.
     c.env.DB.prepare(
-      "INSERT INTO sync_state (user_id, backfill_done, last_polled_at) VALUES (?, 0, 0) ON CONFLICT(user_id) DO NOTHING"
+      "INSERT INTO sync_state (user_id, backfill_done, last_polled_at) VALUES (?, 0, 0) " +
+        "ON CONFLICT(user_id) DO UPDATE SET backfill_done = 0"
     ).bind(userId),
   ]);
 
   await setCallbackCookies(c, userId);
-  // logs carry ids only — never tokens (spec 01 §5)
-  console.log(`buffer connect ok user=${userId}`);
+  // logs carry ids/booleans only — never token material (spec 01 §5). The
+  // refresh-token presence + granted scope make a missing offline_access
+  // grant visible in the logs the moment it happens (seen live 2026-11-01).
+  console.log(
+    `buffer connect ok user=${userId} scopes="${pair.scope}" refresh=${pair.refreshToken ? "yes" : "no"}`
+  );
 
   // kick the 12-month backfill without ever blocking/sinking the login (T09 owns sync)
   void c.executionCtx.waitUntil((async () => {
@@ -218,6 +228,12 @@ auth.post("/revoke", async (c) => {
 });
 
 // GET /api/auth/me → MeResponse | 401
+//
+// The 401 here means "no valid browser session" — nothing else. Buffer token
+// health is reported via needsReconnect instead of bouncing the visitor to
+// the connect screen (the 30-day session cookie and the 1-hour Buffer access
+// token are different lifetimes; conflating them made users log in again
+// every hour when a refresh token was missing — seen live 2026-11-01).
 auth.get("/me", async (c) => {
   const userId = await readSessionUserId(c);
   if (!userId) return jsonError(c, 401, "no_session", "sign in to continue");
@@ -231,19 +247,32 @@ auth.get("/me", async (c) => {
     .bind(userId)
     .first<{ backfill_done: number }>();
 
-  let channels: BufferChannel[];
-  try {
-    channels = await withAccessToken(c.env, userId, (token) => bufferClientFrom(c.env).listChannels(token));
-  } catch (err) {
-    if (err instanceof RefreshError) {
-      return jsonError(
-        c,
-        err.status,
-        err.status === 401 ? "session_expired" : "upstream_error",
-        err.message
+  const tokenRow = await c.env.DB.prepare("SELECT user_id FROM buffer_tokens WHERE user_id = ?")
+    .bind(userId)
+    .first<{ user_id: string }>();
+
+  let channels: BufferChannel[] = [];
+  let needsReconnect = false;
+  if (!tokenRow) {
+    // cookie valid but no Buffer grant (revoked in another tab) — the app
+    // session stays; connect flows decide what renders next
+    needsReconnect = true;
+  } else {
+    try {
+      channels = await withAccessToken(c.env, userId, (token) =>
+        bufferClientFrom(c.env).listChannels(token)
       );
+    } catch (err) {
+      if (err instanceof RefreshError && err.status === 401) {
+        // dead Buffer token (expired + unrefreshable) — keep the app session
+        needsReconnect = true;
+      } else if (err instanceof RefreshError || err instanceof BufferApiError) {
+        // transient upstream trouble — not a session problem, no banner
+        channels = [];
+      } else {
+        throw err;
+      }
     }
-    throw err;
   }
 
   const me: MeResponse = {
@@ -251,8 +280,9 @@ auth.get("/me", async (c) => {
     displayName: userRow.display_name,
     avatarUrl: userRow.avatar_url ?? undefined,
     channels,
-    connected: true,
+    connected: !!tokenRow,
     backfillDone: !!syncRow?.backfill_done,
+    ...(needsReconnect ? { needsReconnect: true } : {}),
   };
   return c.json(me);
 });

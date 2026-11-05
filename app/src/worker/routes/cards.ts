@@ -16,7 +16,7 @@ import { readSessionUserId } from "../lib/session";
 import { jsonError } from "../lib/http";
 import { loadFonts, hash8 } from "../lib/fonts";
 import { renderCardPng, renderOgPng } from "../lib/render";
-import { buildDeck } from "./deck";
+import { buildDeck, resolveDeckYear } from "./deck";
 import type { CardData, Persona, YearStats } from "../../shared/types";
 
 const OG_CACHE_KEY = "card:og:v1";
@@ -40,7 +40,8 @@ export interface DeckContext {
  * can never disagree with the JSON deck it belongs to.
  */
 export async function loadDeckContext(env: Env, userId: string): Promise<DeckContext> {
-  const year = new Date().getUTCFullYear();
+  // same default-year rule as GET /api/deck: most recent year with posts
+  const year = await resolveDeckYear(env, userId, undefined);
   const { deck, persona } = await buildDeck(env, userId, year);
   return { stats: deck.stats, cards: deck.cards, year, persona };
 }

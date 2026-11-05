@@ -426,6 +426,19 @@ describe("startBackfillWith", () => {
     expect(ch2First?.cursor ?? null).toBeNull(); // next channel restarts at its first page
     expect(db.state.get("u1")?.backfill_done).toBe(1);
   });
+
+  it("drains FULL history: no since clamp on any backfill page (posts older than a year count)", async () => {
+    // the 2026-11 revision: the trailing-365-day clamp dropped posts outside
+    // the window; the backfill now pages each channel's whole sent history
+    const db = new FakeD1();
+    seedState(db, "u1", { poll_cursor: cursorPatch({ since: SINCE }) });
+    const client = new FakeBufferClient([{ channelId: "ch1", dataPages: 1 }]);
+
+    await startBackfillWith(makeEnv(db), "u1", client, { accessToken: "tok", now: NOW });
+
+    expect(client.listPostsReq).toBe(2); // page + terminator (the fake ends the stream there)
+    expect(client.pages.every((p) => p.since === undefined)).toBe(true);
+  });
 });
 
 // ── incremental poll ────────────────────────────────────────────────────────

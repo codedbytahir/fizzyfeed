@@ -180,12 +180,13 @@ describe("withAccessToken (reactive 401)", () => {
 });
 
 describe("refreshExpiringTokens (proactive cron)", () => {
-  it("refreshes only rows expiring within 24h, survives per-user failures, returns the count", async () => {
+  it("refreshes only rows dying within 15 min, survives per-user failures, returns the count", async () => {
     const rig = createTestRig();
-    await seedTokenRow(rig, "u-expiring", ACCESS_A, REFRESH_A, 3600);
+    // horizon is 15 min: 10 min + already-expired are in, 1h + 2 days are out
+    await seedTokenRow(rig, "u-expiring", ACCESS_A, REFRESH_A, 600);
     await seedTokenRow(rig, "u-fresh", ACCESS_A, REFRESH_A, 2 * 86_400);
     await seedTokenRow(rig, "u-expired", ACCESS_A, REFRESH_A, -10);
-    await seedTokenRow(rig, "u-bad", ACCESS_A, "rt-bad-token", 3600);
+    await seedTokenRow(rig, "u-bad", ACCESS_A, "rt-bad-token", 700);
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     stubTokenRefresh((form) => {
@@ -196,7 +197,7 @@ describe("refreshExpiringTokens (proactive cron)", () => {
     });
 
     const refreshed = await refreshExpiringTokens(rig.env);
-    expect(refreshed).toBe(2); // u-expiring + u-expired; u-bad failed, u-far untouched
+    expect(refreshed).toBe(2); // u-expiring + u-expired; u-bad failed, u-fresh untouched
 
     const expiringRow = rig.db.tokens.get("u-expiring") as Row;
     expect(
@@ -220,5 +221,49 @@ describe("refreshExpiringTokens (proactive cron)", () => {
     const logged = errSpy.mock.calls.map((args) => args.map(String).join(" ")).join("\n");
     expect(logged).toContain("u-bad");
     expect(logged).not.toContain("rt-bad-token");
+  });
+
+  it("throws reconnect-required 401 without calling Buffer when the stored refresh token is empty", async () => {
+    const rig = createTestRig();
+    // the live 2026-11-01 incident: the exchange returned no refresh_token
+    // (offline_access not granted) and an empty string was sealed
+    await seedTokenRow(rig, USER, ACCESS_A, "");
+    const fetchSpy = vi.fn();
+    vi.stubGlobal("fetch", fetchSpy);
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const fn = vi.fn<(token: string) => Promise<string>>();
+    fn.mockRejectedValueOnce(new BufferApiError(401, "expired"));
+
+    const err = await withAccessToken(rig.env, USER, fn).then(
+      () => null,
+      (e: unknown) => e
+    );
+    expect(err).toBeInstanceOf(RefreshError);
+    expect((err as RefreshError).status).toBe(401);
+    expect((err as RefreshError).message).toContain("reconnect");
+    expect(fetchSpy).not.toHaveBeenCalled(); // a doomed refresh is never sent
+    expect(errSpy.mock.calls.map((a) => a.map(String).join(" ")).join("\n")).not.toContain(ACCESS_A);
+  });
+
+  it("maps a 400 invalid_grant refresh rejection to reconnect-required 401 (never retryable)", async () => {
+    const rig = createTestRig();
+    await seedTokenRow(rig, USER, ACCESS_A, REFRESH_A);
+    stubTokenRefresh(() => jsonResponse({ error: "invalid_grant" }, 400));
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const fn = vi.fn<(token: string) => Promise<string>>();
+    fn.mockRejectedValueOnce(new BufferApiError(401, "expired"));
+
+    const err = await withAccessToken(rig.env, USER, fn).then(
+      () => null,
+      (e: unknown) => e
+    );
+    expect(err).toBeInstanceOf(RefreshError);
+    expect((err as RefreshError).status).toBe(401);
+    // the diagnostic line carries the oauth code, never token material
+    const logged = errSpy.mock.calls.map((args) => args.map(String).join(" ")).join("\n");
+    expect(logged).toContain("invalid_grant");
+    expect(logged).not.toContain(REFRESH_A);
   });
 });

@@ -141,6 +141,8 @@ export interface Deck {
   cards: CardData[]; // 7 with persona; 6 before persona; 1 empty-state card
   persona?: Persona;
   empty?: true; // account has "not enough year yet" (fixture-C state)
+  /** Every year the account has posts for, newest first (deck year picker). */
+  years?: number[];
 }
 
 // ── Recap (spec 06) ─────────────────────────────────────────────────────────
@@ -197,6 +199,12 @@ export interface MeResponse {
   channels: BufferChannel[];
   connected: boolean;
   backfillDone?: boolean;
+  /**
+   * True when the browser session is valid but the Buffer token pair is dead
+   * (expired and unrefreshable, or never issued). The app stays open: features
+   * that need live Buffer access show a reconnect CTA instead of logging out.
+   */
+  needsReconnect?: boolean;
 }
 
 // ── API error shape (spec 01 §5) ────────────────────────────────────────────

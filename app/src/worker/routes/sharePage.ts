@@ -28,7 +28,7 @@ import { jsonError } from "../lib/http";
 import { renderOgPng } from "../lib/render";
 import { readSessionUserId } from "../lib/session";
 import { getCardPng } from "./cards";
-import { buildDeck } from "./deck";
+import { buildDeck, resolveDeckYear } from "./deck";
 
 // ── theme palette for the inline page CSS (Hallmark theme "Hum") ─────────────
 //
@@ -396,7 +396,8 @@ sharePublic.get("/:shareId", async (c) => {
   if (!row || row.enabled !== 1) {
     return notFoundPage(origin, "this share link is off or doesn't exist");
   }
-  const { deck } = await buildDeck(c.env, row.user_id, new Date().getUTCFullYear());
+  const year = await resolveDeckYear(c.env, row.user_id, undefined);
+  const { deck } = await buildDeck(c.env, row.user_id, year);
   if (deck.stats.totals.posts === 0) {
     return notFoundPage(origin, "this link has nothing to share yet");
   }
@@ -418,7 +419,8 @@ sharePublic.get("/:shareId/og.png", async (c) => {
   if (!row || row.enabled !== 1) {
     return notFoundPage(origin, "this share link is off or doesn't exist");
   }
-  const { deck } = await buildDeck(c.env, row.user_id, new Date().getUTCFullYear());
+  const year = await resolveDeckYear(c.env, row.user_id, undefined);
+  const { deck } = await buildDeck(c.env, row.user_id, year);
   if (deck.stats.totals.posts === 0) {
     return notFoundPage(origin, "this link has nothing to share yet");
   }
@@ -448,7 +450,8 @@ sharePublic.get("/:shareId/card/:slug", async (c) => {
   const cached = await c.env.CACHE.get(cacheKey, "arrayBuffer");
   if (cached) return pngResponse(cached);
   // empty account → nothing to share (same gate as the page route)
-  const { deck } = await buildDeck(c.env, row.user_id, new Date().getUTCFullYear());
+  const year = await resolveDeckYear(c.env, row.user_id, undefined);
+  const { deck } = await buildDeck(c.env, row.user_id, year);
   if (deck.stats.totals.posts === 0) {
     return notFoundPage(origin, "this link has nothing to share yet");
   }

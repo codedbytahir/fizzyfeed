@@ -26,7 +26,18 @@ yearize.post("/run", async (c) => {
       try {
         const state = await getSyncState(c.env, userId);
         if (state?.backfill_done) {
-          await pollIncremental(c.env, userId);
+          // self-heal: an account marked done but holding zero posts re-runs
+          // the full backfill (seen live 2026-11-01: done-with-0-posts was a
+          // sticky dead end). Accounts with posts take the cheap incremental
+          // path as before.
+          const counted = await c.env.DB.prepare("SELECT COUNT(*) AS n FROM posts WHERE user_id = ?")
+            .bind(userId)
+            .first<{ n: number }>();
+          if ((counted?.n ?? 0) === 0) {
+            await startBackfill(c.env, userId);
+          } else {
+            await pollIncremental(c.env, userId);
+          }
         } else {
           await startBackfill(c.env, userId);
         }

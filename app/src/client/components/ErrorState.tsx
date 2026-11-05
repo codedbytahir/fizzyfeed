@@ -16,8 +16,12 @@ function BoltGlyph() {
 
 /**
  * Every fetch error lands here (T13 shell contract): message from the API,
- * one "try again" action, never alert()/confirm().
+ * one "try again" action, never alert()/confirm(). Buffer-auth failures
+ * (session_expired / reconnect_required) swap the retry for a reconnect CTA
+ * — retrying a dead token can never succeed.
  */
+const RECONNECT_CODES = new Set(["session_expired", "reconnect_required", "no_buffer_token"]);
+
 export default function ErrorState({
   error,
   onRetry,
@@ -31,6 +35,7 @@ export default function ErrorState({
 }) {
   const message = typeof error === "string" ? error : error.message;
   const code = typeof error === "string" ? null : error.code;
+  const needsReconnect = code !== null && RECONNECT_CODES.has(code);
   return (
     <section className="state-panel" role="alert">
       <span className="state-panel__icon" aria-hidden="true">
@@ -39,12 +44,20 @@ export default function ErrorState({
       {code && <p className="overline">{code.replace(/_/g, " ")}</p>}
       <h2 className="headline headline--sm">{title}</h2>
       <p className="sub">{message}</p>
-      {onRetry && (
+      {needsReconnect ? (
         <div className="state-panel__action">
-          <Button variant="ghost" onClick={onRetry}>
-            try again
-          </Button>
+          <a className="btn btn--primary" href="/api/auth/buffer/login">
+            reconnect buffer
+          </a>
         </div>
+      ) : (
+        onRetry && (
+          <div className="state-panel__action">
+            <Button variant="ghost" onClick={onRetry}>
+              try again
+            </Button>
+          </div>
+        )
       )}
       {children}
     </section>

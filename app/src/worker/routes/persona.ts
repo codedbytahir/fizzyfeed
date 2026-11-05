@@ -17,7 +17,7 @@ import { readSessionUserId } from "../lib/session";
 import { RefreshError, withAccessToken } from "../lib/refresh";
 import { createBufferClient } from "../lib/buffer";
 import { generatePersona, sampleExposts } from "../lib/persona";
-import { buildDeck } from "./deck";
+import { buildDeck, resolveDeckYear } from "./deck";
 import type { BufferPost, Persona, YearStats } from "../../shared/types";
 
 const REGEN_LIMIT = 3;
@@ -124,7 +124,7 @@ async function readRegenCount(kv: KVNamespace, key: string): Promise<number> {
 persona.post("/", async (c) => {
   const userId = await readSessionUserId(c);
   if (!userId) return jsonError(c, 401, "no_session", "sign in with buffer to meet your alter ego");
-  const year = new Date().getUTCFullYear();
+  const year = await resolveDeckYear(c.env, userId, undefined);
 
   const deb = await debounce60s(c.env.CACHE, `deb:persona:${userId}:${year}`);
   if (!deb.allowed) {
@@ -154,7 +154,7 @@ persona.post("/", async (c) => {
 persona.post("/regenerate", async (c) => {
   const userId = await readSessionUserId(c);
   if (!userId) return jsonError(c, 401, "no_session", "sign in with buffer to meet your alter ego");
-  const year = new Date().getUTCFullYear();
+  const year = await resolveDeckYear(c.env, userId, undefined);
 
   const deb = await debounce60s(c.env.CACHE, `deb:persona-regen:${userId}`);
   if (!deb.allowed) {
@@ -188,7 +188,7 @@ persona.post("/regenerate", async (c) => {
 persona.get("/", async (c) => {
   const userId = await readSessionUserId(c);
   if (!userId) return jsonError(c, 401, "no_session", "sign in with buffer to meet your alter ego");
-  const year = new Date().getUTCFullYear();
+  const year = await resolveDeckYear(c.env, userId, undefined);
   const cached = await readCachedPersona(c.env, userId, year);
   if (!cached) return jsonError(c, 404, "no_persona", "no alter ego yet — open your deck to meet them");
   c.header("Cache-Control", "private, max-age=60");

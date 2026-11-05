@@ -126,6 +126,11 @@ export class FakeD1 {
       const row = this.tokens.get(String(params[0]));
       return row ? [row] : [];
     }
+    if (q.startsWith("SELECT user_id FROM buffer_tokens WHERE user_id")) {
+      // /api/auth/me liveness probe: token row exists?
+      const row = this.tokens.get(String(params[0]));
+      return row ? [{ user_id: row["user_id"] }] : [];
+    }
     if (q.startsWith("SELECT user_id FROM buffer_tokens")) {
       const horizon = Number(params[0]);
       return [...this.tokens.values()]
@@ -146,13 +151,17 @@ export class FakeD1 {
 
     if (q.startsWith("INSERT INTO sync_state")) {
       const userId = String(params[0]);
-      if (!this.syncState.has(userId)) {
+      const existing = this.syncState.get(userId);
+      if (!existing) {
         this.syncState.set(userId, {
           user_id: userId,
           backfill_done: 0,
           last_polled_at: 0,
           poll_cursor: null,
         });
+      } else if (q.includes("DO UPDATE SET backfill_done = 0")) {
+        // reconnect re-opens the backfill (routes/auth.ts callback upsert)
+        existing["backfill_done"] = 0;
       }
       return [];
     }

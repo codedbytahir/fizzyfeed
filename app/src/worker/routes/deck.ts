@@ -57,11 +57,51 @@ function firstPostDate(at: number): string {
   return `${monthName(d.getUTCMonth())} ${d.getUTCDate()}`;
 }
 
-const EMPTY_STATE_COPY = "not enough year yet — connect your buffer and post a little more";
+const EMPTY_STATE_COPY =
+  "nothing to draw yet. send a post through buffer and the deck builds itself, one chapter at a time.";
 
 /** The single "not enough year yet" card (bolt gradient, spec 04 §1). */
 export function emptyDeckCard(): CardData {
   return { n: 1, kind: "kickoff", date: "", excerpt: EMPTY_STATE_COPY, gradient: "bolt" };
+}
+
+// ── year resolution ──────────────────────────────────────────────────────────
+
+/**
+ * Every year the account has posts for, newest first. Drives the deck's
+ * default-year choice and the client's year picker: a user whose posts sit
+ * outside the current calendar year still gets their deck (previously the
+ * deck hard-filtered to the current year and "less than a year of posts"
+ * counted as nothing).
+ */
+export async function listDeckYears(env: Env, userId: string): Promise<number[]> {
+  const rows = await env.DB.prepare(
+    "SELECT DISTINCT year FROM posts WHERE user_id = ? ORDER BY year DESC"
+  )
+    .bind(userId)
+    .all<{ year: number }>();
+  // dedupe + sort in js as well: D1 handles DISTINCT, test fakes may not
+  return [...new Set(rows.results.map((r) => r.year))].sort((a, b) => b - a);
+}
+
+/**
+ * Which year to draw: an explicit ?year= override when valid, otherwise the
+ * most recent year that actually has posts, otherwise the current year (an
+ * empty deck with an honest explanation).
+ */
+export async function resolveDeckYear(
+  env: Env,
+  userId: string,
+  requested: unknown,
+  knownYears?: number[]
+): Promise<number> {
+  if (typeof requested === "string" && /^\d{4}$/.test(requested)) {
+    const year = Number(requested);
+    if (year >= 2006 && year <= 2100) return year;
+  }
+  const years = knownYears ?? (await listDeckYears(env, userId));
+  if (years.length > 0) return years[0] ?? new Date().getUTCFullYear();
+  return new Date().getUTCFullYear();
 }
 
 /**
@@ -189,8 +229,10 @@ deck.get("/", async (c) => {
   if (!userId) {
     return jsonError(c, 401, "no_session", "sign in with buffer to open your deck");
   }
-  const year = new Date().getUTCFullYear();
+  const years = await listDeckYears(c.env, userId);
+  const year = await resolveDeckYear(c.env, userId, c.req.query("year"), years);
   const { deck: built } = await buildDeck(c.env, userId, year);
+  built.years = years;
   c.header("Cache-Control", "private, max-age=60");
   return c.json(built);
 });
